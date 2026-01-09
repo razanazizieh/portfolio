@@ -322,13 +322,21 @@ section {
   font-size: clamp(15px, 1.5vw, 17px);
   font-weight: 300;
 }
+.section-title {
+  font-size: clamp(30px, 4vw, 48px);
+  font-weight: 200;
+  letter-spacing: -1.5px;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
 .contact-subtitle {
-  font-size: 0.55em;
-  opacity: 0.7;
+  font-size: 0.45em;
+  opacity: 0.6;
   font-weight: 100;
   letter-spacing: 0.5px;
-  display: inline-block;
+  display: block;
   margin-top: 10px;
+  color: var(--text);
 }
 
 @media (max-width: 1024px) {
@@ -414,5 +422,11 @@ section {
   .hero-meta {
     grid-template-columns: 1fr;
     gap: 30px;
+  }
+  .section-title {
+    letter-spacing: -1px;
+  }
+  .contact-subtitle {
+    font-size: 0.55em;
   }
 }
