@@ -12,14 +12,6 @@ let mouseX = 0,
   ballY = 0;
 const lerp = 0.15;
 
-// Mouse Events
-document.addEventListener("mousemove", (e) => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  cursor.style.opacity = "1";
-  if (Math.random() > 0.2) particles.push(new Particle(e.clientX, e.clientY));
-});
-
 // Touch Events
 document.addEventListener(
   "touchstart",
@@ -48,17 +40,36 @@ document.addEventListener("mouseleave", () => {
   cursor.style.opacity = "0";
 });
 
+const MAX_PARTICLES = 100;
+
+document.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  cursor.style.opacity = "1";
+
+  if (particles.length < MAX_PARTICLES && Math.random() > 0.5) {
+    particles.push(new Particle(e.clientX, e.clientY));
+  }
+});
+
 function animate() {
   ballX += (mouseX - ballX) * lerp;
   ballY += (mouseY - ballY) * lerp;
+
   cursor.style.left = ballX + "px";
   cursor.style.top = ballY + "px";
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  particles = particles.filter((p) => p.life > 0);
-  particles.forEach((p) => {
-    p.update();
-    p.draw();
-  });
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    particles[i].update();
+    if (particles[i].life <= 0) {
+      particles.splice(i, 1);
+    } else {
+      particles[i].draw();
+    }
+  }
+
   requestAnimationFrame(animate);
 }
 
@@ -75,13 +86,15 @@ class Particle {
   update() {
     this.x += this.speedX;
     this.y += this.speedY;
+    this.speedX *= 0.98;
+    this.speedY *= 0.98;
     this.life -= 0.012;
   }
   draw() {
     ctx.globalAlpha = this.life;
     ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.arc(this.x, this.y, this.size * this.life, 0, Math.PI * 2);
     ctx.fill();
   }
 }
@@ -96,16 +109,10 @@ animate();
 
 document.querySelectorAll("a, .theme-toggle").forEach((el) => {
   el.addEventListener("mouseenter", () => {
-    cursor.style.width = "30px";
-    cursor.style.height = "30px";
-    cursor.style.background = "rgba(255, 45, 149, 0.1)";
-    cursor.style.border = "1px solid var(--neon-pink)";
+    cursor.classList.add("hover-active");
   });
   el.addEventListener("mouseleave", () => {
-    cursor.style.width = "5px";
-    cursor.style.height = "5px";
-    cursor.style.background = "var(--neon-pink)";
-    cursor.style.border = "none";
+    cursor.classList.remove("hover-active");
   });
 });
 
@@ -149,6 +156,6 @@ setInterval(() => {
   const animatedIcon = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><radialGradient id='g'><stop offset='0%' stop-color='white'/><stop offset='100%' stop-color='%23ff2d95'/></radialGradient></defs><circle cx='55' cy='55' r='${glowSize}' fill='%23ff2d95' opacity='0.3'/><circle cx='55' cy='55' r='${coreSize}' fill='url(%23g)'/></svg>`;
   favicon.setAttribute("href", animatedIcon);
   step += 0.15;
-}, 100);
+}, 200);
 
 document.getElementById("year").textContent = new Date().getFullYear();
