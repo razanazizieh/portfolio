@@ -1,6 +1,6 @@
 # Portfolio | Razan Azizieh
 
-A minimalist, high-performance personal portfolio showcasing my journey as a **Frontend Developer** and **MSc student in Math & Computer Science**.
+Professional portfolio of Razan Azizieh: A Frontend Developer and MSc graduate in Mathematics & Computer Science, blending analytical rigor with modern web development.
 
 ## ✨ Features
 - **Dynamic Particles:** Interactive background using HTML5 Canvas.
