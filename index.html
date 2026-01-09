@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      id="favicon"
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='10' fill='%23ff2d95'/></svg>"
+    />
+    <title>RAZAN AZIZIEH</title>
+    <meta
+      name="description"
+      content="Portfolio of Razan Azizieh, Frontend Developer & MSc in Math and Computer Science."
+    />
+    <meta
+      name="keywords"
+      content="Razan Azizieh, Frontend Developer, Web Development, Math and CS"
+    />
+    <meta property="og:title" content="RAZAN AZIZIEH | Portfolio" />
+    <meta
+      property="og:description"
+      content="Building fluid digital experiences through structured code."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <canvas id="particleCanvas"></canvas>
+    <div id="cursor"></div>
+
+    <aside>
+      <div class="logo-area">
+        <h1>RAZAN AZIZIEH</h1>
+        <span>FRONTEND DEVELOPER <br />MSc MATH & CS</span>
+      </div>
+      <nav id="sidebar-nav">
+        <a href="#about" class="nav-link active">ABOUT</a>
+        <a href="#projects" class="nav-link">PROJECTS</a>
+        <a href="#contact" class="nav-link">CONTACT</a>
+      </nav>
+      <div class="aside-footer">
+        <div
+          class="theme-toggle"
+          onclick="document.body.classList.toggle('dark-mode')"
+          aria-label="Toggle dark mode"
+          role="button"
+        >
+          ◑
+        </div>
+        <div class="copyright-area">
+          © <span id="year"></span> Razan Azizieh
+        </div>
+      </div>
+    </aside>
+
+    <main id="main-content">
+      <section id="about">
+        <h2 class="hero-h reveal">
+          Building Fluid<br />Digital Experiences through<br />Structured
+          <b>Code</b>.
+        </h2>
+        <div class="hero-meta reveal">
+          <p>
+            I focus on building high-performance web applications where
+            technical precision meets a refined user feel.<br />
+            By merging structured development with a focus on
+            <b>accessibility</b> and <b>performance</b>, I ensure every
+            interaction is seamless.
+          </p>
+          <div class="tech-list">
+            React / JavaScript / HTML & CSS<br />
+            State Management / API Integration<br />
+            Web Standards / AI Tooling
+          </div>
+        </div>
+      </section>
+
+      <section id="projects">
+        <article class="project-card reveal">
+          <h3>Articlua App</h3>
+          <p>
+            A full-featured <b>Content Management Application</b> designed to
+            streamline digital publishing. It solves the complexity of
+            <b>user-generated content</b> by implementing a robust
+            <b>CRUD system</b>, allowing users to seamlessly create, manage, and
+            edit their personal profiles and articles while interacting with a
+            global feed via dynamic <b>API integration</b>.
+          </p>
+          <!-- <div class="p-links">
+            <a href="#">SOURCE CODE</a><a href="#">LIVE DEMO ↗</a></div> -->
+          <div class="p-links">
+            <a
+              href="https://github.com/razanazizieh/articula-app"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GITHUB REPOSITORY</a
+            >
+            <span
+              style="
+                font-family: 'JetBrains Mono';
+                font-size: 10px;
+                color: var(--dim);
+                opacity: 0.5;
+              "
+              >[ PRIVATE BETA ]</span
+            >
+          </div>
+        </article>
+        <article class="project-card reveal" style="opacity: 0.6">
+          <h3 style="font-style: italic; opacity: 0.5">More to come...</h3>
+          <p>
+            A variety of projects are currently being prepared for the
+            spotlight. Uploading soon.
+          </p>
+          <div class="p-links">
+            <span
+              style="
+                font-family: 'JetBrains Mono';
+                font-size: 10px;
+                color: var(--neon-pink);
+              "
+            >
+              [ UPCOMING REPOS ]
+            </span>
+          </div>
+        </article>
+        <!-- <article class="project-card reveal">
+          <h3>Kinetic State</h3>
+          <p>
+            Advanced UI orchestration handling complex physics-driven animations
+            with zero-lag performance.
+          </p>
+          <div class="p-links">
+            <a href="#">GITHUB</a><a href="#">DOCUMENTATION</a>
+          </div>
+        </article> -->
+      </section>
+
+      <section id="contact">
+        <div class="reveal">
+          <h2>
+            Setting standards, together.<br />
+            <span class="contact-subtitle">
+              Always open to connecting with creative minds.
+            </span>
+          </h2>
+          <div class="contact-horizon">
+            <a
+              href="https://github.com/razanazizieh"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="c-item"
+              ><span>[GIT]</span><span>GitHub</span></a
+            >
+            <a
+              href="https://www.linkedin.com/in/razan-azizieh"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="c-item"
+              ><span>[LINK]</span><span>LinkedIn</span></a
+            >
+            <a
+              href="https://www.instagram.com/_rraz.a"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="c-item"
+              ><span>[IG]</span><span>Instagram</span></a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
