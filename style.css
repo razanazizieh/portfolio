@@ -8,6 +8,7 @@
   --neon-purple: #9d00ff;
   --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 body.dark-mode {
   --bg: #080808;
   --sidebar-bg: #0a0a0a;
@@ -32,6 +33,7 @@ body.dark-mode {
   padding: 0;
   box-sizing: border-box;
 }
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -43,13 +45,23 @@ body {
   cursor: none !important;
 }
 
+a,
+button,
+.theme-toggle,
+.nav-link {
+  cursor: none !important;
+}
+
 canvas {
   position: fixed;
   top: 0;
   left: 0;
-  pointer-events: none;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
   z-index: 9998;
 }
+
 #cursor {
   position: fixed;
   width: 5px;
@@ -57,13 +69,25 @@ canvas {
   background: var(--neon-pink);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9999;
+  z-index: 10000;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 10px var(--neon-pink);
   opacity: 0;
-  transition: opacity 0.3s, width 0.3s, height 0.3s, background 0.3s,
-    border 0.3s;
-  will-change: transform, left, top;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease,
+    background 0.3s ease;
+  will-change: left, top;
+}
+
+#cursor.hover-active {
+  width: 15px;
+  height: 15px;
+  background: rgba(255, 45, 149, 0.15);
+  border: 1px solid var(--neon-pink);
+}
+
+main,
+aside {
+  pointer-events: auto;
 }
 
 .logo-area h1 {
@@ -84,6 +108,7 @@ canvas {
     nameBreathe 4s infinite ease-in-out;
   margin-bottom: 5px;
 }
+
 @keyframes moveGradient {
   0% {
     background-position: 0% 50%;
@@ -131,6 +156,7 @@ nav {
   padding-left: 10px;
   border-left: 1px solid var(--border);
 }
+
 nav a {
   text-decoration: none;
   color: var(--dim);
@@ -138,8 +164,8 @@ nav a {
   letter-spacing: 2px;
   transition: var(--transition);
   font-weight: 400;
-  position: relative;
 }
+
 nav a.active {
   color: var(--neon-pink);
   transform: translateX(5px);
@@ -159,6 +185,7 @@ nav a.active {
   width: fit-content;
   opacity: 0.6;
 }
+
 .theme-toggle:hover {
   opacity: 1;
   color: var(--neon-pink);
@@ -255,6 +282,7 @@ section {
   line-height: 1.7;
   margin-bottom: 28px;
 }
+
 .p-links {
   display: flex;
   gap: 30px;
@@ -302,24 +330,20 @@ section {
   display: inline-block;
   margin-top: 10px;
 }
-.reveal h2 {
-  font-size: clamp(26px, 4vw, 48px);
-  font-weight: 200;
-  letter-spacing: -1px;
-  margin-bottom: 35px;
-}
 
 @media (max-width: 1024px) {
   body {
     flex-direction: column;
     overflow-y: auto;
-    cursor: auto;
+    cursor: auto !important;
   }
-
+  #cursor {
+    display: none;
+  }
   canvas {
-    display: block;
     opacity: 0.5;
   }
+
   aside {
     width: 100%;
     padding: 20px 8%;
@@ -327,38 +351,60 @@ section {
     top: 0;
     height: auto;
     flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid var(--border);
     background: var(--bg);
     z-index: 1000;
   }
+
+  aside .theme-toggle {
+    display: block !important;
+    position: fixed;
+    top: 25px;
+    right: 20px;
+    z-index: 2000;
+    opacity: 1;
+    font-size: 22px;
+    pointer-events: auto !important;
+  }
+
   aside nav {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     background: var(--sidebar-bg);
-    padding: 15px 0;
+    padding: 15px 0 35px 0;
     border-top: 1px solid var(--border);
     border-left: none;
     margin: 0;
     z-index: 1000;
   }
-  nav a {
-    font-size: 10px;
-    letter-spacing: 1px;
+
+  .aside-footer {
+    position: fixed;
+    bottom: 8px;
+    left: 0;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    pointer-events: none;
+  }
+
+  .aside-footer .theme-toggle {
+    display: none;
   }
 
   main {
-    padding-bottom: 80px;
+    padding-bottom: 100px;
     margin-top: 80px;
-  }
-  .aside-footer {
-    display: none;
-  }
-  main {
     overflow-y: visible;
   }
   section {
@@ -368,8 +414,5 @@ section {
   .hero-meta {
     grid-template-columns: 1fr;
     gap: 30px;
-  }
-  .hero-h {
-    letter-spacing: -1.5px;
   }
 }
