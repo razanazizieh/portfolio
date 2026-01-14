@@ -340,6 +340,10 @@ section {
 }
 
 @media (max-width: 1024px) {
+  html {
+    scroll-padding-top: 100px;
+    scroll-behavior: smooth;
+  }
   body {
     flex-direction: column;
     overflow-y: auto;
