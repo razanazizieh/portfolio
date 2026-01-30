@@ -20,9 +20,11 @@ body.dark-mode {
 ::-webkit-scrollbar {
   width: 4px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg);
 }
+
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, var(--neon-pink), var(--neon-purple));
   border-radius: 10px;
@@ -94,13 +96,11 @@ aside {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.5px;
-  background: linear-gradient(
-    90deg,
-    var(--text),
-    var(--neon-pink),
-    var(--neon-purple),
-    var(--text)
-  );
+  background: linear-gradient(90deg,
+      var(--text),
+      var(--neon-pink),
+      var(--neon-purple),
+      var(--text));
   background-size: 300% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -113,15 +113,19 @@ aside {
   0% {
     background-position: 0% 50%;
   }
+
   100% {
     background-position: 100% 50%;
   }
 }
+
 @keyframes nameBreathe {
+
   0%,
   100% {
     filter: drop-shadow(0 0 0px rgba(255, 45, 149, 0));
   }
+
   50% {
     filter: drop-shadow(0 0 8px rgba(255, 45, 149, 0.3));
   }
@@ -207,6 +211,7 @@ main {
   position: relative;
   -webkit-overflow-scrolling: touch;
 }
+
 section {
   padding: 0 10%;
   min-height: 100vh;
@@ -220,6 +225,7 @@ section {
   transform: translateY(30px);
   transition: var(--transition);
 }
+
 .reveal.active {
   opacity: 1;
   transform: translateY(0);
@@ -232,6 +238,7 @@ section {
   letter-spacing: -2px;
   margin-bottom: 35px;
 }
+
 .hero-h b {
   color: var(--neon-pink);
   font-weight: 400;
@@ -245,6 +252,7 @@ section {
   padding-top: 35px;
   max-width: 950px;
 }
+
 .hero-meta p {
   font-size: clamp(15px, 1.2vw, 17px);
   line-height: 1.7;
@@ -252,6 +260,7 @@ section {
   font-weight: 300;
   opacity: 0.9;
 }
+
 .tech-list {
   font-family: "JetBrains Mono";
   font-size: 10px;
@@ -265,16 +274,19 @@ section {
   padding: 70px 0;
   border-bottom: 1px solid var(--border);
 }
+
 .project-card h3 {
   font-size: clamp(26px, 3.8vw, 42px);
   font-weight: 300;
   margin-bottom: 18px;
   transition: 0.4s;
 }
+
 .project-card:hover h3 {
   color: var(--neon-pink);
   transform: translateX(10px);
 }
+
 .project-card p {
   font-size: 15px;
   color: var(--dim);
@@ -287,6 +299,7 @@ section {
   display: flex;
   gap: 30px;
 }
+
 .p-links a {
   text-decoration: none;
   font-family: "JetBrains Mono";
@@ -304,6 +317,7 @@ section {
   gap: 18px 45px;
   margin-top: 20px;
 }
+
 .c-item {
   text-decoration: none;
   color: var(--text);
@@ -312,16 +326,19 @@ section {
   gap: 11px;
   transition: 0.4s;
 }
+
 .c-item span:first-child {
   font-family: "JetBrains Mono";
   font-size: 10px;
   color: var(--neon-pink);
   font-weight: bold;
 }
+
 .c-item span:last-child {
   font-size: clamp(15px, 1.5vw, 17px);
   font-weight: 300;
 }
+
 .section-title {
   font-size: clamp(30px, 4vw, 48px);
   font-weight: 200;
@@ -329,6 +346,7 @@ section {
   line-height: 1.2;
   margin-bottom: 20px;
 }
+
 .contact-subtitle {
   font-size: 0.45em;
   opacity: 0.6;
@@ -344,14 +362,17 @@ section {
     scroll-padding-top: 100px;
     scroll-behavior: smooth;
   }
+
   body {
     flex-direction: column;
     overflow-y: auto;
     cursor: auto !important;
   }
+
   #cursor {
     display: none;
   }
+
   canvas {
     opacity: 0.5;
   }
@@ -419,18 +440,42 @@ section {
     margin-top: 80px;
     overflow-y: visible;
   }
+
   section {
     padding: 60px 8%;
     min-height: calc(100vh - 140px);
   }
+
   .hero-meta {
     grid-template-columns: 1fr;
     gap: 30px;
   }
+
   .section-title {
     letter-spacing: -1px;
   }
+
   .contact-subtitle {
     font-size: 0.55em;
   }
+}
+
+.here {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--neon-pink);
+  font-weight: 500;
+}
+
+.beta {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--dim);
+  opacity: 0.5;
+  font-weight: 500;
+}
+
+.p-links a:has(.here) {
+  border-bottom: none !important;
+  padding: 0 !important;
 }
