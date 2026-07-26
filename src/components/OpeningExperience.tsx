@@ -168,7 +168,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
                 animate={shouldAnimate ? "visible" : "hidden"}
                 onClick={onCtaClick}
                 aria-label="Scroll down to contact section"
-                className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+                className="typo-mono-btn transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
                 whileHover={{ x: 4 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               >

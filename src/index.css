@@ -18,9 +18,9 @@
     --card-bg: #000000; /* Pure Matte Black */
     --card-bg-subtle: rgba(255, 255, 255, 0.03); /* Subtle dark background card */
     --accent-color: #FFFFFF; /* Pure Crisp White Accent */
-    --text-l1: #FFFFFF; /* Pure Crisp White (100% Brightness) */
-    --text-l2: #a1a1aa; /* Zinc 400 - secondary emphasis */
-    --text-l3: #e5e5e5; /* Zinc 200 - high contrast */
+    --text-l1: #FFFFFF; /* Line 1: Pure White (#FFFFFF) */
+    --text-l2: #A1A1AA; /* Line 2: Zinc 400 (#A1A1AA) */
+    --text-l3: #71717A; /* Line 3: Zinc 500 (#71717A) */
     --text-l4: #3f3f46; /* Zinc 700 */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-serif: 'Playfair Display', Georgia, Cambria, serif;
@@ -38,9 +38,9 @@
     --card-bg: #FFFFFF; /* Pure Crisp White */
     --card-bg-subtle: rgba(0, 0, 0, 0.03); /* Subtle light background card */
     --accent-color: #000000; /* Pure Stark Black Accent */
-    --text-l1: #111111; /* Zinc 900 */
-    --text-l2: #222222; /* Zinc 800 */
-    --text-l3: #333333; /* Zinc 700 */
+    --text-l1: #000000; /* Line 1: Solid Black (#000000) */
+    --text-l2: #333333; /* Line 2: Dark Gray (#333333) */
+    --text-l3: #555555; /* Line 3: Muted Slate Gray (#555555) */
     --text-l4: #52525b; /* Zinc 600 */
   }
 
@@ -197,7 +197,7 @@ html, body {
   font-size: clamp(1.25rem, 5.8vw, 84px);
   line-height: 0.86;
   letter-spacing: -0.04em;
-  color: var(--text-l1);
+  color: var(--text-l1) !important;
 }
 
 .typo-display-hero-l2 {
@@ -207,7 +207,7 @@ html, body {
   font-size: clamp(1.125rem, 5vw, 70px);
   line-height: 0.86;
   letter-spacing: -0.04em;
-  color: var(--text-l2);
+  color: var(--text-l2) !important;
 }
 
 .typo-display-hero-l3 {
@@ -217,7 +217,7 @@ html, body {
   font-size: clamp(1rem, 4vw, 56px);
   line-height: 0.86;
   letter-spacing: -0.04em;
-  color: var(--text-l3);
+  color: var(--text-l3) !important;
 }
 
 .typo-display-lg {
@@ -430,21 +430,6 @@ html, body {
   color-scheme: light;
 }
 
-.light h1,
-.light h2,
-.light h3,
-.light h4,
-.light h5,
-.light h6,
-:root[data-theme='light'] h1,
-:root[data-theme='light'] h2,
-:root[data-theme='light'] h3,
-:root[data-theme='light'] h4,
-:root[data-theme='light'] h5,
-:root[data-theme='light'] h6 {
-  color: #000000;
-}
-
 .light .typo-mono-label,
 .light .typo-mono-sub,
 .light .typo-body-regular-dim,
@@ -458,7 +443,7 @@ html, body {
 
 .light .typo-mono-btn,
 :root[data-theme='light'] .typo-mono-btn {
-  color: #111111;
+  color: #222222;
   font-weight: 600;
 }
 
@@ -471,21 +456,6 @@ html, body {
 :root[data-theme='dark'],
 .dark {
   color-scheme: dark;
-}
-
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6,
-:root[data-theme='dark'] h1,
-:root[data-theme='dark'] h2,
-:root[data-theme='dark'] h3,
-:root[data-theme='dark'] h4,
-:root[data-theme='dark'] h5,
-:root[data-theme='dark'] h6 {
-  color: #FFFFFF;
 }
 
 .dark .typo-mono-label,
