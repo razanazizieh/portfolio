@@ -258,4 +258,3 @@ export function useHeaderLogoScroll() {
   const logoY = useTransform(scrollY, [60, 240], [0, 0]);
   return { logoOpacity, logoY };
 }
-
