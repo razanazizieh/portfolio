@@ -132,17 +132,15 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
     return {
       initial: {
         opacity: isMobileViewport ? 1 : 0,
-        clipPath: (shouldReduceMotion || isMobileViewport) ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
-        filter: (shouldReduceMotion || isMobileViewport) ? "none" : "contrast(0.95) brightness(1.04)",
+        y: (shouldReduceMotion || isMobileViewport) ? 0 : 10,
       },
       whileInView: {
         opacity: 1,
-        clipPath: "inset(0% 0% 0% 0%)",
-        filter: "contrast(1) brightness(1)",
+        y: 0,
         transition: {
-          duration: 0.85,
+          duration: 0.7,
           ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : 0.08,
+          delay: isMobileViewport ? 0 : 0.05,
         }
       }
     };
@@ -151,16 +149,14 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   const getImageVariants = () => {
     return {
       initial: {
-        opacity: isMobileViewport ? 1 : 0.15,
-        clipPath: (shouldReduceMotion || isMobileViewport) ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
-        filter: (shouldReduceMotion || isMobileViewport) ? "none" : "brightness(1.10) contrast(0.92)",
+        opacity: 1,
+        clipPath: "inset(0% 0% 0% 0%)",
       },
       whileInView: {
         opacity: 1,
         clipPath: "inset(0% 0% 0% 0%)",
-        filter: "brightness(1) contrast(1)",
         transition: {
-          duration: 0.88,
+          duration: 0.85,
           ease: [0.16, 1, 0.3, 1],
           delay: isMobileViewport ? 0 : 0.05
         }
@@ -173,13 +169,13 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       variants={getEditorialContentBlockVariants()}
       initial="initial"
       whileInView="whileInView"
-      viewport={{ once: true, amount: 0.08 }}
-      className="flex flex-col gap-6 md:gap-8 justify-start w-full"
+      viewport={{ once: false, amount: 0.1 }}
+      className="flex flex-col gap-6 md:gap-8 justify-start w-full text-[var(--text-color)]"
     >
       <div className="w-full text-left">
-        <div className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300">
+        <div className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium">
           <span>{project.category}</span>
-          <span className="mx-2">|</span>
+          <span className="mx-2 opacity-60">|</span>
           <span>{project.year}</span>
         </div>
         <h3 className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350">
@@ -188,25 +184,38 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       </div>
 
       <div className="flex flex-col items-start gap-6 text-left w-full">
-        <p className="typo-body-regular-dim select-text group-hover:text-[var(--text-color)] transition-all duration-300">
+        <p className="typo-body-regular-dim select-text text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-all duration-300">
           {getNarrative()}
         </p>
 
         <div className="pt-2 flex items-center gap-8 flex-wrap">
-          <span className="inline-flex items-center gap-1.5 typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium">
-            <span>OPEN CASE STUDY</span>
-          </span>
+          <motion.button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen(project);
+            }}
+            aria-label={`Open case study for ${project.title}`}
+            className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+            whileHover={{ x: 4 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+          >
+            OPEN CASE STUDY
+          </motion.button>
 
           {project.live && (
-            <a
+            <motion.a
               href={project.live}
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-1.5 typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium"
+              aria-label={`View live site for ${project.title}`}
+              className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+              whileHover={{ x: 4 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             >
-              <span>VIEW LIVE</span>
-            </a>
+              VIEW LIVE
+            </motion.a>
           )}
         </div>
       </div>
@@ -218,12 +227,12 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       ref={imageRef}
       initial="initial"
       whileInView="whileInView"
-      viewport={{ once: true, amount: 0.15 }}
-      className="relative w-full aspect-video overflow-hidden bg-transparent select-none"
+      viewport={{ once: false, amount: 0.15 }}
+      className="relative w-full aspect-video overflow-hidden bg-transparent select-none opacity-100"
     >
       <motion.div
         variants={getImageVariants()}
-        className="absolute inset-0 w-full h-full overflow-hidden"
+        className="absolute inset-0 w-full h-full overflow-hidden opacity-100"
       >
         {project.image ? (
           <>
@@ -233,7 +242,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.35 }}
-                  className="absolute inset-0 bg-neutral-200/40 dark:bg-zinc-900/40 animate-pulse flex flex-col items-center justify-center"
+                  className="absolute inset-0 bg-transparent flex flex-col items-center justify-center"
                 >
                   <div className="flex flex-col items-center gap-1.5">
                     <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500/80">
@@ -251,11 +260,10 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
               alt={project.title}
               onLoad={() => setIsImageLoaded(true)}
               loading={shouldEagerLoad ? "eager" : "lazy"}
-              className={`absolute inset-0 w-full h-full object-cover object-top sm:object-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                isImageLoaded ? 'opacity-100' : 'opacity-0'
-              } ${
+              className={`absolute inset-0 w-full h-full object-cover object-top sm:object-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 !opacity-100 ${
                 isThisProjectActive ? 'scale-[1.018]' : 'scale-100'
               }`}
+              style={{ opacity: 1, filter: 'none' }}
               referrerPolicy="no-referrer"
             />
           </>
@@ -346,9 +354,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       onFocus={() => setFocusedProjectId(project.id)}
       onBlur={() => setFocusedProjectId(null)}
       whileHover={getHoverConfig()}
-      className={`group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        showFaded ? "opacity-35" : "opacity-100"
-      } py-10 sm:py-16 md:py-20`}
+      className="group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 py-10 sm:py-16 md:py-20"
     >
       <div className="w-full max-w-7xl mx-auto px-0 sm:px-12 lg:px-16">
         {renderLayout()}
@@ -510,7 +516,7 @@ export default function SelectedWork({
               }}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.05 }}
+              viewport={{ once: false, amount: 0.05 }}
               style={{ x: 0 }}
               className="typo-display-lg select-text text-[var(--text-color)] font-black"
             >
@@ -524,7 +530,7 @@ export default function SelectedWork({
             aria-label="Project filter categories"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.15 }}
+            viewport={{ once: false, amount: 0.15 }}
             variants={{
               hidden: {},
               visible: {

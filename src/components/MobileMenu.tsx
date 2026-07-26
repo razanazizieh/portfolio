@@ -56,8 +56,8 @@ export default function MobileMenu({
                 aria-label="Navigate to works section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   (activeSection === 'works' || !!activeCaseStudy)
-                    ? 'text-[var(--text-color)] opacity-100'
-                    : 'text-[var(--text-color)] opacity-60 hover:opacity-100 focus:opacity-100'
+                    ? 'text-[var(--text-color)] font-extrabold'
+                    : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
                 }`}
               >
                 WORKS
@@ -75,8 +75,8 @@ export default function MobileMenu({
                 aria-label="Navigate to connect section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'contact' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] opacity-100'
-                    : 'text-[var(--text-color)] opacity-60 hover:opacity-100 focus:opacity-100'
+                    ? 'text-[var(--text-color)] font-extrabold'
+                    : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
                 }`}
               >
                 CONNECT

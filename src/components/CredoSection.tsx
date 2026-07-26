@@ -111,7 +111,7 @@ export default function CredoSection() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: false, amount: 0.2 }}
             className="col-span-1 lg:col-span-10 flex flex-col gap-0 select-text"
           >
             <StaggeredHeaderLine

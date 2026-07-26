@@ -28,7 +28,7 @@ export default function PremiumImage({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={{ once: false, amount: 0.15 }}
       onViewportEnter={() => setIsInView(true)}
       className={`relative w-full overflow-hidden select-none cursor-default ${aspectRatio} ${
         borderNone
@@ -38,7 +38,7 @@ export default function PremiumImage({
     >
       <motion.div
         variants={{
-          hidden: { clipPath: 'inset(0% 0% 100% 0%)', opacity: 0 },
+          hidden: { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 },
           visible: { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 }
         }}
         transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
@@ -51,7 +51,7 @@ export default function PremiumImage({
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="absolute inset-0 bg-neutral-900/60 dark:bg-neutral-900/80 animate-pulse flex items-center justify-center"
+              className="absolute inset-0 bg-neutral-200/40 dark:bg-zinc-900/40 animate-pulse flex items-center justify-center"
             >
               <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
                 loading asset

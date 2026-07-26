@@ -70,7 +70,7 @@ export default function Contact() {
             <motion.h2
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={{ once: false, amount: 0.15 }}
               className="typo-display-lg select-text flex flex-wrap items-baseline gap-x-4"
             >
               <span className="inline-block overflow-hidden py-[0.05em] -my-[0.05em]">
@@ -140,7 +140,7 @@ export default function Contact() {
               }}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={{ once: false, amount: 0.15 }}
               className="w-full"
             >
               <p className="typo-body-regular-dim max-w-xl w-full whitespace-normal break-words">
@@ -160,7 +160,7 @@ export default function Contact() {
               }}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
+              viewport={{ once: false, amount: 0.15 }}
               className="flex flex-col gap-4 lg:gap-2 w-full max-w-lg lg:items-end lg:text-right mt-8 sm:mt-10"
             >
               {/* GitHub */}
@@ -257,6 +257,7 @@ export default function Contact() {
           </motion.div>
         </div>
 
+        {/* Minimal Swiss footer: Subtle upward settling */}
         <motion.footer
           variants={{
             hidden: { 
@@ -273,7 +274,7 @@ export default function Contact() {
           }}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
+          viewport={{ once: false }}
           className="pt-16 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center typo-mono-sub px-8 gap-4"
         >
           <div className="text-[10px] tracking-widest uppercase opacity-40 text-left">
