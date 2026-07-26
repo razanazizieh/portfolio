@@ -43,7 +43,7 @@ const ThoughtWord: React.FC<{ thought: FloatingThought; scrollY: any }> = ({ tho
         opacity: thought.opacity,
         willChange: 'transform, opacity',
       }}
-      className="typo-mono-sub text-neutral-300 select-none pointer-events-none uppercase whitespace-nowrap z-0"
+      className="typo-mono-sub text-[var(--text-dim)] select-none pointer-events-none uppercase whitespace-nowrap z-0"
     >
       {thought.text}
     </motion.div>

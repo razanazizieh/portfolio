@@ -55,7 +55,7 @@ function DriftingWordsParagraph({ text, align, variants }: DriftingWordsParagrap
         contain: "layout style",
       }}
     >
-      <p className={`font-sans font-light text-[clamp(1rem,1.2vw,1.125rem)] leading-relaxed select-text text-neutral-300 dark:text-neutral-300 w-full whitespace-normal break-words ${alignClass}`}>
+      <p className={`font-sans font-light text-[clamp(1rem,1.2vw,1.125rem)] leading-relaxed select-text text-[var(--text-dim-high)] w-full whitespace-normal break-words ${alignClass}`}>
         {text}
       </p>
     </motion.div>

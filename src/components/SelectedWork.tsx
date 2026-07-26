@@ -48,7 +48,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   const isThisProjectActive = hoveredProjectId === project.id || focusedProjectId === project.id;
   const showFaded = !isMobileViewport && isAnyProjectActive && !isThisProjectActive;
 
-  const [shouldEagerLoad, setShouldEagerLoad] = useState(index === 0);
+  const [shouldEagerLoad, setShouldEagerLoad] = useState(index < 3);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const imageRef = useRef<HTMLDivElement>(null);
 
@@ -128,37 +128,21 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   // 4. Reveals image first then text (index 3)
   // 5. Reveals text first then image (index 4)
 
-  const getSmallLabelVariants = () => {
+  const getEditorialContentBlockVariants = () => {
     return {
       initial: {
         opacity: isMobileViewport ? 1 : 0,
-        y: (shouldReduceMotion || isMobileViewport) ? 0 : 15,
+        clipPath: (shouldReduceMotion || isMobileViewport) ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+        filter: (shouldReduceMotion || isMobileViewport) ? "none" : "contrast(0.95) brightness(1.04)",
       },
       whileInView: {
         opacity: 1,
-        y: 0,
+        clipPath: "inset(0% 0% 0% 0%)",
+        filter: "contrast(1) brightness(1)",
         transition: {
-          duration: 0.9,
+          duration: 0.85,
           ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : 0.22
-        }
-      }
-    };
-  };
-
-  const getTitleVariants = () => {
-    return {
-      initial: {
-        opacity: isMobileViewport ? 1 : 0,
-        y: (shouldReduceMotion || isMobileViewport) ? 0 : 20,
-      },
-      whileInView: {
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: 1.1,
-          ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : 0.28
+          delay: isMobileViewport ? 0 : 0.08,
         }
       }
     };
@@ -167,14 +151,16 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   const getImageVariants = () => {
     return {
       initial: {
-        opacity: isMobileViewport ? 1 : 0,
+        opacity: isMobileViewport ? 1 : 0.15,
         clipPath: (shouldReduceMotion || isMobileViewport) ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+        filter: (shouldReduceMotion || isMobileViewport) ? "none" : "brightness(1.10) contrast(0.92)",
       },
       whileInView: {
         opacity: 1,
         clipPath: "inset(0% 0% 0% 0%)",
+        filter: "brightness(1) contrast(1)",
         transition: {
-          duration: 1.15,
+          duration: 0.88,
           ease: [0.16, 1, 0.3, 1],
           delay: isMobileViewport ? 0 : 0.05
         }
@@ -182,56 +168,49 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
     };
   };
 
-  const getDescriptionVariants = (paraIndex: number) => {
-    const delay = paraIndex === 0 ? 0.34 : 0.40;
-    return {
-      initial: {
-        opacity: isMobileViewport ? 1 : 0,
-        y: (shouldReduceMotion || isMobileViewport) ? 0 : 15,
-      },
-      whileInView: {
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: 0.9,
-          ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : delay
-        }
-      }
-    };
-  };
+  const editorialContentModule = (
+    <motion.div
+      variants={getEditorialContentBlockVariants()}
+      initial="initial"
+      whileInView="whileInView"
+      viewport={{ once: true, amount: 0.08 }}
+      className="flex flex-col gap-6 md:gap-8 justify-start w-full"
+    >
+      <div className="w-full text-left">
+        <div className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300">
+          <span>{project.category}</span>
+          <span className="mx-2">|</span>
+          <span>{project.year}</span>
+        </div>
+        <h3 className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350">
+          {project.title}
+        </h3>
+      </div>
 
-  const titleAnimate = getTitleVariants();
-  const imageAnimate = getImageVariants();
-  const descParagraphAnimate = getDescriptionVariants(0);
-  const descActionsAnimate = getDescriptionVariants(1);
+      <div className="flex flex-col items-start gap-6 text-left w-full">
+        <p className="typo-body-regular-dim select-text group-hover:text-[var(--text-color)] transition-all duration-300">
+          {getNarrative()}
+        </p>
 
-  const titleWords = project.title.split(/\s+/);
+        <div className="pt-2 flex items-center gap-8 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium">
+            <span>OPEN CASE STUDY</span>
+          </span>
 
-  const titleModule = (
-    <div className="w-full text-left">
-      <motion.div
-        variants={getSmallLabelVariants()}
-        initial="initial"
-        whileInView="whileInView"
-        viewport={{ once: true, amount: 0.05 }}
-        inherit={false}
-        className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300"
-      >
-        <span>{project.category}</span>
-        <span className="mx-2">|</span>
-        <span>{project.year}</span>
-      </motion.div>
-      <motion.h3
-        variants={getTitleVariants()}
-        initial="initial"
-        whileInView="whileInView"
-        viewport={{ once: true, amount: 0.05 }}
-        className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350"
-      >
-        {project.title}
-      </motion.h3>
-    </div>
+          {project.live && (
+            <a
+              href={project.live}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-1.5 typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium"
+            >
+              <span>VIEW LIVE</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </motion.div>
   );
 
   const imageContainer = (
@@ -240,7 +219,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       initial="initial"
       whileInView="whileInView"
       viewport={{ once: true, amount: 0.15 }}
-      className="relative w-full aspect-video overflow-hidden bg-[var(--card-bg-subtle)] border border-white/[0.08] rounded select-none"
+      className="relative w-full aspect-video overflow-hidden bg-transparent select-none"
     >
       <motion.div
         variants={getImageVariants()}
@@ -253,8 +232,8 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
                 <motion.div
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.45 }}
-                  className="absolute inset-0 bg-neutral-950/40 dark:bg-zinc-950/60 animate-pulse flex flex-col items-center justify-center border border-white/[0.04]"
+                  transition={{ duration: 0.35 }}
+                  className="absolute inset-0 bg-neutral-200/40 dark:bg-zinc-900/40 animate-pulse flex flex-col items-center justify-center"
                 >
                   <div className="flex flex-col items-center gap-1.5">
                     <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500/80">
@@ -272,16 +251,16 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
               alt={project.title}
               onLoad={() => setIsImageLoaded(true)}
               loading={shouldEagerLoad ? "eager" : "lazy"}
-              className={`absolute inset-0 w-full h-full object-contain object-top p-4 sm:p-6 bg-zinc-900/60 dark:bg-zinc-950/40 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`absolute inset-0 w-full h-full object-cover object-top sm:object-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 isImageLoaded ? 'opacity-100' : 'opacity-0'
               } ${
-                isThisProjectActive ? 'scale-[1.015]' : 'scale-100'
+                isThisProjectActive ? 'scale-[1.018]' : 'scale-100'
               }`}
               referrerPolicy="no-referrer"
             />
           </>
         ) : (
-          <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-[var(--card-bg-subtle)] border border-[var(--border-color)] select-none overflow-hidden pb-4">
+          <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-transparent select-none overflow-hidden pb-4">
             <svg className="w-1/2 h-1/2 opacity-[0.08] text-zinc-500 group-hover:opacity-[0.15] transition-opacity duration-500" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="200" cy="125" r="85" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 8" />
               <circle cx="200" cy="125" r="45" stroke="currentColor" strokeWidth="0.5" />
@@ -299,56 +278,12 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
     </motion.div>
   );
 
-  const descriptionModule = (
-    <div className="flex flex-col items-start gap-6 text-left w-full">
-      <motion.div
-        variants={getDescriptionVariants(0)}
-        initial="initial"
-        whileInView="whileInView"
-        viewport={{ once: true, amount: 0.05 }}
-        inherit={false}
-      >
-        <p className="typo-body-regular-dim select-text group-hover:text-[var(--text-color)] transition-all duration-300">
-          {getNarrative()}
-        </p>
-      </motion.div>
-
-      {/* Action triggers */}
-      <motion.div
-        variants={getDescriptionVariants(1)}
-        initial="initial"
-        whileInView="whileInView"
-        viewport={{ once: true, amount: 0.05 }}
-        inherit={false}
-        className="pt-2 flex items-center gap-8 flex-wrap"
-      >
-        <span
-          className="inline-flex items-center gap-1.5 typo-mono-btn text-neutral-300 hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium"
-        >
-          <span>OPEN CASE STUDY</span>
-        </span>
-
-        {project.live && (
-          <a
-            href={project.live}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1.5 typo-mono-btn text-neutral-300 hover:text-[var(--text-color)] transition-colors duration-300 select-none cursor-pointer min-h-[44px] py-1 -my-1 font-medium"
-          >
-            <span>VIEW LIVE</span>
-          </a>
-        )}
-      </motion.div>
-    </div>
-  );
-
   const renderLayout = () => {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-16 lg:gap-20 items-center w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
         {isEven ? (
           <>
-            {/* Even Chapter: Image Left, Metadata Right with Subtle Upward Exit Drift */}
+            {/* Even Chapter: Image Left, Metadata Right */}
             <motion.div
               style={{
                 y: exitImageY,
@@ -364,24 +299,22 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
                 y: exitTextY,
                 opacity: exitOpacity
               }}
-              className="w-full lg:col-span-5 flex flex-col gap-6 md:gap-8 justify-start order-2"
+              className="w-full lg:col-span-5 flex flex-col justify-start order-2"
             >
-              {titleModule}
-              {descriptionModule}
+              {editorialContentModule}
             </motion.div>
           </>
         ) : (
           <>
-            {/* Odd Chapter: Metadata Left, Image Right with Subtle Upward Exit Drift */}
+            {/* Odd Chapter: Metadata Left, Image Right */}
             <motion.div
               style={{
                 y: exitTextY,
                 opacity: exitOpacity
               }}
-              className="w-full lg:col-span-5 flex flex-col gap-6 md:gap-8 justify-start order-2 lg:order-1"
+              className="w-full lg:col-span-5 flex flex-col justify-start order-2 lg:order-1"
             >
-              {titleModule}
-              {descriptionModule}
+              {editorialContentModule}
             </motion.div>
             <motion.div
               style={{
@@ -509,6 +442,16 @@ export default function SelectedWork({
     return PROJECTS_DATA.filter((p) => p.category === activeFilter);
   }, [activeFilter]);
 
+  // Preload project images for instantaneous appearance during scroll
+  useEffect(() => {
+    filteredProjects.forEach((p) => {
+      if (p.image) {
+        const img = new Image();
+        img.src = p.image;
+      }
+    });
+  }, [filteredProjects]);
+
   const handleProjectNavigation = useCallback((currentIndex: number, direction: 'next' | 'prev') => {
     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
     if (targetIndex >= 0 && targetIndex < filteredProjects.length) {
@@ -575,7 +518,7 @@ export default function SelectedWork({
             </motion.h2>
           </div>
 
-          {/* Typographic Filter Controls: Subtle sequential entrance */}
+          {/* Typographic Filter Controls: Single row visibility on mobile without scrolling */}
           <motion.div
             role="group"
             aria-label="Project filter categories"
@@ -591,7 +534,7 @@ export default function SelectedWork({
                 }
               }
             }}
-            className="col-span-1 lg:col-span-6 flex flex-nowrap lg:flex-wrap items-center lg:justify-end gap-x-8 gap-y-3 typo-mono-filter lg:pl-6 lg:pt-3 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 scrollbar-none w-full max-w-full whitespace-nowrap scroll-smooth"
+            className="col-span-1 lg:col-span-6 flex flex-nowrap items-center justify-between sm:justify-start lg:justify-end gap-x-1.5 sm:gap-x-4 lg:gap-x-8 typo-mono-filter lg:pl-6 lg:pt-3 w-full max-w-full whitespace-nowrap overflow-x-visible pb-1 lg:pb-0"
           >
             {(['ALL', 'FULL-STACK', 'CODE', 'UI'] as const).map((filterValue) => {
                const count = filterCounts[filterValue];
@@ -637,13 +580,13 @@ export default function SelectedWork({
                    }}
                    aria-label={`Filter projects by ${displayName}`}
                    aria-pressed={isActive}
-                  className={`relative cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded filter-tab-button shrink-0 py-3 lg:py-1 inline-flex items-center ${
+                  className={`relative cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded filter-tab-button shrink-0 py-2 lg:py-1 px-1 sm:px-2 lg:px-0 inline-flex items-center text-[10px] sm:text-xs lg:text-xs ${
                     isActive ? 'active' : ''
                   }`}
                 >
-                  <span className="inline-flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 sm:gap-1.5">
                     <span>{displayName}</span>
-                    <span className="typo-mono-sub text-xs font-normal tracking-normal filter-tab-count">
+                    <span className="typo-mono-sub text-[9px] sm:text-xs font-normal tracking-normal filter-tab-count">
                       ({count})
                     </span>
                   </span>

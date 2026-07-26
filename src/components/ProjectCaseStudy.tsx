@@ -19,12 +19,12 @@ const FluidInteractionCanvas = () => {
   const project = PROJECTS_DATA.find((p) => p.id === "3d-fluid");
 
   return (
-    <div className="w-full h-[360px] relative bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800/40 overflow-hidden group">
+    <div className="w-full h-[360px] relative bg-transparent overflow-hidden group">
       {project?.image && (
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-contain object-top p-4 sm:p-6 bg-zinc-900/60 dark:bg-zinc-950/40 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
+          className="w-full h-full object-contain object-center transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
           referrerPolicy="no-referrer"
         />
       )}
@@ -719,7 +719,7 @@ export default function ProjectCaseStudy({
                       alt={`${project.title} — ${item.label}`}
                       aspectRatio="aspect-video"
                       borderNone={true}
-                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.015] object-contain object-top p-4 sm:p-6 bg-zinc-900/60 dark:bg-zinc-950/40 w-full h-full"
+                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.015] object-contain object-center w-full h-full"
                     />
                   </div>
                   <figcaption className="flex items-center mt-1.5 px-0 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-zinc-500/80 dark:text-zinc-400/80">
