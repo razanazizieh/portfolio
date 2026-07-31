@@ -103,7 +103,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
               variants={opacityReveal(0.45)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-mono-sub select-text mt-3 whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm"
+              className="typo-mono-sub select-text mt-3 whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm opacity-100"
             >
               MSc IN MATHEMATICS & COMPUTER SCIENCE
             </motion.div>
@@ -154,7 +154,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
                 variants={opacityReveal(1.2)}
                 initial="hidden"
                 animate={shouldAnimate ? "visible" : "hidden"}
-                className="typo-body-sm leading-relaxed text-[var(--text-dim)]"
+                className="typo-body-sm leading-relaxed text-[var(--text-dim)] opacity-100 font-normal"
               >
                 Building software that feels as intentional as it functions.
               </motion.p>
@@ -168,7 +168,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
                 animate={shouldAnimate ? "visible" : "hidden"}
                 onClick={onCtaClick}
                 aria-label="Scroll down to contact section"
-                className="typo-mono-btn transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+                className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5 opacity-100"
                 whileHover={{ x: 4 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 30 }}
               >

@@ -32,8 +32,8 @@
   .light {
     --bg-color: #FFFFFF; /* Pure Crisp White */
     --text-color: #000000; /* Pure Stark Black */
-    --text-dim: #333333; /* Solid readable dark gray for light mode */
-    --text-dim-high: #111111; /* Solid dark black for body text */
+    --text-dim: #111111; /* Solid readable dark black/gray for light mode */
+    --text-dim-high: #000000; /* Solid black for body text */
     --border-color: rgba(0, 0, 0, 0.14); /* Stark black border with higher opacity for legibility */
     --card-bg: #FFFFFF; /* Pure Crisp White */
     --card-bg-subtle: rgba(0, 0, 0, 0.03); /* Subtle light background card */
@@ -438,18 +438,21 @@ html, body {
 :root[data-theme='light'] .typo-mono-sub,
 :root[data-theme='light'] .typo-body-regular-dim,
 :root[data-theme='light'] .typo-body-sm {
-  color: #333333;
+  color: #111111;
+  opacity: 1;
 }
 
 .light .typo-mono-btn,
 :root[data-theme='light'] .typo-mono-btn {
-  color: #222222;
+  color: #000000;
+  opacity: 1;
   font-weight: 600;
 }
 
 .light .typo-mono-btn:hover,
 :root[data-theme='light'] .typo-mono-btn:hover {
   color: #000000;
+  opacity: 1;
 }
 
 /* Dark mode explicit fallback guarantees */
@@ -467,17 +470,20 @@ html, body {
 :root[data-theme='dark'] .typo-body-regular-dim,
 :root[data-theme='dark'] .typo-body-sm {
   color: #E5E5E5;
+  opacity: 1;
 }
 
 .dark .typo-mono-btn,
 :root[data-theme='dark'] .typo-mono-btn {
   color: #E5E5E5;
+  opacity: 1;
   font-weight: 600;
 }
 
 .dark .typo-mono-btn:hover,
 :root[data-theme='dark'] .typo-mono-btn:hover {
   color: #FFFFFF;
+  opacity: 1;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */

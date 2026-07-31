@@ -228,11 +228,11 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       initial="initial"
       whileInView="whileInView"
       viewport={{ once: false, amount: 0.15 }}
-      className="relative w-full aspect-video overflow-hidden bg-transparent select-none opacity-100"
+      className="relative w-full bg-transparent select-none opacity-100"
     >
       <motion.div
         variants={getImageVariants()}
-        className="absolute inset-0 w-full h-full overflow-hidden opacity-100"
+        className="relative w-full h-auto bg-transparent opacity-100 flex items-center justify-center overflow-hidden"
       >
         {project.image ? (
           <>
@@ -242,7 +242,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.35 }}
-                  className="absolute inset-0 bg-transparent flex flex-col items-center justify-center"
+                  className="absolute inset-0 bg-transparent flex flex-col items-center justify-center min-h-[220px]"
                 >
                   <div className="flex flex-col items-center gap-1.5">
                     <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500/80">
@@ -260,7 +260,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
               alt={project.title}
               onLoad={() => setIsImageLoaded(true)}
               loading={shouldEagerLoad ? "eager" : "lazy"}
-              className={`absolute inset-0 w-full h-full object-cover object-top sm:object-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 !opacity-100 ${
+              className={`w-full h-auto max-h-full object-contain object-top transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 !opacity-100 ${
                 isThisProjectActive ? 'scale-[1.018]' : 'scale-100'
               }`}
               style={{ opacity: 1, filter: 'none' }}

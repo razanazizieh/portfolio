@@ -19,12 +19,12 @@ const FluidInteractionCanvas = () => {
   const project = PROJECTS_DATA.find(p => p.id === '3d-fluid');
 
   return (
-    <div className="w-full h-[360px] relative bg-transparent overflow-hidden group">
+    <div className="w-full relative bg-transparent overflow-hidden group">
       {project?.image && (
         <img
           src={project.image}
           alt={project.title}
-          className="w-full h-full object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
+          className="w-full h-auto max-h-full object-contain object-top transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.015]"
           referrerPolicy="no-referrer"
         />
       )}
@@ -663,9 +663,8 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                     <PremiumImage
                       src={item.image}
                       alt={`${project.title} — ${item.label}`}
-                      aspectRatio="aspect-video"
                       borderNone={true}
-                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.015] object-cover object-top w-full h-full"
+                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.015] object-contain object-top w-full h-auto"
                     />
                   </div>
                   <figcaption className="flex items-center mt-1.5 px-0 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-zinc-500/80 dark:text-zinc-400/80">

@@ -30,11 +30,7 @@ export default function PremiumImage({
       whileInView="visible"
       viewport={{ once: false, amount: 0.15 }}
       onViewportEnter={() => setIsInView(true)}
-      className={`relative w-full overflow-hidden select-none cursor-default ${aspectRatio} ${
-        borderNone
-          ? 'border-none outline-none shadow-none bg-transparent'
-          : 'bg-[var(--card-bg-subtle)] border border-white/[0.06]'
-      }`}
+      className={`relative w-full select-none cursor-default ${aspectRatio} bg-transparent border-none outline-none shadow-none p-0 m-0`}
     >
       <motion.div
         variants={{
@@ -42,7 +38,7 @@ export default function PremiumImage({
           visible: { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1 }
         }}
         transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 w-full h-full overflow-hidden"
+        className={`relative w-full ${aspectRatio ? 'h-full overflow-hidden' : 'h-auto'} bg-transparent p-0 m-0 flex items-center justify-center`}
       >
         {/* Premium Swiss skeleton loader with subtle pulse */}
         <AnimatePresence>
@@ -51,7 +47,7 @@ export default function PremiumImage({
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }}
-              className="absolute inset-0 bg-neutral-200/40 dark:bg-zinc-900/40 animate-pulse flex items-center justify-center"
+              className="absolute inset-0 bg-transparent flex items-center justify-center min-h-[200px]"
             >
               <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
                 loading asset
@@ -66,8 +62,8 @@ export default function PremiumImage({
             src={src}
             alt={alt}
             onLoad={() => setIsLoaded(true)}
-            className={`w-full h-full ${
-              className.includes('object-') ? '' : 'object-cover'
+            className={`w-full h-auto max-h-full ${
+              className.includes('object-') ? '' : 'object-contain object-top'
             } transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               isLoaded ? 'opacity-100' : 'opacity-0'
             } ${className}`}
