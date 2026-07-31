@@ -56,8 +56,8 @@ export default function MobileMenu({
                 aria-label="Navigate to about section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'about' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] font-black opacity-100'
-                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
+                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
                 }`}
               >
                 ABOUT
@@ -75,8 +75,8 @@ export default function MobileMenu({
                 aria-label="Navigate to works section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   (activeSection === 'works' || !!activeCaseStudy)
-                    ? 'text-[var(--text-color)] font-black opacity-100'
-                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
+                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
                 }`}
               >
                 WORKS
@@ -94,8 +94,8 @@ export default function MobileMenu({
                 aria-label="Navigate to connect section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'contact' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] font-black opacity-100'
-                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
+                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
                 }`}
               >
                 CONNECT

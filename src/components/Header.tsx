@@ -98,8 +98,8 @@ export default function Header({
               aria-label="Navigate to about section"
               className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
                 activeSection === 'about' && !activeCaseStudy
-                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
-                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
+                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
               About
@@ -111,8 +111,8 @@ export default function Header({
               aria-label="Navigate to works section"
               className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
                 (activeSection === 'works' || !!activeCaseStudy)
-                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
-                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
+                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
               Works
@@ -124,8 +124,8 @@ export default function Header({
               aria-label="Navigate to connect section"
               className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
                 activeSection === 'contact' && !activeCaseStudy
-                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
-                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
+                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
               }`}
             >
               Connect
