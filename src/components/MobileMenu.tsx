@@ -45,8 +45,27 @@ export default function MobileMenu({
         >
           {/* Nav targets with edge-to-edge dividers */}
           <motion.nav variants={linksContainerVariants} className="flex-1 flex flex-col justify-center w-full">
+            {/* ABOUT Link Block with horizontal padding */}
+            <motion.div variants={menuLinkVariants} className="py-4 px-[max(20px,4vw)] w-full">
+              <a
+                href="#about"
+                onClick={(e) => {
+                  setIsMobileMenuOpen(false);
+                  handleNav(e, 'about');
+                }}
+                aria-label="Navigate to about section"
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                  activeSection === 'about' && !activeCaseStudy
+                    ? 'text-[var(--text-color)] font-black opacity-100'
+                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+                }`}
+              >
+                ABOUT
+              </a>
+            </motion.div>
+
             {/* WORKS Link Block with horizontal padding */}
-            <motion.div variants={menuLinkVariants} className="py-5 px-[max(20px,4vw)] w-full">
+            <motion.div variants={menuLinkVariants} className="py-4 px-[max(20px,4vw)] w-full">
               <a
                 href="#works"
                 onClick={(e) => {
@@ -54,10 +73,10 @@ export default function MobileMenu({
                   handleNav(e, 'works');
                 }}
                 aria-label="Navigate to works section"
-                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   (activeSection === 'works' || !!activeCaseStudy)
-                    ? 'text-[var(--text-color)] font-extrabold'
-                    : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
+                    ? 'text-[var(--text-color)] font-black opacity-100'
+                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
                 }`}
               >
                 WORKS
@@ -73,10 +92,10 @@ export default function MobileMenu({
                   handleNav(e, 'contact');
                 }}
                 aria-label="Navigate to connect section"
-                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'contact' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] font-extrabold'
-                    : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
+                    ? 'text-[var(--text-color)] font-black opacity-100'
+                    : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
                 }`}
               >
                 CONNECT

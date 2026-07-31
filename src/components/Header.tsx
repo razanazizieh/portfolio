@@ -74,12 +74,12 @@ export default function Header({
         }}
         className="branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 before:absolute before:content-[''] before:-inset-y-4 before:-inset-x-3 before:block"
       >
-        <span className="typo-mono-sub font-light tracking-[0.14em] xs:tracking-[0.18em] sm:tracking-[0.24em] transition-all duration-300 inline-flex items-center gap-0 text-[var(--text-color)]">
-          RΛZΛN ΛZIZIEH
+        <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] opacity-100 transition-colors duration-200 inline-flex items-center">
+          RAZAN AZIZIEH
         </span>
       </motion.div>
 
-      {/* Minimalist text links (Works, Connect, Theme) using semantic <nav> */}
+      {/* Minimalist text links (About, Works, Connect, Theme) using semantic <nav> */}
       <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-8 typo-mono-filter pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
         {activeCaseStudy ? (
           <a
@@ -93,13 +93,26 @@ export default function Header({
         ) : (
           <>
             <a
+              href="#about"
+              onClick={(e) => handleNav(e, 'about')}
+              aria-label="Navigate to about section"
+              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
+                activeSection === 'about' && !activeCaseStudy
+                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
+                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
+              }`}
+            >
+              About
+            </a>
+
+            <a
               href="#works"
               onClick={(e) => handleNav(e, 'works')}
               aria-label="Navigate to works section"
-              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] px-2 py-1 rounded block transition-colors duration-200 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
+              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
                 (activeSection === 'works' || !!activeCaseStudy)
-                  ? 'text-[var(--text-color)] font-bold'
-                  : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
+                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
+                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
               }`}
             >
               Works
@@ -109,10 +122,10 @@ export default function Header({
               href="#contact"
               onClick={(e) => handleNav(e, 'contact')}
               aria-label="Navigate to connect section"
-              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] px-2 py-1 rounded block transition-colors duration-200 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
+              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
                 activeSection === 'contact' && !activeCaseStudy
-                  ? 'text-[var(--text-color)] font-bold'
-                  : 'text-[var(--text-dim)] font-medium hover:text-[var(--text-color)]'
+                  ? 'text-[var(--text-color)] font-bold opacity-100 border-b border-[var(--text-color)]'
+                  : 'text-[var(--text-color)] font-medium opacity-50 hover:opacity-100'
               }`}
             >
               Connect

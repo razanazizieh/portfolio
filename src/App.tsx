@@ -3,50 +3,43 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { useLocation, Routes, Route, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { useLocation, Routes, Route, useNavigate } from 'react-router-dom';
 
-import OpeningExperience from "./components/OpeningExperience";
-import SelectedWork from "./components/SelectedWork";
-import Contact from "./components/Contact";
-import ProjectCaseStudy from "./components/ProjectCaseStudy";
-import NotFound from "./components/NotFound";
-import AmbientMotionGrid from "./components/AmbientMotionGrid";
-import { useSmoothScroll } from "./hooks/useSmoothScroll";
-import { PROJECTS_DATA } from "./data";
-import TransitionOverlay from "./components/TransitionOverlay";
-import { useHeaderLogoScroll, MOTION_CURVE_PREMIUM } from "./utils/motion";
+import OpeningExperience from './components/OpeningExperience';
+import SelectedWork from './components/SelectedWork';
+import Contact from './components/Contact';
+import ProjectCaseStudy from './components/ProjectCaseStudy';
+import NotFound from './components/NotFound';
+import AmbientMotionGrid from './components/AmbientMotionGrid';
+import { useSmoothScroll } from './hooks/useSmoothScroll';
+import { PROJECTS_DATA } from './data';
+import TransitionOverlay from './components/TransitionOverlay';
+import { useHeaderLogoScroll, MOTION_CURVE_PREMIUM } from './utils/motion';
 
-import PageLoader from "./components/PageLoader";
-import CredoSection from "./components/CredoSection";
-import Header from "./components/Header";
-import MobileMenu from "./components/MobileMenu";
-import BackToTop from "./components/BackToTop";
+import PageLoader from './components/PageLoader';
+import AboutSection from './components/AboutSection';
+import CredoSection from './components/CredoSection';
+import Header from './components/Header';
+import MobileMenu from './components/MobileMenu';
+import BackToTop from './components/BackToTop';
 
-const RoutesWithKey = Routes as React.ComponentType<{
-  location: any;
-  key?: string;
-  children?: React.ReactNode;
-}>;
+const RoutesWithKey = Routes as React.ComponentType<{ location: any; key?: string; children?: React.ReactNode }>;
 
 export default function App() {
   const shouldReduceMotion = useReducedMotion();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [isFooterReached, setIsFooterReached] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [activeSection, setActiveSection] = useState<string>("hero");
-  const [activeCaseStudy, setActiveCaseStudy] = useState<
-    (typeof PROJECTS_DATA)[0] | null
-  >(null);
-  const [activeFilter, setActiveFilter] = useState<
-    "ALL" | "FULL-STACK" | "CODE" | "UI"
-  >("ALL");
+  const [activeSection, setActiveSection] = useState<string>('hero');
+  const [activeCaseStudy, setActiveCaseStudy] = useState<typeof PROJECTS_DATA[0] | null>(null);
+  const [activeFilter, setActiveFilter] = useState<'ALL' | 'FULL-STACK' | 'CODE' | 'UI'>('ALL');
   const [isNotFound, setIsNotFound] = useState(false);
 
   const isSectionTrackingDormant = activeCaseStudy !== null || isNotFound;
@@ -80,8 +73,8 @@ export default function App() {
     const setupObserver = () => {
       const observerOptions = {
         root: null,
-        rootMargin: "-25% 0px -55% 0px", // Focused active band centered in the middle of viewport
-        threshold: 0.1, // Efficient trigger threshold
+        rootMargin: '-25% 0px -55% 0px', // Focused active band centered in the middle of viewport
+        threshold: 0.1 // Efficient trigger threshold
       };
 
       const observerCallback = (entries: IntersectionObserverEntry[]) => {
@@ -91,31 +84,31 @@ export default function App() {
         // The Statement section is the closing part of the Works experience.
         // Therefore, the active navigation item must remain: WORKS until the actual "LET'S CONNECT" heading enters the viewport.
         // Do not activate CONNECT while the Statement section is still visible.
-        const statementEl = document.getElementById("statement");
+        const statementEl = document.getElementById('statement');
         if (statementEl) {
           const rect = statementEl.getBoundingClientRect();
           if (rect.bottom > 0 && rect.top < window.innerHeight) {
-            setActiveSection("works");
+            setActiveSection('works');
             return;
           }
         }
 
         // Filter intersecting entries to resolve the most prominent active section
-        const intersecting = entries.filter((entry) => entry.isIntersecting);
+        const intersecting = entries.filter(entry => entry.isIntersecting);
         if (intersecting.length > 0) {
           // Find the section with the highest intersection ratio to prevent jitter
-          const bestEntry = intersecting.reduce((best, current) =>
-            current.intersectionRatio > best.intersectionRatio ? current : best,
+          const bestEntry = intersecting.reduce((best, current) => 
+            current.intersectionRatio > best.intersectionRatio ? current : best
           );
           const id = bestEntry.target.id;
-          const mappedId = id === "statement" ? "works" : id;
-          setActiveSection((prev) => (prev === mappedId ? prev : mappedId));
+          const mappedId = id === 'statement' ? 'works' : id;
+          setActiveSection(prev => prev === mappedId ? prev : mappedId);
         }
       };
 
       observer = new IntersectionObserver(observerCallback, observerOptions);
 
-      const sections = ["hero", "works", "statement", "contact"];
+      const sections = ['hero', 'about', 'works', 'statement', 'contact'];
       let foundAll = true;
 
       sections.forEach((id) => {
@@ -130,7 +123,7 @@ export default function App() {
       // Perform a robust initial manual detection of the active section on mount/hydration
       // to guarantee it resolves correctly even before any scroll event occurs
       if (!isManualScrolling.current) {
-        let bestSection = "hero";
+        let bestSection = 'hero';
         let maxVisibleHeight = 0;
 
         sections.forEach((id) => {
@@ -141,14 +134,14 @@ export default function App() {
             const visibleTop = Math.max(0, rect.top);
             const visibleBottom = Math.min(window.innerHeight, rect.bottom);
             const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-
+            
             if (visibleHeight > maxVisibleHeight) {
               maxVisibleHeight = visibleHeight;
-              bestSection = id === "statement" ? "works" : id;
+              bestSection = id === 'statement' ? 'works' : id;
             }
           }
         });
-
+        
         if (maxVisibleHeight > 0) {
           setActiveSection(bestSection);
         }
@@ -208,48 +201,50 @@ export default function App() {
     }
   };
 
-  const handleNav = (
-    e: React.SyntheticEvent | { preventDefault: () => void },
-    targetId: string,
-  ) => {
+  const handleNav = (e: React.SyntheticEvent | { preventDefault: () => void }, targetId: string) => {
     e.preventDefault();
-    triggerTransitionOverlay(true); // Initiate curtain cover
-    setTimeout(() => {
-      if (location.pathname !== "/") {
-        setActiveCaseStudy(null); // Sync state change to mount homepage instantly
-        navigate("/");
-      }
+    // If not on homepage or a case study is open, perform transition overlay to homepage
+    if (location.pathname !== '/' || activeCaseStudy !== null) {
+      triggerTransitionOverlay(true); // Initiate curtain cover
       setTimeout(() => {
-        // Reposition scroll behind the curtain
-        scrollSection(targetId, "auto");
-        triggerTransitionOverlay(false); // Retract curtain revealing content
-        setIsMobileMenuOpen(false); // Make sure menu closes
-      }, 50);
-    }, 450);
+        setActiveCaseStudy(null); // Sync state change to mount homepage instantly
+        navigate('/');
+        setTimeout(() => {
+          // Reposition scroll behind the curtain
+          scrollSection(targetId, 'auto');
+          triggerTransitionOverlay(false); // Retract curtain revealing content
+          setIsMobileMenuOpen(false); // Make sure menu closes
+        }, 50);
+      }, 450);
+    } else {
+      // Direct smooth scroll & active section highlight when already on homepage
+      setIsMobileMenuOpen(false);
+      scrollSection(targetId, 'smooth');
+    }
   };
 
   // Body scroll lock during mobile menu open, with robust cleanup
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-      document.body.style.height = "100%";
-      document.documentElement.style.overflow = "hidden";
-      document.documentElement.style.height = "100%";
+      document.body.style.overflow = 'hidden';
+      document.body.style.height = '100%';
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.height = '100%';
     } else {
-      document.body.style.overflow = "";
-      document.body.style.height = "";
-      document.body.style.position = "";
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.height = "";
-      document.documentElement.style.position = "";
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+      document.documentElement.style.position = '';
     }
     return () => {
-      document.body.style.overflow = "";
-      document.body.style.height = "";
-      document.body.style.position = "";
-      document.documentElement.style.overflow = "";
-      document.documentElement.style.height = "";
-      document.documentElement.style.position = "";
+      document.body.style.overflow = '';
+      document.body.style.height = '';
+      document.body.style.position = '';
+      document.documentElement.style.overflow = '';
+      document.documentElement.style.height = '';
+      document.documentElement.style.position = '';
     };
   }, [isMobileMenuOpen]);
 
@@ -258,36 +253,24 @@ export default function App() {
     const handleScrollKeysGlobal = (e: KeyboardEvent) => {
       // Allow default input behavior for interactive text fields
       if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA" ||
-        document.activeElement?.getAttribute("contenteditable") === "true"
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA' ||
+        document.activeElement?.getAttribute('contenteditable') === 'true'
       ) {
         return;
       }
 
-      const standardScrollKeys = [
-        "ArrowUp",
-        "ArrowDown",
-        " ",
-        "PageUp",
-        "PageDown",
-        "Home",
-        "End",
-      ];
+      const standardScrollKeys = ['ArrowUp', 'ArrowDown', ' ', 'PageUp', 'PageDown', 'Home', 'End'];
       if (standardScrollKeys.includes(e.key)) {
-        // Stop keydown events from propagating to nested active focus elements
+        // Stop keydown events from propagating to nested active focus elements 
         // that might incorrectly intercept or run e.preventDefault() on them.
         e.stopPropagation();
       }
     };
 
-    window.addEventListener("keydown", handleScrollKeysGlobal, {
-      capture: true,
-    });
+    window.addEventListener('keydown', handleScrollKeysGlobal, { capture: true });
     return () => {
-      window.removeEventListener("keydown", handleScrollKeysGlobal, {
-        capture: true,
-      });
+      window.removeEventListener('keydown', handleScrollKeysGlobal, { capture: true });
     };
   }, []);
 
@@ -347,20 +330,20 @@ export default function App() {
   // Monitor scheme toggles
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("dark", "light");
+    root.classList.remove('dark', 'light');
     root.classList.add(theme);
-    root.setAttribute("data-theme", theme);
+    root.setAttribute('data-theme', theme);
     try {
-      localStorage.setItem("theme", theme);
+      localStorage.setItem('theme', theme);
     } catch (e) {
-      console.warn("Unable to write to localStorage.", e);
+      console.warn('Unable to write to localStorage.', e);
     }
   }, [theme]);
 
   // Dynamic SEO JSON-LD structured data and Document Title / Meta tags update
   useEffect(() => {
     // Remove existing dynamic script if present
-    const existingScript = document.getElementById("dynamic-jsonld-seo");
+    const existingScript = document.getElementById('dynamic-jsonld-seo');
     if (existingScript) {
       existingScript.remove();
     }
@@ -372,29 +355,24 @@ export default function App() {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
         "@id": `${window.location.origin}/project/${activeCaseStudy.id}`,
-        name: activeCaseStudy.title,
-        description: activeCaseStudy.overview,
-        genre: activeCaseStudy.category,
-        datePublished: activeCaseStudy.year,
-        creator: {
+        "name": activeCaseStudy.title,
+        "description": activeCaseStudy.overview,
+        "genre": activeCaseStudy.category,
+        "datePublished": activeCaseStudy.year,
+        "creator": {
           "@type": "Person",
-          name: "Razan Azizieh",
-          jobTitle: "Design Engineer",
+          "name": "Razan Azizieh",
+          "jobTitle": "Design Engineer"
         },
-        keywords: activeCaseStudy.technology.join(", "),
-        url:
-          activeCaseStudy.live ||
-          `${window.location.origin}/project/${activeCaseStudy.id}`,
+        "keywords": activeCaseStudy.technology.join(", "),
+        "url": activeCaseStudy.live || `${window.location.origin}/project/${activeCaseStudy.id}`
       };
-
+      
       document.title = `${activeCaseStudy.title} — Razan Azizieh`;
-
+      
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
-        metaDesc.setAttribute(
-          "content",
-          `${activeCaseStudy.overview} An interactive case study by Razan Azizieh.`,
-        );
+        metaDesc.setAttribute('content', `${activeCaseStudy.overview} An interactive case study by Razan Azizieh.`);
       }
     } else if (isNotFound) {
       document.title = "404 Page Not Found — Razan Azizieh";
@@ -403,19 +381,18 @@ export default function App() {
         "@context": "https://schema.org",
         "@type": "ProfilePage",
         "@id": `${window.location.origin}/#profile`,
-        name: "Razan Azizieh — Design Engineer & Full-Stack Developer",
-        description:
-          "Interactive design engineering portfolio of Razan Azizieh, showcasing high-fidelity front-end interactions and dynamic code-driven architectures.",
-        mainEntity: {
+        "name": "Razan Azizieh — Design Engineer & Full-Stack Developer",
+        "description": "Interactive design engineering portfolio of Razan Azizieh, showcasing high-fidelity front-end interactions and dynamic code-driven architectures.",
+        "mainEntity": {
           "@type": "Person",
-          name: "Razan Azizieh",
-          jobTitle: "Design Engineer",
-          url: window.location.origin,
-          sameAs: [
+          "name": "Razan Azizieh",
+          "jobTitle": "Design Engineer",
+          "url": window.location.origin,
+          "sameAs": [
             "https://github.com/razanazizieh",
-            "https://www.linkedin.com/in/razan-azizieh",
+            "https://www.linkedin.com/in/razan-azizieh"
           ],
-          knowsAbout: [
+          "knowsAbout": [
             "Design Engineering",
             "Full-Stack Web Development",
             "TypeScript & React Ecosystem",
@@ -430,81 +407,78 @@ export default function App() {
             "Modern CSS Architecture: Tailwind CSS, CSS Modules, Stitches, & Bootstrap 5",
             "Build Optimization & Frontend Bundlers (Vite, Esbuild, Webpack)",
             "Touch-Responsive Interactive Sliders & Swiper.js Integrations",
-            "Visual Grid Composition & Multi-Breakpoint Responsive Alignments",
+            "Visual Grid Composition & Multi-Breakpoint Responsive Alignments"
           ],
-          hasCredential: [
+          "hasCredential": [
             {
               "@type": "EducationalOccupationalCredential",
-              name: "Advanced React & Frontend Architecture Certification",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "Advanced React & Frontend Architecture Certification",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "Frontend Masters",
-              },
+                "name": "Frontend Masters"
+              }
             },
             {
               "@type": "EducationalOccupationalCredential",
-              name: "Meta Front-End Developer Professional Certificate",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "Meta Front-End Developer Professional Certificate",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "Meta",
-              },
+                "name": "Meta"
+              }
             },
             {
               "@type": "EducationalOccupationalCredential",
-              name: "3D Interaction Design & Creative Coding Practitioner",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "3D Interaction Design & Creative Coding Practitioner",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "Three.js Journey",
-              },
+                "name": "Three.js Journey"
+              }
             },
             {
               "@type": "EducationalOccupationalCredential",
-              name: "React & TypeScript Full-Stack Developer Specialist",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "React & TypeScript Full-Stack Developer Specialist",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "Udemy & React Training",
-              },
+                "name": "Udemy & React Training"
+              }
             },
             {
               "@type": "EducationalOccupationalCredential",
-              name: "Tailwind CSS & Responsive Layout Architecture Certification",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "Tailwind CSS & Responsive Layout Architecture Certification",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "CSS Design Systems Academy",
-              },
+                "name": "CSS Design Systems Academy"
+              }
             },
             {
               "@type": "EducationalOccupationalCredential",
-              name: "RESTful API Integration & Client-Side CRUD Specialist",
-              credentialCategory: "Professional Certification",
-              recognizedBy: {
+              "name": "RESTful API Integration & Client-Side CRUD Specialist",
+              "credentialCategory": "Professional Certification",
+              "recognizedBy": {
                 "@type": "Organization",
-                name: "Web Development Association",
-              },
-            },
-          ],
-        },
+                "name": "Web Development Association"
+              }
+            }
+          ]
+        }
       };
-
+      
       document.title = "Razan Azizieh";
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) {
-        metaDesc.setAttribute(
-          "content",
-          "Interactive design engineering portfolio of Razan Azizieh, showcasing 3D experiences, bilingual portfolio engines, and custom React CMS & dashboards.",
-        );
+        metaDesc.setAttribute('content', "Interactive design engineering portfolio of Razan Azizieh, showcasing 3D experiences, bilingual portfolio engines, and custom React CMS & dashboards.");
       }
     }
 
     if (schemaData) {
-      const script = document.createElement("script");
-      script.id = "dynamic-jsonld-seo";
-      script.type = "application/ld+json";
+      const script = document.createElement('script');
+      script.id = 'dynamic-jsonld-seo';
+      script.type = 'application/ld+json';
       script.text = JSON.stringify(schemaData);
       document.head.appendChild(script);
     }
@@ -536,27 +510,40 @@ export default function App() {
           const docHeight = document.documentElement.scrollHeight;
           const scrollableHeight = docHeight - winHeight;
 
-          setScrolledPastHero((prev) => {
+          setScrolledPastHero(prev => {
             const next = scrollY > 15;
             return next === prev ? prev : next;
           });
 
-          if (
-            !isSectionTrackingDormantRef.current &&
-            !isManualScrolling.current &&
-            scrollY < 100
-          ) {
-            setActiveSection("hero");
+          if (!isSectionTrackingDormantRef.current && !isManualScrolling.current) {
+            if (scrollY < 120) {
+              setActiveSection('hero');
+            } else if (scrollableHeight > 0 && scrollY >= scrollableHeight - 160) {
+              setActiveSection('contact');
+            } else {
+              const targetSections = ['contact', 'statement', 'works', 'about', 'hero'];
+              const vMid = winHeight * 0.4;
+              for (const sId of targetSections) {
+                const el = document.getElementById(sId);
+                if (el) {
+                  const rect = el.getBoundingClientRect();
+                  if (rect.top <= vMid && rect.bottom >= vMid) {
+                    const mapped = sId === 'statement' ? 'works' : sId;
+                    setActiveSection(prev => prev === mapped ? prev : mapped);
+                    break;
+                  }
+                }
+              }
+            }
           }
 
-          setShowBackToTop((prev) => {
+          setShowBackToTop(prev => {
             const next = scrollY > winHeight * 0.5;
             return next === prev ? prev : next;
           });
 
-          setIsFooterReached((prev) => {
-            const next =
-              scrollableHeight > 0 && scrollY >= scrollableHeight - 160;
+          setIsFooterReached(prev => {
+            const next = scrollableHeight > 0 && scrollY >= scrollableHeight - 160;
             return next === prev ? prev : next;
           });
 
@@ -566,12 +553,12 @@ export default function App() {
       }
     };
 
-    window.addEventListener("scroll", handleScrollMonitor, { passive: true });
+    window.addEventListener('scroll', handleScrollMonitor, { passive: true });
     handleScrollMonitor(); // Run initially to guarantee sync on refresh/load
 
     return () => {
       isUnmounted = true;
-      window.removeEventListener("scroll", handleScrollMonitor);
+      window.removeEventListener('scroll', handleScrollMonitor);
       if (rafId !== null) {
         window.cancelAnimationFrame(rafId);
       }
@@ -579,12 +566,12 @@ export default function App() {
   }, [loading]);
 
   useEffect(() => {
-    const isProjectRoute = location.pathname.startsWith("/project/");
+    const isProjectRoute = location.pathname.startsWith('/project/');
     if (isProjectRoute) {
       const match = location.pathname.match(/\/project\/([^/]+)/);
       if (match) {
         const pId = match[1];
-        const project = PROJECTS_DATA.find((p) => p.id === pId);
+        const project = PROJECTS_DATA.find(p => p.id === pId);
         if (project) {
           setActiveCaseStudy(project);
           setIsNotFound(false);
@@ -596,7 +583,7 @@ export default function App() {
         setActiveCaseStudy(null);
         setIsNotFound(true);
       }
-    } else if (location.pathname === "/") {
+    } else if (location.pathname === '/') {
       setActiveCaseStudy(null);
       setIsNotFound(false);
     } else {
@@ -607,21 +594,19 @@ export default function App() {
 
   const homepageScrollY = useRef(0);
 
-  const handleActiveCaseStudyChange = (
-    project: (typeof PROJECTS_DATA)[0] | null,
-  ) => {
+  const handleActiveCaseStudyChange = (project: typeof PROJECTS_DATA[0] | null) => {
     if (project) {
       homepageScrollY.current = window.scrollY;
       navigate(`/project/${project.id}`);
     } else {
       setActiveCaseStudy(null); // Sync state change to mount homepage instantly
-      navigate("/");
+      navigate('/');
     }
   };
 
   useEffect(() => {
     // If we transitioned from a case study page back to the homepage
-    if (!activeCaseStudy && location.pathname === "/") {
+    if (!activeCaseStudy && location.pathname === '/') {
       // Restore scroll position after a layout reflow
       const restoreScroll = () => {
         window.scrollTo(0, homepageScrollY.current);
@@ -632,15 +617,17 @@ export default function App() {
     }
   }, [activeCaseStudy, location.pathname]);
 
-  const scrollSection = (id: string, behavior: ScrollBehavior = "auto") => {
+  const scrollSection = (id: string, behavior: ScrollBehavior = 'auto') => {
     let targetId = id;
 
-    if (id === "selected-projects" || id === "works") {
-      targetId = "works";
-    } else if (id === "contact-gate" || id === "contact") {
-      targetId = "contact";
-    } else if (id === "top" || id === "hero") {
-      targetId = "hero";
+    if (id === 'selected-projects' || id === 'works') {
+      targetId = 'works';
+    } else if (id === 'contact-gate' || id === 'contact') {
+      targetId = 'contact';
+    } else if (id === 'top' || id === 'hero') {
+      targetId = 'hero';
+    } else if (id === 'about') {
+      targetId = 'about';
     }
 
     // Set manual scrolling mode to true to prevent IntersectionObserver state stutter
@@ -652,32 +639,30 @@ export default function App() {
       isManualScrolling.current = false;
     }, 850); // Generous timeout to allow smooth scrolls/instant flips to settle completely
 
-    if (targetId === "hero") {
-      setActiveSection("hero");
+    if (targetId === 'hero') {
+      setActiveSection('hero');
       window.scrollTo({ top: 0, behavior });
     } else {
       const element = document.getElementById(targetId);
       if (element) {
         setActiveSection(targetId);
-        element.scrollIntoView({ behavior, block: "start" });
+        element.scrollIntoView({ behavior, block: 'start' });
       }
     }
   };
 
   return (
     <div className="relative min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] selection:bg-[var(--text-color)] selection:text-[var(--bg-color)] theme-transition overflow-x-hidden">
+      
       {/* Top sentinel for high-performance scroll/header-bg threshold tracking */}
-      <div
-        id="top-sentinel"
-        className="absolute top-0 left-0 w-full h-[15px] pointer-events-none z-0"
-      />
+      <div id="top-sentinel" className="absolute top-0 left-0 w-full h-[15px] pointer-events-none z-0" />
 
       {/* Premium Minimalist Page Preloader Transition Overlay */}
       <PageLoader loading={loading} />
-
+ 
       {/* Background Interactive Motion Layout Grid */}
       <AmbientMotionGrid />
-
+      
       {/* Persistent Global Editorial Header with flat high-contrast matte background past hero */}
       <Header
         theme={theme}
@@ -720,35 +705,35 @@ export default function App() {
       ) : (
         <>
           {/* Main Home Page remains persistently mounted for instantaneous, low-latency entry/return and scroll position retention */}
-          <div
-            className="w-full relative"
-            style={{ display: activeCaseStudy ? "none" : "block" }}
-          >
+          <div className="w-full relative" style={{ display: activeCaseStudy ? 'none' : 'block' }}>
             {/* Immersive Opening Fold */}
             <section id="hero" className="w-full">
-              <OpeningExperience
-                onCtaClick={() => scrollSection("contact", "smooth")}
+              <OpeningExperience 
+                onCtaClick={() => scrollSection('contact', 'smooth')} 
                 loading={loading}
               />
             </section>
 
             {/* Main Narrative Blocks */}
             <main className="relative z-10 bg-transparent">
+              {/* Pure Editorial About Section */}
+              <AboutSection key="about-section" />
+
               {/* Selected Projects */}
-              <SelectedWork
-                activeProject={activeCaseStudy}
-                onActiveProjectChange={handleActiveCaseStudyChange}
-                triggerWipe={triggerTransition}
+              <SelectedWork 
+                activeProject={activeCaseStudy} 
+                onActiveProjectChange={handleActiveCaseStudyChange} 
+                triggerWipe={triggerTransition} 
                 activeFilter={activeFilter}
                 setActiveFilter={setActiveFilter}
               />
 
               {/* Transitional Credo Statement Block */}
-              <CredoSection key={activeCaseStudy ? "hidden" : "visible"} />
+              <CredoSection key="credo-section" />
 
               {/* Contact Entrance & Real-time ledger */}
               <div className="w-full">
-                <Contact key={activeCaseStudy ? "hidden" : "visible"} />
+                <Contact key="contact-section" />
               </div>
             </main>
           </div>
@@ -784,6 +769,7 @@ export default function App() {
 
       {/* Solid Minimalist Block Transition Overlay Layer */}
       <TransitionOverlay step={transitionStep} theme={theme} />
+
     </div>
   );
 }
