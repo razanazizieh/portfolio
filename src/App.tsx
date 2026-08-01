@@ -203,6 +203,14 @@ export default function App() {
 
   const handleNav = (e: React.SyntheticEvent | { preventDefault: () => void }, targetId: string) => {
     e.preventDefault();
+    
+    // Unlock body scroll lock immediately for mobile navigation
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.height = '';
+    setIsMobileMenuOpen(false);
+
     // If not on homepage or a case study is open, perform transition overlay to homepage
     if (location.pathname !== '/' || activeCaseStudy !== null) {
       triggerTransitionOverlay(true); // Initiate curtain cover
@@ -213,13 +221,13 @@ export default function App() {
           // Reposition scroll behind the curtain
           scrollSection(targetId, 'auto');
           triggerTransitionOverlay(false); // Retract curtain revealing content
-          setIsMobileMenuOpen(false); // Make sure menu closes
         }, 50);
       }, 450);
     } else {
       // Direct smooth scroll & active section highlight when already on homepage
-      setIsMobileMenuOpen(false);
-      scrollSection(targetId, 'smooth');
+      setTimeout(() => {
+        scrollSection(targetId, 'smooth');
+      }, 40);
     }
   };
 
@@ -622,7 +630,7 @@ export default function App() {
 
     if (id === 'selected-projects' || id === 'works') {
       targetId = 'works';
-    } else if (id === 'contact-gate' || id === 'contact') {
+    } else if (id === 'contact-gate' || id === 'contact' || id === 'connect') {
       targetId = 'contact';
     } else if (id === 'top' || id === 'hero') {
       targetId = 'hero';

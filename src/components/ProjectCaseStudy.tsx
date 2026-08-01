@@ -7,7 +7,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Project } from '../types';
-import { MOTION_CURVE_PREMIUM } from '../utils/motion';
+import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 import { PROJECTS_DATA } from '../data';
 import PremiumImage from './PremiumImage';
 
@@ -573,14 +573,14 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
       className="relative w-full min-h-screen bg-[var(--bg-color)] select-text focus:outline-none flex flex-col overflow-x-hidden"
     >
       {/* Editorial Page Container */}
-      <div className="w-full max-w-4xl mx-auto px-6 sm:px-12 md:px-16 pb-24 pt-24 sm:pt-28 flex-1 flex flex-col gap-10 md:gap-14">
+      <div className="w-full max-w-4xl mx-auto px-6 sm:px-12 md:px-16 pb-32 pt-24 sm:pt-32 flex-1 flex flex-col gap-16 md:gap-24">
 
         {/* • HERO HEADER SECTION */}
-        <section className="flex flex-col gap-6 text-left">
+        <section className="flex flex-col gap-8 text-left">
           <motion.div
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: MOTION_CURVE_PREMIUM, delay: 0.05 }}
+            variants={motionRoles.metaLabel(0.05)}
+            initial="hidden"
+            animate="visible"
             className="typo-mono-label text-[var(--text-dim)] tracking-[0.2em] text-[11px] uppercase flex items-center"
           >
             <span>{project.category}</span>
@@ -588,21 +588,22 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             <span>{project.year}</span>
           </motion.div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <motion.h1
               id="case-study-title"
-              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, ease: MOTION_CURVE_PREMIUM, delay: 0.12 }}
+              variants={motionRoles.largeTypography(0.12, shouldReduceMotion)}
+              initial="hidden"
+              animate="visible"
               className="typo-display-md text-[var(--text-color)]"
             >
               {project.title}
             </motion.h1>
+
             {project.subtitle && (
               <motion.p
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
-                animate={{ opacity: 0.8, y: 0 }}
-                transition={{ duration: 0.35, ease: MOTION_CURVE_PREMIUM, delay: 0.19 }}
+                variants={motionRoles.supportingText(0.18, shouldReduceMotion)}
+                initial="hidden"
+                animate="visible"
                 className="typo-mono-sub mt-2 max-w-2xl leading-relaxed font-normal text-[var(--text-dim)]"
               >
                 {project.subtitle}
@@ -611,19 +612,19 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
 
             {(project.live || (isCodeCentric && project.repository)) && (
               <motion.div
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: MOTION_CURVE_PREMIUM, delay: 0.24 }}
-                className="flex items-center gap-6 flex-wrap mt-4"
+                variants={motionRoles.interactiveButton(0.24)}
+                initial="hidden"
+                animate="visible"
+                className="flex items-center gap-6 flex-wrap mt-6"
               >
                 {project.live && (
                   <motion.a
                     href={project.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-                    whileHover={{ x: 4 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+                    whileHover={{ x: 3 }}
+                    transition={{ duration: 0.3, ease: MOTION_CURVE_PREMIUM }}
                   >
                     VIEW LIVE SITE
                   </motion.a>
@@ -634,9 +635,9 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                     href={project.repository}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-                    whileHover={{ x: 4 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+                    whileHover={{ x: 3 }}
+                    transition={{ duration: 0.3, ease: MOTION_CURVE_PREMIUM }}
                   >
                     VIEW SOURCE CODE
                   </motion.a>
@@ -645,58 +646,59 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             )}
           </div>
 
-
-
-          {/* Main Visual Showcase: Behance-style Vertical Image Stack for Frontend/UI projects, completely omitted for CODE projects */}
+          {/* Main Visual Showcase: Vertical Image Stack */}
           {!isCodeCentric && allImages.length > 0 && (
-            <div className="w-full flex flex-col gap-12 sm:gap-16 mt-8">
+            <div className="w-full flex flex-col gap-20 sm:gap-28 my-10 sm:my-14">
               {allImages.map((item, idx) => (
                 <motion.figure
                   key={idx}
-                  initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: false, margin: "-80px" }}
-                  transition={{ duration: 0.6, ease: MOTION_CURVE_PREMIUM }}
-                  className="w-full flex flex-col gap-3 group/editorial rounded-none cursor-default"
+                  variants={motionRoles.editorialImage(0, shouldReduceMotion)}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={VIEWPORT_ONCE_CONFIG}
+                  className="w-full flex flex-col gap-4 group/editorial rounded-none cursor-default"
                 >
                   <div className="w-full rounded-none overflow-hidden border-none outline-none shadow-none bg-transparent">
                     <PremiumImage
                       src={item.image}
                       alt={`${project.title} — ${item.label}`}
                       borderNone={true}
-                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.015] object-contain object-top w-full h-auto"
+                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.012] object-contain object-top w-full h-auto"
                     />
                   </div>
-                  <figcaption className="flex items-center mt-1.5 px-0 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-zinc-500/80 dark:text-zinc-400/80">
+                  <figcaption className="flex items-center mt-2 px-0 font-mono text-[10px] sm:text-[11px] tracking-widest uppercase text-[var(--text-dim)] opacity-60">
                     FIG. {String(idx + 1).padStart(2, '0')} — {item.label.toUpperCase()}
                   </figcaption>
                 </motion.figure>
               ))}
             </div>
           )}
-        </section>        {/* • OVERVIEW */}
+
+        </section>
+
+        {/* • OVERVIEW */}
         {project.overview && (
           <motion.section
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Overview
             </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)]">
+            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.overview}
             </p>
           </motion.section>
@@ -708,23 +710,23 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Challenge
             </h2>
-            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)]">
+            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
               {project.challenge}
             </p>
           </motion.section>
@@ -736,29 +738,27 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Solution
             </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)]">
+            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.solution}
             </p>
           </motion.section>
         )}
-
-
 
         {/* • MY ROLE */}
         {project.myRole && (
@@ -766,23 +766,23 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               My Role
             </h2>
-            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)]">
+            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
               {project.myRole}
             </p>
           </motion.section>
@@ -794,25 +794,25 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Technical Highlights
             </h2>
-            <ul className="flex flex-col gap-3 max-w-2xl pl-5 list-disc text-neutral-600 dark:text-neutral-300">
+            <ul className="flex flex-col gap-3.5 max-w-2xl pl-5 list-disc text-[var(--text-dim-high)]">
               {project.technicalHighlights.map((highlight, idx) => (
-                <li key={idx} className="typo-body-regular">
+                <li key={idx} className="typo-body-regular leading-[1.7]">
                   {highlight}
                 </li>
               ))}
@@ -825,8 +825,8 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
           <motion.section
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Technology
@@ -843,55 +843,49 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                     visible: {
                       opacity: 1,
                       y: 0,
-                      transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM, delay: idx * 0.03 }
+                      transition: { duration: 0.4, ease: MOTION_CURVE_PREMIUM, delay: idx * 0.03 }
                     }
                   }}
                   className="typo-mono-sub font-light flex items-center text-[var(--text-color)]"
                 >
                   {tech}
-                  {idx < project.technology.length - 1 && <span className="ml-6 text-zinc-600 font-normal">·</span>}
+                  {idx < project.technology.length - 1 && <span className="ml-6 text-[var(--text-dim)] opacity-40 font-normal">·</span>}
                 </motion.span>
               ))}
             </div>
           </motion.section>
         )}
 
-
-
-        {/* • IMPACT (Outcome renamed to impact) */}
+        {/* • IMPACT */}
         {project.impact && (
           <motion.section
             variants={{
               hidden: {
                 opacity: 0,
-                y: shouldReduceMotion ? 0 : 12,
+                y: shouldReduceMotion ? 0 : 16,
               },
               visible: {
                 opacity: 1,
                 y: 0,
-                transition: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
               }
             }}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.1 }}
-            className="flex flex-col gap-4 text-left"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col gap-5 text-left"
           >
             <h2 className="typo-mono-label">
               Impact
             </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)]">
+            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.impact}
             </p>
           </motion.section>
         )}
 
-
-
-
-
         {/* Editorial Bottom Navigation */}
-        <div className="mt-20 sm:mt-24 select-none border-t border-[var(--border-color)]/10 pt-12">
+        <div className="mt-24 sm:mt-32 select-none border-t border-[var(--border-color)]/10 pt-16">
           <div className="flex items-center justify-between gap-6 w-full">
             {/* Previous Project Link */}
             <motion.button
@@ -906,7 +900,9 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                   handlePrevClick();
                 }
               }}
-              className="typo-mono-btn font-medium text-zinc-500 hover:text-[var(--text-color)] transition-colors duration-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] uppercase cursor-pointer flex items-center gap-1 bg-transparent border-none outline-none p-0"
+              whileHover={{ x: -3 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="typo-mono-btn font-medium text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] uppercase cursor-pointer flex items-center gap-1 bg-transparent border-none outline-none p-0"
             >
               <span>← PREVIOUS PROJECT</span>
             </motion.button>
@@ -924,7 +920,9 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                   handleNextClick();
                 }
               }}
-              className="typo-mono-btn font-medium text-zinc-500 hover:text-[var(--text-color)] transition-colors duration-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] uppercase cursor-pointer flex items-center gap-1 bg-transparent border-none outline-none p-0"
+              whileHover={{ x: 3 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="typo-mono-btn font-medium text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] uppercase cursor-pointer flex items-center gap-1 bg-transparent border-none outline-none p-0"
             >
               <span>NEXT PROJECT →</span>
             </motion.button>

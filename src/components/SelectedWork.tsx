@@ -6,7 +6,8 @@
 import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'motion/react';
 import { PROJECTS_DATA } from '../data';
-import { MOTION_CURVE_PREMIUM } from '../utils/motion';
+import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
+
 
 interface ProjectChapterProps {
   project: typeof PROJECTS_DATA[0];
@@ -128,50 +129,19 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   // 4. Reveals image first then text (index 3)
   // 5. Reveals text first then image (index 4)
 
-  const getEditorialContentBlockVariants = () => {
-    return {
-      initial: {
-        opacity: isMobileViewport ? 1 : 0,
-        y: (shouldReduceMotion || isMobileViewport) ? 0 : 10,
-      },
-      whileInView: {
-        opacity: 1,
-        y: 0,
-        transition: {
-          duration: 0.7,
-          ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : 0.05,
-        }
-      }
-    };
-  };
+  const getEditorialContentBlockVariants = () => motionRoles.supportingText(isMobileViewport ? 0 : 0.08, shouldReduceMotion);
 
-  const getImageVariants = () => {
-    return {
-      initial: {
-        opacity: 1,
-        clipPath: "inset(0% 0% 0% 0%)",
-      },
-      whileInView: {
-        opacity: 1,
-        clipPath: "inset(0% 0% 0% 0%)",
-        transition: {
-          duration: 0.85,
-          ease: [0.16, 1, 0.3, 1],
-          delay: isMobileViewport ? 0 : 0.05
-        }
-      }
-    };
-  };
+  const getImageVariants = () => motionRoles.editorialImage(isMobileViewport ? 0 : 0.05, shouldReduceMotion);
 
   const editorialContentModule = (
     <motion.div
       variants={getEditorialContentBlockVariants()}
-      initial="initial"
-      whileInView="whileInView"
-      viewport={{ once: false, amount: 0.1 }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={VIEWPORT_ONCE_CONFIG}
       className="flex flex-col gap-6 md:gap-8 justify-start w-full text-[var(--text-color)]"
     >
+
       <div className="w-full text-left">
         <div className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium">
           <span>{project.category}</span>
@@ -196,9 +166,9 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
               onOpen(project);
             }}
             aria-label={`Open case study for ${project.title}`}
-            className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-            whileHover={{ x: 4 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+            whileHover={{ x: 3 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
             OPEN CASE STUDY
           </motion.button>
@@ -210,9 +180,9 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               aria-label={`View live site for ${project.title}`}
-              className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-              whileHover={{ x: 4 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+              className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+              whileHover={{ x: 3 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
               VIEW LIVE
             </motion.a>
@@ -225,11 +195,12 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   const imageContainer = (
     <motion.div
       ref={imageRef}
-      initial="initial"
-      whileInView="whileInView"
-      viewport={{ once: false, amount: 0.15 }}
+      initial="hidden"
+      whileInView="visible"
+      viewport={VIEWPORT_ONCE_CONFIG}
       className="relative w-full bg-transparent select-none opacity-100"
     >
+
       <motion.div
         variants={getImageVariants()}
         className="relative w-full h-auto bg-transparent opacity-100 flex items-center justify-center overflow-hidden"
@@ -245,10 +216,10 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
                   className="absolute inset-0 bg-transparent flex flex-col items-center justify-center min-h-[220px]"
                 >
                   <div className="flex flex-col items-center gap-1.5">
-                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-zinc-500/80">
+                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--text-dim)] opacity-60">
                       RESOLVING PREVIEW
                     </span>
-                    <span className="font-mono text-[8px] text-zinc-600">
+                    <span className="font-mono text-[8px] text-[var(--text-dim)] opacity-40">
                       INDEX_{index + 1}
                     </span>
                   </div>
@@ -269,14 +240,14 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
           </>
         ) : (
           <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-transparent select-none overflow-hidden pb-4">
-            <svg className="w-1/2 h-1/2 opacity-[0.08] text-zinc-500 group-hover:opacity-[0.15] transition-opacity duration-500" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-1/2 h-1/2 opacity-[0.08] text-[var(--text-dim)] group-hover:opacity-[0.15] transition-opacity duration-500" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="200" cy="125" r="85" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 8" />
               <circle cx="200" cy="125" r="45" stroke="currentColor" strokeWidth="0.5" />
               <line x1="40" y1="125" x2="360" y2="125" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
               <line x1="200" y1="15" x2="200" y2="235" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="typo-mono-sub text-zinc-500">
+              <span className="typo-mono-sub text-[var(--text-dim)] opacity-60">
                 [UI_IMAGE_PLACEHOLDER: ASPECT_RATIO_PRESERVED]
               </span>
             </div>
@@ -287,58 +258,122 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
   );
 
   const renderLayout = () => {
+    const layoutVariant = index % 4;
+
+    if (layoutVariant === 0) {
+      // Index 0: Dominant Featured Showcase (8-col Image, 4-col Text)
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+          <motion.div
+            style={{
+              y: exitImageY,
+              scale: exitScale,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-8 order-1"
+          >
+            {imageContainer}
+          </motion.div>
+          <motion.div
+            style={{
+              y: exitTextY,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-4 flex flex-col justify-start order-2"
+          >
+            {editorialContentModule}
+          </motion.div>
+        </div>
+      );
+    }
+
+    if (layoutVariant === 1) {
+      // Index 1: Offset Narrative Spread (5-col Text Left, 7-col Image Right)
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+          <motion.div
+            style={{
+              y: exitTextY,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-5 flex flex-col justify-start order-2 lg:order-1"
+          >
+            {editorialContentModule}
+          </motion.div>
+          <motion.div
+            style={{
+              y: exitImageY,
+              scale: exitScale,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-7 order-1 lg:order-2"
+          >
+            {imageContainer}
+          </motion.div>
+        </div>
+      );
+    }
+
+    if (layoutVariant === 2) {
+      // Index 2: Asymmetric Left Feature (7-col Image Left, 5-col Text Right)
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+          <motion.div
+            style={{
+              y: exitImageY,
+              scale: exitScale,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-7 order-1"
+          >
+            {imageContainer}
+          </motion.div>
+          <motion.div
+            style={{
+              y: exitTextY,
+              opacity: exitOpacity
+            }}
+            className="w-full lg:col-span-5 flex flex-col justify-start order-2"
+          >
+            {editorialContentModule}
+          </motion.div>
+        </div>
+      );
+    }
+
+    // Index 3: Monograph Balanced Spread (6-col Text Left, 6-col Image Right)
     return (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
-        {isEven ? (
-          <>
-            {/* Even Chapter: Image Left, Metadata Right */}
-            <motion.div
-              style={{
-                y: exitImageY,
-                scale: exitScale,
-                opacity: exitOpacity
-              }}
-              className="w-full lg:col-span-7 order-1"
-            >
-              {imageContainer}
-            </motion.div>
-            <motion.div
-              style={{
-                y: exitTextY,
-                opacity: exitOpacity
-              }}
-              className="w-full lg:col-span-5 flex flex-col justify-start order-2"
-            >
-              {editorialContentModule}
-            </motion.div>
-          </>
-        ) : (
-          <>
-            {/* Odd Chapter: Metadata Left, Image Right */}
-            <motion.div
-              style={{
-                y: exitTextY,
-                opacity: exitOpacity
-              }}
-              className="w-full lg:col-span-5 flex flex-col justify-start order-2 lg:order-1"
-            >
-              {editorialContentModule}
-            </motion.div>
-            <motion.div
-              style={{
-                y: exitImageY,
-                scale: exitScale,
-                opacity: exitOpacity
-              }}
-              className="w-full lg:col-span-7 order-1 lg:order-2"
-            >
-              {imageContainer}
-            </motion.div>
-          </>
-        )}
+        <motion.div
+          style={{
+            y: exitTextY,
+            opacity: exitOpacity
+          }}
+          className="w-full lg:col-span-6 flex flex-col justify-start order-2 lg:order-1"
+        >
+          {editorialContentModule}
+        </motion.div>
+        <motion.div
+          style={{
+            y: exitImageY,
+            scale: exitScale,
+            opacity: exitOpacity
+          }}
+          className="w-full lg:col-span-6 order-1 lg:order-2"
+        >
+          {imageContainer}
+        </motion.div>
       </div>
     );
   };
+
+  const rhythmPadding = useMemo(() => {
+    const mod = index % 4;
+    if (mod === 0) return "py-14 sm:py-20 md:py-28 lg:py-32";
+    if (mod === 1) return "pt-8 pb-16 sm:pt-12 sm:pb-22 md:pt-14 md:pb-28";
+    if (mod === 2) return "py-16 sm:py-24 md:py-32 lg:py-36";
+    return "pt-10 pb-16 sm:pt-14 sm:pb-20 md:pt-16 md:pb-24";
+  }, [index]);
 
   return (
     <motion.div
@@ -354,7 +389,7 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
       onFocus={() => setFocusedProjectId(project.id)}
       onBlur={() => setFocusedProjectId(null)}
       whileHover={getHoverConfig()}
-      className="group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 py-10 sm:py-16 md:py-20"
+      className={`group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 ${rhythmPadding}`}
     >
       <div className="w-full max-w-7xl mx-auto px-0 sm:px-12 lg:px-16">
         {renderLayout()}
@@ -485,7 +520,7 @@ export default function SelectedWork({
     <section
       ref={sectionRef}
       id="works"
-      className="relative w-full bg-[var(--bg-color)] z-20 text-[var(--text-color)] overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 scroll-mt-[100px]"
+      className="relative w-full bg-[var(--bg-color)] z-20 text-[var(--text-color)] overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-16 md:pb-24 scroll-mt-20 md:scroll-mt-24"
       style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
     >
       <motion.div
@@ -501,47 +536,27 @@ export default function SelectedWork({
         >
           <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
             <motion.h2
-              variants={{
-                hidden: {
-                  opacity: 0,
-                },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    duration: 0.5,
-                    ease: "easeOut",
-                    delay: 0.05
-                  }
-                }
-              }}
+              variants={motionRoles.largeTypography(0.05, shouldReduceMotion)}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.05 }}
-              style={{ x: 0 }}
+              viewport={VIEWPORT_ONCE_CONFIG}
               className="typo-display-lg select-text text-[var(--text-color)] font-black"
             >
               SELECTED WORKS
             </motion.h2>
           </div>
 
-          {/* Typographic Filter Controls: Single row visibility on mobile without scrolling */}
+          {/* Typographic Filter Controls */}
           <motion.div
             role="group"
             aria-label="Project filter categories"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.15 }}
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.04,
-                  delayChildren: 0.05
-                }
-              }
-            }}
+            viewport={VIEWPORT_ONCE_CONFIG}
+            variants={motionRoles.metaLabel(0.1)}
             className="col-span-1 lg:col-span-6 flex flex-nowrap items-center justify-between sm:justify-start lg:justify-end gap-x-1.5 sm:gap-x-4 lg:gap-x-8 typo-mono-filter lg:pl-6 lg:pt-3 w-full max-w-full whitespace-nowrap overflow-x-visible pb-1 lg:pb-0"
           >
+
             {(['ALL', 'FULL-STACK', 'CODE', 'UI'] as const).map((filterValue) => {
                const count = filterCounts[filterValue];
                const isActive = activeFilter === filterValue;
@@ -564,7 +579,7 @@ export default function SelectedWork({
                    
                    transition: {
                      duration: 0.35,
-                     type: "spring", stiffness: 280, damping: 22,
+                     ease: [0.16, 1, 0.3, 1]
                    }
                  }
                };

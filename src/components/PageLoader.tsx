@@ -18,7 +18,7 @@ export default function PageLoader({ loading }: PageLoaderProps) {
       {loading && (
         <motion.div
           key="page-loader"
-          className="page-loader bg-black"
+          className="page-loader bg-[var(--bg-color)]"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -29,7 +29,7 @@ export default function PageLoader({ loading }: PageLoaderProps) {
             left: 0,
             width: '100vw',
             height: '100vh',
-            background: '#000000', // Match pure dark background for flat, high-contrast black screen loader
+            background: 'var(--bg-color)',
             zIndex: 9999,
             display: 'flex',
             justifyContent: 'center',

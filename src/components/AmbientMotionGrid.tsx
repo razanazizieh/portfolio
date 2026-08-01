@@ -15,8 +15,6 @@ interface FloatingThought {
 }
 
 const THOUGHTS: FloatingThought[] = [
-  { text: "proportional balance", left: "6vw", top: "115vh", speed: 0.18, opacity: 0.08 },
-  { text: "the silence of light", left: "75vw", top: "140vh", speed: 0.28, opacity: 0.05 },
   { text: "friction of fluid layouts", left: "12vw", top: "180vh", speed: 0.12, opacity: 0.06 },
   { text: "natural gravity", left: "82vw", top: "210vh", speed: 0.35, opacity: 0.09 },
   { text: "geometry as poetic logic", left: "4vw", top: "260vh", speed: 0.15, opacity: 0.07 },

@@ -37,6 +37,22 @@ export default function Header({
   forceShowLogo = false
 }: HeaderProps) {
   const shouldReduceMotion = useReducedMotion();
+  const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
+
+  const getNavOpacity = (id: string, isActive?: boolean) => {
+    if (hoveredNav !== null) {
+      return hoveredNav === id ? 1 : 0.4;
+    }
+    if (isActive) return 1;
+    return 0.6;
+  };
+
+  const getNavFontWeight = (id: string, isActive?: boolean) => {
+    if (hoveredNav !== null) {
+      return hoveredNav === id ? 700 : 500;
+    }
+    return isActive ? 700 : 500;
+  };
 
   return (
     <header 
@@ -54,16 +70,16 @@ export default function Header({
           : 'text-[var(--text-color)]'
       }`}
     >
-      {/* Central Logo 'RAZAN AZIZIEH' that morphs into top-left via scroll trigger */}
+      {/* Top-left Logo 'RAZAN AZIZIEH' */}
       <motion.div
         id="logo-name"
         role="button"
         tabIndex={0}
         aria-label="Razan Azizieh - Scroll back to top of the page"
         style={{
-          opacity: forceShowLogo ? 1 : logoOpacity,
+          opacity: 1,
           scale: 1,
-          y: forceShowLogo ? 0 : (shouldReduceMotion ? 0 : logoY),
+          y: 0,
           x: 0,
         }}
         onClick={(e) => handleNav(e, activeCaseStudy ? 'works' : 'top')}
@@ -72,21 +88,31 @@ export default function Header({
             handleNav(e, activeCaseStudy ? 'works' : 'top');
           }
         }}
-        className="branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 before:absolute before:content-[''] before:-inset-y-4 before:-inset-x-3 before:block"
+        className="branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 before:absolute before:content-[''] before:-inset-y-4 before:-inset-x-3 before:block group"
       >
-        <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] opacity-100 transition-colors duration-200 inline-flex items-center">
+        <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] opacity-100 group-hover:opacity-60 transition-opacity duration-300 inline-flex items-center">
           RAZAN AZIZIEH
         </span>
       </motion.div>
 
       {/* Minimalist text links (About, Works, Connect, Theme) using semantic <nav> */}
-      <nav aria-label="Primary Navigation" className="hidden md:flex items-center gap-8 typo-mono-filter pointer-events-auto transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]">
+      <nav 
+        aria-label="Primary Navigation" 
+        onMouseLeave={() => setHoveredNav(null)}
+        className="hidden md:flex items-center gap-8 typo-mono-filter pointer-events-auto transition-all duration-300 ease-out"
+      >
         {activeCaseStudy ? (
           <a
             href="#works"
             onClick={(e) => handleNav(e, 'works')}
+            onMouseEnter={() => setHoveredNav('back')}
             aria-label="Back to Works"
-            className="relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block font-semibold text-xs tracking-wider uppercase before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
+            style={{ 
+              opacity: getNavOpacity('back', true),
+              fontWeight: getNavFontWeight('back', true),
+              color: 'var(--text-color)',
+            }}
+            className="relative pointer-events-auto cursor-pointer bg-transparent border-0 typo-mono-sub transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block text-xs tracking-wider uppercase before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
           >
             Back to Works ✕
           </a>
@@ -95,12 +121,14 @@ export default function Header({
             <a
               href="#about"
               onClick={(e) => handleNav(e, 'about')}
+              onMouseEnter={() => setHoveredNav('about')}
               aria-label="Navigate to about section"
-              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
-                activeSection === 'about' && !activeCaseStudy
-                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
-                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
-              }`}
+              style={{ 
+                opacity: getNavOpacity('about', activeSection === 'about' && !activeCaseStudy),
+                fontWeight: getNavFontWeight('about', activeSection === 'about' && !activeCaseStudy),
+                color: 'var(--text-color)',
+              }}
+              className="relative pointer-events-auto cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-200 ease-in-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
             >
               About
             </a>
@@ -108,12 +136,14 @@ export default function Header({
             <a
               href="#works"
               onClick={(e) => handleNav(e, 'works')}
+              onMouseEnter={() => setHoveredNav('works')}
               aria-label="Navigate to works section"
-              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
-                (activeSection === 'works' || !!activeCaseStudy)
-                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
-                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
-              }`}
+              style={{ 
+                opacity: getNavOpacity('works', (activeSection === 'works' || !!activeCaseStudy) && !activeCaseStudy),
+                fontWeight: getNavFontWeight('works', (activeSection === 'works' || !!activeCaseStudy) && !activeCaseStudy),
+                color: 'var(--text-color)',
+              }}
+              className="relative pointer-events-auto cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-200 ease-in-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
             >
               Works
             </a>
@@ -121,12 +151,14 @@ export default function Header({
             <a
               href="#contact"
               onClick={(e) => handleNav(e, 'contact')}
+              onMouseEnter={() => setHoveredNav('contact')}
               aria-label="Navigate to connect section"
-              className={`relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-300 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block ${
-                activeSection === 'contact' && !activeCaseStudy
-                  ? 'text-neutral-950 dark:text-white font-bold opacity-100'
-                  : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
-              }`}
+              style={{ 
+                opacity: getNavOpacity('contact', activeSection === 'contact' && !activeCaseStudy),
+                fontWeight: getNavFontWeight('contact', activeSection === 'contact' && !activeCaseStudy),
+                color: 'var(--text-color)',
+              }}
+              className="relative pointer-events-auto cursor-pointer bg-transparent border-0 typo-mono-sub focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] px-2 py-1 rounded block transition-all duration-200 ease-in-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
             >
               Connect
             </a>
@@ -135,8 +167,14 @@ export default function Header({
 
         <button
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
+          onMouseEnter={() => setHoveredNav('theme')}
           aria-label="Switch visual theme scale"
-          className="relative pointer-events-auto interactive-hover cursor-pointer bg-transparent border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] px-2 py-1 rounded flex items-center justify-center text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-200 ease-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
+          style={{ 
+            opacity: getNavOpacity('theme', false),
+            fontWeight: getNavFontWeight('theme', false),
+            color: 'var(--text-color)',
+          }}
+          className="relative pointer-events-auto cursor-pointer bg-transparent border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] px-2 py-1 rounded flex items-center justify-center transition-all duration-200 ease-in-out before:absolute before:content-[''] before:-inset-y-3 before:-inset-x-2 before:block"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -157,7 +195,7 @@ export default function Header({
         <button
           onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           aria-label="Switch visual theme scale"
-          className="text-zinc-500 hover:text-[var(--text-color)] w-11 h-11 transition-colors duration-[250ms] flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] rounded-md"
+          className="text-[var(--text-dim)] opacity-60 hover:opacity-100 hover:text-[var(--text-color)] w-11 h-11 transition-all duration-300 ease-out flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] rounded-md"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -175,7 +213,7 @@ export default function Header({
           <button
             onClick={(e) => handleNav(e, 'works')}
             aria-label="Back to Works"
-            className="typo-mono-sub text-zinc-500 hover:text-[var(--text-color)] transition-colors duration-0 h-11 px-2 uppercase flex items-center justify-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded-md font-medium text-xs tracking-wider cursor-pointer"
+            className="typo-mono-sub text-[var(--text-dim)] opacity-60 hover:opacity-100 hover:text-[var(--text-color)] transition-all duration-300 ease-out h-11 px-2 uppercase flex items-center justify-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded-md font-medium text-xs tracking-wider cursor-pointer"
           >
             Back ✕
           </button>
@@ -186,7 +224,7 @@ export default function Header({
             aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
-            className="typo-mono-sub text-zinc-500 hover:text-[var(--text-color)] h-11 min-w-[44px] px-2 uppercase flex items-center justify-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] rounded-md"
+            className="typo-mono-sub text-[var(--text-dim)] opacity-60 hover:opacity-100 hover:text-[var(--text-color)] h-11 min-w-[44px] px-2 uppercase flex items-center justify-center gap-1 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:text-[var(--text-color)] rounded-md transition-all duration-300"
           >
             {isMobileMenuOpen ? 'CLOSE' : 'MENU'}
           </button>

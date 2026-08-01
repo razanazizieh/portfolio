@@ -44,7 +44,10 @@ export default function MobileMenu({
           className="fixed inset-0 z-40 bg-[var(--bg-color)] flex flex-col justify-between pt-28 pb-10 md:hidden text-left"
         >
           {/* Nav targets with edge-to-edge dividers */}
-          <motion.nav variants={linksContainerVariants} className="flex-1 flex flex-col justify-center w-full">
+          <motion.nav 
+            variants={linksContainerVariants} 
+            className="flex-1 flex flex-col justify-center w-full"
+          >
             {/* ABOUT Link Block with horizontal padding */}
             <motion.div variants={menuLinkVariants} className="py-4 px-[max(20px,4vw)] w-full">
               <a
@@ -54,10 +57,10 @@ export default function MobileMenu({
                   handleNav(e, 'about');
                 }}
                 aria-label="Navigate to about section"
-                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'about' && !activeCaseStudy
-                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
-                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
+                    ? 'text-[var(--text-color)] font-bold opacity-100'
+                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
                 }`}
               >
                 ABOUT
@@ -73,10 +76,10 @@ export default function MobileMenu({
                   handleNav(e, 'works');
                 }}
                 aria-label="Navigate to works section"
-                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   (activeSection === 'works' || !!activeCaseStudy)
-                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
-                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
+                    ? 'text-[var(--text-color)] font-bold opacity-100'
+                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
                 }`}
               >
                 WORKS
@@ -92,10 +95,10 @@ export default function MobileMenu({
                   handleNav(e, 'contact');
                 }}
                 aria-label="Navigate to connect section"
-                className={`typo-display-md tracking-tighter uppercase transition-all duration-300 block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
+                className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'contact' && !activeCaseStudy
-                    ? 'text-neutral-950 dark:text-white font-black opacity-100'
-                    : 'text-neutral-500 dark:text-zinc-400 font-medium opacity-60 hover:opacity-100 hover:text-neutral-950 dark:hover:text-white'
+                    ? 'text-[var(--text-color)] font-bold opacity-100'
+                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
                 }`}
               >
                 CONNECT

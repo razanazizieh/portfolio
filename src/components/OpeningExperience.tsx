@@ -69,8 +69,6 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
     <motion.div
       id="html-opening-screen"
       style={{
-        height: '100vh',
-        minHeight: '100vh',
         position: 'relative',
         zIndex: 1,
         display: 'flex',
@@ -80,30 +78,29 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
         paddingRight: 'max(20px, 4vw)',
         opacity: heroOpacity,
       }}
-      className="relative w-full h-screen min-h-[100vh] bg-[var(--bg-color)] font-sans overflow-hidden"
+      className="relative w-full min-h-[85vh] bg-[var(--bg-color)] font-sans overflow-hidden py-16 md:py-24 flex flex-col justify-center"
     >
-      <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col justify-center h-full">
+      <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col justify-center">
         {/* Unified monolithic architectural block */}
         <div 
-          className="flex flex-col items-start text-left max-w-6xl w-full justify-center translate-y-2 md:translate-y-[5vh]"
+          className="flex flex-col items-start text-left max-w-6xl w-full justify-center"
         >
 
-          {/* Logo Title and Subtitle */}
-          <div id="hero-logo-name" className="branding-container name logo-container w-full mb-6 md:mb-12 pl-[4vw] md:pl-[40px]">
+          {/* Hero Name & Subtitle */}
+          <div id="hero-header-identity" className="w-full mb-6 md:mb-12 pl-[4vw] md:pl-[40px]">
             <motion.h1
-              variants={typographyReveal(0.2)}
+              variants={typographyReveal(0.25)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em]"
+              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)]"
             >
               RΛZΛN ΛZIZIEH
             </motion.h1>
-
             <motion.div
               variants={opacityReveal(0.45)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-mono-sub select-text mt-3 whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm opacity-100"
+              className="typo-mono-sub select-text mt-2 whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
             >
               MSc IN MATHEMATICS & COMPUTER SCIENCE
             </motion.div>
@@ -148,32 +145,33 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
               </motion.h2>
             </div>
 
-            {/* Subtle Editorial Descriptor */}
-            <div className="w-full mt-4 md:mt-8 max-w-[85vw] sm:max-w-[48vw] text-left select-text pl-[6vw] md:pl-[150px] lg:pl-[216px]">
-              <motion.p
-                variants={opacityReveal(1.2)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
-                className="typo-body-sm leading-relaxed text-[var(--text-dim)] opacity-100 font-normal"
-              >
-                Building software that feels as intentional as it functions.
-              </motion.p>
-            </div>
+            {/* Subtle Editorial Descriptor & Bottom-Right CTA */}
+            <div className="w-full mt-6 md:mt-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pl-[6vw] md:pl-[150px] lg:pl-[216px]">
+              {/* Subtle Editorial Descriptor */}
+              <div className="max-w-[85vw] sm:max-w-[32vw] text-left select-text">
+                <motion.p
+                  variants={opacityReveal(1.2)}
+                  initial="hidden"
+                  animate={shouldAnimate ? "visible" : "hidden"}
+                  className="typo-body-sm leading-relaxed text-[var(--text-dim)] opacity-100 font-normal"
+                >
+                  Building software that feels as intentional as it functions.
+                </motion.p>
+              </div>
 
-            {/* Editorial CTA */}
-            <div className="pl-[6vw] md:pl-[150px] lg:pl-[216px] mt-6 md:mt-12 flex flex-col items-start gap-4">
-              <motion.button
-                variants={opacityReveal(1.45)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
-                onClick={onCtaClick}
-                aria-label="Scroll down to contact section"
-                className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5 opacity-100"
-                whileHover={{ x: 4 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              >
-                LET'S BUILD TOGETHER
-              </motion.button>
+              {/* Editorial CTA Button (Bottom-Right Aligned) */}
+              <div className="flex flex-col items-start sm:items-end justify-end">
+                <motion.button
+                  variants={opacityReveal(1.45)}
+                  initial="hidden"
+                  animate={shouldAnimate ? "visible" : "hidden"}
+                  onClick={onCtaClick}
+                  aria-label="Scroll down to contact section"
+                  className="typo-display-sm uppercase font-bold tracking-tight text-[#666666] opacity-40 hover:opacity-100 hover:text-[var(--text-color)] transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer block text-left sm:text-right"
+                >
+                  LET'S BUILD TOGETHER
+                </motion.button>
+              </div>
             </div>
 
           </div>

@@ -49,7 +49,7 @@ export default function PremiumImage({
               transition={{ duration: 0.4 }}
               className="absolute inset-0 bg-transparent flex items-center justify-center min-h-[200px]"
             >
-              <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--text-dim)] opacity-60">
                 loading asset
               </span>
             </motion.div>

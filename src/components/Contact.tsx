@@ -5,7 +5,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
-import { MOTION_CURVE_PREMIUM } from '../utils/motion';
+import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -40,85 +40,44 @@ export default function Contact() {
     return () => cancelAnimationFrame(frameId);
   }, [shouldReduceMotion]);
 
-  // Art director scroll-driven micro-fade focusing system
+  // Editorial scroll-driven micro-fade focusing system
   const contentScale = useTransform(scrollYProgress, [0.15, 0.42, 0.68, 0.95], [1.0, 1.0, 1.0, 1.0]);
-  const contentOpacity = useTransform(scrollYProgress, [0.15, 0.42, 0.68, 0.95], [0.4, 1.0, 1.0, 0.4]);
+  const contentOpacity = 1.0;
 
   return (
     <section
       id="contact"
       ref={sectionRef}
-      className="bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between min-h-[75vh] md:min-h-[85vh] overflow-hidden py-10 md:py-16 scroll-mt-[100px]"
+      className="bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-16 sm:pb-24 md:pb-32 scroll-mt-20 md:scroll-mt-24"
       style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
     >
       <motion.div
         style={{
           scale: shouldReduceMotion ? 1 : contentScale,
-          opacity: shouldReduceMotion ? 1 : contentOpacity,
+          opacity: 1,
           transformOrigin: "center"
         }}
-        className="w-full h-full pt-6 pb-6 bg-[var(--bg-color)] overflow-hidden relative flex flex-col justify-between max-w-7xl mx-auto"
+        className="w-full h-full pt-2 pb-6 bg-[var(--bg-color)] overflow-hidden relative flex flex-col justify-between max-w-7xl mx-auto"
       >
 
         {/* Structural Editorial Layout Grid */}
         <div
-          className="grid grid-cols-1 lg:grid-cols-12 gap-x-6 lg:gap-x-20 gap-y-3 lg:gap-y-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-6 md:pt-8 pb-0"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-x-6 lg:gap-x-20 gap-y-3 lg:gap-y-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-2 md:pt-4 pb-0"
         >
 
-          {/* Left Column: Massive header text "LET'S BUILD" or "CONNECT" */}
+          {/* Left Column: Massive header text "LET'S CONNECT" */}
           <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
             <motion.h2
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: false, amount: 0.15 }}
+              viewport={VIEWPORT_ONCE_CONFIG}
+              variants={motionRoles.largeTypography(0.05, shouldReduceMotion)}
               className="typo-display-lg select-text flex flex-wrap items-baseline gap-x-4"
             >
-              <span className="inline-block overflow-hidden py-[0.05em] -my-[0.05em]">
-                <motion.span
-                  variants={{
-                    hidden: { 
-                      opacity: 0, 
-                      clipPath: "inset(0% 0% 100% 0%)"
-                    },
-                    visible: { 
-                      opacity: 1, 
-                      clipPath: "inset(0% 0% 0% 0%)",
-                      transition: { 
-                        duration: 0.85,
-                        ease: [0.16, 1, 0.3, 1],
-                        delay: 0.05 
-                      } 
-                    }
-                  }}
-                  className="inline-block"
-                >
-                  LET'S
-                </motion.span>
-              </span>
-              <span className="inline-block overflow-hidden py-[0.05em] -my-[0.05em]">
-                <motion.span
-                  variants={{
-                    hidden: { 
-                      opacity: 0, 
-                      clipPath: "inset(0% 0% 100% 0%)"
-                    },
-                    visible: { 
-                      opacity: 1, 
-                      clipPath: "inset(0% 0% 0% 0%)",
-                      transition: { 
-                        duration: 0.85,
-                        ease: [0.16, 1, 0.3, 1],
-                        delay: 0.15 
-                      } 
-                    }
-                  }}
-                  className="inline-block"
-                >
-                  CONNECT
-                </motion.span>
-              </span>
+              LET'S CONNECT
             </motion.h2>
           </div>
+
 
           {/* Right Column: Availability & fully functional pure typography plain text links */}
           <motion.div className="col-span-1 lg:col-span-6 flex flex-col items-start text-left gap-[15px] lg:pl-6">
@@ -184,9 +143,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open Razan's GitHub profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-neutral-400 hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-                whileHover={{ x: 3 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
               >
                 <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
                   GITHUB
@@ -214,9 +171,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open Razan's LinkedIn profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-neutral-400 hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-                whileHover={{ x: 3 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
               >
                 <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
                   LINKEDIN
@@ -244,9 +199,7 @@ export default function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open Razan's Instagram profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-neutral-400 hover:text-[var(--text-color)] transition-colors duration-300 focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-                whileHover={{ x: 3 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
               >
                 <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
                   INSTAGRAM

@@ -17,7 +17,7 @@ export default function TransitionOverlay({ step, theme }: TransitionOverlayProp
   if (step === 0) return null;
 
   // Exact background matching to block any layout paint glimpses
-  const bgColor = theme === 'dark' ? '#0d0d0d' : '#fcfcfc';
+  const bgColor = 'var(--bg-color)';
 
   if (shouldReduceMotion) {
     let opacityValue = 0;

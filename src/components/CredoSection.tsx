@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { motion, useReducedMotion } from 'motion/react';
+import { motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 
 interface DriftingWordsParagraphProps {
   text: string;
@@ -34,7 +35,6 @@ function StaggeredHeaderLine({
 }
 
 function DriftingWordsParagraph({ text, align, variants }: DriftingWordsParagraphProps) {
-  // Determine alignment classes
   let alignClass = "md:whitespace-nowrap";
   if (align === "justify") {
     alignClass = "text-justify md:text-justify md:whitespace-normal max-w-2xl";
@@ -65,36 +65,6 @@ function DriftingWordsParagraph({ text, align, variants }: DriftingWordsParagrap
 export default function CredoSection() {
   const shouldReduceMotion = useReducedMotion();
 
-  const typographyReveal = (delay: number) => ({
-    hidden: {
-      opacity: 0,
-      clipPath: "inset(0% 0% 100% 0%)",
-    },
-    visible: {
-      opacity: 1,
-      clipPath: "inset(0% 0% 0% 0%)",
-      transition: {
-        duration: 0.85,
-        ease: [0.16, 1, 0.3, 1],
-        delay
-      }
-    }
-  });
-
-  const paragraphVariants = {
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.7,
-        ease: "easeOut",
-        delay: 0.55
-      }
-    }
-  };
-
   return (
     <motion.section
       id="statement"
@@ -102,7 +72,7 @@ export default function CredoSection() {
         paddingLeft: "max(20px, 4vw)",
         paddingRight: "max(20px, 4vw)",
       }}
-      className="relative w-full bg-[var(--bg-color)] pt-16 pb-16 sm:pt-24 sm:pb-24 lg:pt-32 lg:pb-32 overflow-hidden select-none"
+      className="relative w-full bg-[var(--bg-color)] pt-24 pb-24 sm:pt-36 sm:pb-36 lg:pt-48 lg:pb-48 overflow-hidden select-none"
     >
       <div className="w-full max-w-7xl mx-auto text-left">
         <div
@@ -111,30 +81,30 @@ export default function CredoSection() {
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: false, amount: 0.2 }}
+            viewport={VIEWPORT_ONCE_CONFIG}
             className="col-span-1 lg:col-span-10 flex flex-col gap-0 select-text"
           >
             <StaggeredHeaderLine
               text="STRUCTURE EARNS TRUST"
               className="typo-credo-l1"
-              variants={typographyReveal(0.0)}
+              variants={motionRoles.largeTypography(0.0, shouldReduceMotion)}
             />
             <StaggeredHeaderLine
               text="PRECISION ENABLES CLARITY"
               className="typo-credo-l2 mt-3"
-              variants={typographyReveal(0.15)}
+              variants={motionRoles.largeTypography(0.12, shouldReduceMotion)}
             />
             <StaggeredHeaderLine
               text="EVERY DETAIL HAS A PURPOSE"
               className="typo-credo-l3 mt-3"
-              variants={typographyReveal(0.30)}
+              variants={motionRoles.largeTypography(0.24, shouldReduceMotion)}
             />
 
             <div className="mt-4 sm:mt-5 max-w-xl">
               <DriftingWordsParagraph
                 text="Every project begins differently. The process adapts. Careful thinking remains constant."
                 align="left"
-                variants={paragraphVariants}
+                variants={motionRoles.supportingText(0.36, shouldReduceMotion)}
               />
             </div>
           </motion.div>
@@ -143,3 +113,4 @@ export default function CredoSection() {
     </motion.section>
   );
 }
+
