@@ -171,14 +171,14 @@ export default function Contact() {
         </div>
 
         {/* Minimal Swiss footer */}
-        <footer className="pt-16 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center typo-mono-sub px-8 gap-4">
+        <footer className="pt-16 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-8 gap-4">
           <div className="overflow-hidden block py-0.5">
             <motion.div
               initial={{ y: "100%", opacity: 0 }}
               whileInView={{ y: 0, opacity: 1 }}
               viewport={VIEWPORT_ONCE_CONFIG}
               transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
-              className="text-[10px] tracking-widest uppercase opacity-40 text-left"
+              className="font-mono text-[10px] tracking-widest uppercase text-neutral-400 dark:text-neutral-600 text-left"
             >
               2026 © — ALL RIGHTS RESERVED.
             </motion.div>

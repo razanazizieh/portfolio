@@ -59,8 +59,8 @@ export default function MobileMenu({
                 aria-label="Navigate to about section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'about' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] font-bold opacity-100'
-                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
+                    ? 'text-black dark:text-white font-bold opacity-100'
+                    : 'text-black dark:text-white font-medium opacity-70 hover:opacity-100 hover:font-bold'
                 }`}
               >
                 ABOUT
@@ -78,8 +78,8 @@ export default function MobileMenu({
                 aria-label="Navigate to works section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   (activeSection === 'works' || !!activeCaseStudy)
-                    ? 'text-[var(--text-color)] font-bold opacity-100'
-                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
+                    ? 'text-black dark:text-white font-bold opacity-100'
+                    : 'text-black dark:text-white font-medium opacity-70 hover:opacity-100 hover:font-bold'
                 }`}
               >
                 WORKS
@@ -97,8 +97,8 @@ export default function MobileMenu({
                 aria-label="Navigate to connect section"
                 className={`typo-display-md tracking-tighter uppercase transition-all duration-200 ease-in-out block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-md ${
                   activeSection === 'contact' && !activeCaseStudy
-                    ? 'text-[var(--text-color)] font-bold opacity-100'
-                    : 'text-[#A1A1AA] font-medium opacity-80 hover:opacity-100 hover:text-[var(--text-color)] hover:font-bold'
+                    ? 'text-black dark:text-white font-bold opacity-100'
+                    : 'text-black dark:text-white font-medium opacity-70 hover:opacity-100 hover:font-bold'
                 }`}
               >
                 CONNECT
@@ -111,7 +111,7 @@ export default function MobileMenu({
             variants={menuLinkVariants} 
             className="w-full px-[max(16px,4vw)] pb-8 flex items-center"
           >
-            <span className="typo-mono-sub text-[10px] tracking-widest uppercase opacity-40">
+            <span className="font-mono text-[10px] tracking-widest uppercase text-neutral-400 dark:text-neutral-600">
               2026 © — ALL RIGHTS RESERVED.
             </span>
           </motion.div>

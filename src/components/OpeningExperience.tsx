@@ -103,7 +103,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
                 initial={{ y: "100%", opacity: 0 }}
                 animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
-                className="typo-mono-sub select-text whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
+                className="typo-mono-sub select-text whitespace-normal md:whitespace-nowrap text-neutral-500 dark:text-neutral-400 uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold"
               >
                 MSc IN MATHEMATICS & COMPUTER SCIENCE
               </motion.div>
@@ -155,7 +155,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
                 initial={{ y: "100%", opacity: 0 }}
                 animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.95 }}
-                className="font-sans text-sm sm:text-base text-[var(--text-dim)] font-normal tracking-normal leading-relaxed max-w-xl select-text"
+                className="font-sans text-sm sm:text-base text-neutral-600 dark:text-neutral-400 font-normal tracking-normal leading-relaxed max-w-xl select-text"
               >
                 Building software that feels as intentional as it functions.
               </motion.p>
