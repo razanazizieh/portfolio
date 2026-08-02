@@ -78,23 +78,23 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
         paddingRight: 'max(20px, 4vw)',
         opacity: heroOpacity,
       }}
-      className="relative w-full min-h-[85vh] bg-[var(--bg-color)] font-sans overflow-hidden py-20 md:py-28 flex flex-col justify-center"
+      className="relative w-full min-h-[calc(100vh-80px)] sm:min-h-screen bg-[var(--bg-color)] font-sans overflow-hidden py-12 sm:py-16 md:py-20 flex flex-col justify-center"
     >
-      <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col justify-center">
+      <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col justify-center my-auto">
         {/* Unified monolithic architectural block */}
         <div 
           className="flex flex-col items-start text-left max-w-6xl w-full justify-center"
         >
 
           {/* Hero Name & Subtitle */}
-          <div id="hero-header-identity" className="w-full mb-6 md:mb-12 pl-[4vw] md:pl-[40px]">
+          <div id="hero-header-identity" className="w-full mb-3 md:mb-4 pl-[4vw] md:pl-[40px]">
             <motion.h1
               variants={typographyReveal(0.25)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)] mb-3 md:mb-4"
+              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)] mb-1 md:mb-1.5"
             >
-              RAZAN AZIZIEH
+              RΛZΛN ΛZIZIEH
             </motion.h1>
             <motion.div
               variants={opacityReveal(0.45)}
@@ -145,33 +145,30 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
               </motion.h2>
             </div>
 
-            {/* Subtle Editorial Descriptor & Bottom-Right CTA */}
-            <div className="w-full mt-12 md:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pl-[6vw] md:pl-[150px] lg:pl-[216px] pr-0 sm:pr-[2vw]">
-              {/* Subtle Editorial Descriptor */}
-              <div className="max-w-[85vw] sm:max-w-[32vw] text-left select-text">
-                <motion.p
-                  variants={opacityReveal(1.2)}
-                  initial="hidden"
-                  animate={shouldAnimate ? "visible" : "hidden"}
-                  className="typo-body-sm leading-relaxed text-[var(--text-dim)] opacity-100 font-normal"
-                >
-                  Building software that feels as intentional as it functions.
-                </motion.p>
-              </div>
+            {/* Tagline / Supporting Paragraph */}
+            <div className="w-full mt-6 pl-[4vw] md:pl-[40px] text-left select-text">
+              <motion.p
+                variants={opacityReveal(1.2)}
+                initial="hidden"
+                animate={shouldAnimate ? "visible" : "hidden"}
+                className="font-sans text-sm sm:text-base text-[var(--text-dim)] font-normal tracking-normal leading-relaxed max-w-xl select-text"
+              >
+                Building software that feels as intentional as it functions.
+              </motion.p>
+            </div>
 
-              {/* Editorial CTA Button (Bottom-Right Aligned) */}
-              <div className="flex flex-col items-start sm:items-end justify-end">
-                <motion.button
-                  variants={opacityReveal(1.45)}
-                  initial="hidden"
-                  animate={shouldAnimate ? "visible" : "hidden"}
-                  onClick={onCtaClick}
-                  aria-label="Scroll down to contact section"
-                  className="typo-display-sm uppercase font-bold tracking-tight text-[#666666] opacity-40 hover:opacity-100 hover:text-[var(--text-color)] transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer block text-left sm:text-right"
-                >
-                  LET'S BUILD TOGETHER
-                </motion.button>
-              </div>
+            {/* Completely Independent Editorial CTA Button (Styled like Contact Links, Bottom-Right Aligned) */}
+            <div className="w-full mt-8 sm:mt-12 flex justify-end items-end pr-0 sm:pr-[2vw]">
+              <motion.button
+                variants={opacityReveal(1.45)}
+                initial="hidden"
+                animate={shouldAnimate ? "visible" : "hidden"}
+                onClick={onCtaClick}
+                aria-label="Scroll down to contact section"
+                className="typo-display-sm leading-tight tracking-tight uppercase text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm select-none cursor-pointer block text-right m-0 p-0 bg-transparent border-0"
+              >
+                LET'S BUILD TOGETHER
+              </motion.button>
             </div>
 
           </div>

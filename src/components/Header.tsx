@@ -89,7 +89,7 @@ export default function Header({
         }`}
       >
         <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] group-hover:opacity-60 transition-opacity duration-300 inline-flex items-center">
-          RAZAN AZIZIEH
+          RΛZΛN ΛZIZIEH
         </span>
       </div>
 
