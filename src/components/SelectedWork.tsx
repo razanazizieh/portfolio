@@ -20,6 +20,25 @@ interface ProjectChapterProps {
   onNavigate: (currentIndex: number, direction: 'next' | 'prev') => void;
 }
 
+function ScrollLitNarrative({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 92%", "start 55%"],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
+  return (
+    <motion.p
+      ref={ref}
+      style={{ opacity }}
+      className={className}
+    >
+      {children}
+    </motion.p>
+  );
+}
+
 const ProjectChapter = React.memo<ProjectChapterProps>(({
   project,
   index,
@@ -143,20 +162,36 @@ const ProjectChapter = React.memo<ProjectChapterProps>(({
     >
 
       <div className="w-full text-left">
-        <div className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium">
-          <span>{project.category}</span>
-          <span className="mx-2 opacity-60">|</span>
-          <span>{project.year}</span>
+        <div className="overflow-hidden block py-0.5">
+          <motion.div
+            initial={{ y: "100%", opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={VIEWPORT_ONCE_CONFIG}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium"
+          >
+            <span>{project.category}</span>
+            <span className="mx-2 opacity-60">|</span>
+            <span>{project.year}</span>
+          </motion.div>
         </div>
-        <h3 className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350">
-          {project.title}
-        </h3>
+        <div className="overflow-hidden block py-1">
+          <motion.h3
+            initial={{ y: "100%", opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={VIEWPORT_ONCE_CONFIG}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350"
+          >
+            {project.title}
+          </motion.h3>
+        </div>
       </div>
 
       <div className="flex flex-col items-start gap-6 text-left w-full">
-        <p className="typo-body-regular-dim select-text text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-all duration-300">
+        <ScrollLitNarrative className="typo-body-regular-dim select-text text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-all duration-300">
           {getNarrative()}
-        </p>
+        </ScrollLitNarrative>
 
         <div className="pt-2 flex items-center gap-8 flex-wrap">
           <motion.button
@@ -535,15 +570,17 @@ export default function SelectedWork({
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-4 pb-0"
         >
           <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
-            <motion.h2
-              variants={motionRoles.largeTypography(0.05, shouldReduceMotion)}
-              initial="hidden"
-              whileInView="visible"
-              viewport={VIEWPORT_ONCE_CONFIG}
-              className="typo-display-lg select-text text-[var(--text-color)] font-black"
-            >
-              SELECTED WORKS
-            </motion.h2>
+            <div className="overflow-hidden block py-1">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+                className="typo-display-lg select-text text-[var(--text-color)] font-black"
+              >
+                SELECTED WORKS
+              </motion.h2>
+            </div>
           </div>
 
           {/* Typographic Filter Controls */}

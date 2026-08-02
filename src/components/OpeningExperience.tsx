@@ -88,33 +88,37 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
 
           {/* Hero Name & Subtitle */}
           <div id="hero-header-identity" className="w-full mb-3 md:mb-4 pl-[4vw] md:pl-[40px]">
-            <motion.h1
-              variants={typographyReveal(0.25)}
-              initial="hidden"
-              animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)] mb-1 md:mb-1.5"
-            >
-              RΛZΛN ΛZIZIEH
-            </motion.h1>
-            <motion.div
-              variants={opacityReveal(0.45)}
-              initial="hidden"
-              animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-mono-sub select-text whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
-            >
-              MSc IN MATHEMATICS & COMPUTER SCIENCE
-            </motion.div>
+            <div className="overflow-hidden block py-1">
+              <motion.h1
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)] mb-1 md:mb-1.5"
+              >
+                RΛZΛN ΛZIZIEH
+              </motion.h1>
+            </div>
+            <div className="overflow-hidden block py-0.5">
+              <motion.div
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.35 }}
+                className="typo-mono-sub select-text whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
+              >
+                MSc IN MATHEMATICS & COMPUTER SCIENCE
+              </motion.div>
+            </div>
           </div>
 
           {/* Core Philosophy Statement */}
           <div className="flex flex-col items-start text-left select-text w-full gap-y-3 mt-0">
 
             {/* Line 1 */}
-            <div className="w-full pl-[4vw] md:pl-[120px] lg:pl-[168px] whitespace-normal md:whitespace-nowrap">
+            <div className="w-full pl-[4vw] md:pl-[120px] lg:pl-[168px] whitespace-normal md:whitespace-nowrap overflow-hidden py-1">
               <motion.h2
-                variants={typographyReveal(0.7)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
                 className="typo-display-hero-l1 leading-[1.1] whitespace-normal md:whitespace-nowrap w-full block tracking-tight"
               >
                 DIGITAL EXPERIENCES
@@ -122,11 +126,11 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
             </div>
 
             {/* Line 2 */}
-            <div className="w-full pl-[2vw] md:pl-[64px] lg:pl-[88px] whitespace-normal md:whitespace-nowrap">
+            <div className="w-full pl-[2vw] md:pl-[64px] lg:pl-[88px] whitespace-normal md:whitespace-nowrap overflow-hidden py-1">
               <motion.h2
-                variants={typographyReveal(0.82)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.65 }}
                 className="typo-display-hero-l2 leading-[1.1] whitespace-normal md:whitespace-nowrap w-full block tracking-tight"
               >
                 SHAPED WITH
@@ -134,11 +138,11 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
             </div>
 
             {/* Line 3 */}
-            <div className="w-full pl-[6vw] md:pl-[150px] lg:pl-[216px] whitespace-normal md:whitespace-nowrap">
+            <div className="w-full pl-[6vw] md:pl-[150px] lg:pl-[216px] whitespace-normal md:whitespace-nowrap overflow-hidden py-1">
               <motion.h2
-                variants={typographyReveal(0.94)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.8 }}
                 className="typo-display-hero-l3 leading-[1.1] whitespace-normal md:whitespace-nowrap w-full block tracking-tight"
               >
                 CAREFUL THINKING
@@ -146,11 +150,11 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
             </div>
 
             {/* Tagline / Supporting Paragraph */}
-            <div className="w-full mt-6 pl-[4vw] md:pl-[40px] text-left select-text">
+            <div className="w-full mt-6 pl-[4vw] md:pl-[40px] text-left select-text overflow-hidden py-1">
               <motion.p
-                variants={opacityReveal(1.2)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.95 }}
                 className="font-sans text-sm sm:text-base text-[var(--text-dim)] font-normal tracking-normal leading-relaxed max-w-xl select-text"
               >
                 Building software that feels as intentional as it functions.
@@ -158,11 +162,11 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
             </div>
 
             {/* Completely Independent Editorial CTA Button (Styled like Contact Links, Bottom-Right Aligned) */}
-            <div className="w-full mt-8 sm:mt-12 flex justify-end items-end pr-0 sm:pr-[2vw]">
+            <div className="w-full mt-8 sm:mt-12 flex justify-end items-end pr-0 sm:pr-[2vw] overflow-hidden py-1">
               <motion.button
-                variants={opacityReveal(1.45)}
-                initial="hidden"
-                animate={shouldAnimate ? "visible" : "hidden"}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={shouldAnimate ? { y: 0, opacity: 1 } : { y: "100%", opacity: 0 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 1.1 }}
                 onClick={onCtaClick}
                 aria-label="Scroll down to contact section"
                 className="typo-display-sm leading-tight tracking-tight uppercase text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm select-none cursor-pointer block text-right m-0 p-0 bg-transparent border-0"

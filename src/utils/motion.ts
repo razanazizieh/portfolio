@@ -35,6 +35,24 @@ export type ContentRole =
   | 'navigation'
   | 'metaLabel';
 
+export const MASK_REVEAL_EASE = [0.16, 1, 0.3, 1] as const;
+
+export const lineMaskVariants = (delay = 0) => ({
+  hidden: {
+    y: "100%",
+    opacity: 0,
+  },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: MASK_REVEAL_EASE,
+      delay,
+    },
+  },
+});
+
 export const motionRoles = {
   largeTypography: (delay = 0, _shouldReduceMotion = false) => ({
     hidden: {

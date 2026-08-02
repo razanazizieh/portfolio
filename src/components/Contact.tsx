@@ -7,6 +7,25 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 
+function ScrollLitAvailabilityText({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 92%", "start 55%"],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
+  return (
+    <motion.p
+      ref={ref}
+      style={{ opacity }}
+      className={className}
+    >
+      {children}
+    </motion.p>
+  );
+}
+
 export default function Contact() {
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
@@ -67,173 +86,104 @@ export default function Contact() {
 
           {/* Left Column: Massive header text "LET'S CONNECT" */}
           <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
-            <motion.h2
-              initial="hidden"
-              whileInView="visible"
-              viewport={VIEWPORT_ONCE_CONFIG}
-              variants={motionRoles.largeTypography(0.05, shouldReduceMotion)}
-              className="typo-display-lg select-text flex flex-wrap items-baseline gap-x-4"
-            >
-              LET'S CONNECT
-            </motion.h2>
+            <div className="overflow-hidden block py-1">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+                className="typo-display-lg select-text flex flex-wrap items-baseline gap-x-4"
+              >
+                LET'S CONNECT
+              </motion.h2>
+            </div>
           </div>
 
 
           {/* Right Column: Availability & fully functional pure typography plain text links */}
           <motion.div className="col-span-1 lg:col-span-6 flex flex-col items-start text-left gap-[15px] lg:pl-6">
 
-            {/* Context/Availability statement: Subtle downward settling */}
-            <motion.div
-              variants={{
-                hidden: { 
-                  opacity: 0, 
-                },
-                visible: { 
-                  opacity: 1, 
-                  transition: { 
-                    duration: 0.7,
-                    ease: "easeOut",
-                    delay: 0.25 
-                  }
-                }
-              }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.15 }}
-              className="w-full"
-            >
-              <p className="typo-body-regular-dim max-w-xl w-full whitespace-normal break-words">
-                Whether you're starting something new, refining something existing, or simply exchanging ideas, you're welcome to reach out.
-              </p>
-            </motion.div>
+            {/* Context/Availability statement with Scroll Lighting */}
+            <ScrollLitAvailabilityText className="typo-body-regular-dim max-w-xl w-full whitespace-normal break-words">
+              Whether you're starting something new, refining something existing, or simply exchanging ideas, you're welcome to reach out.
+            </ScrollLitAvailabilityText>
 
             {/* Typography Social Links list */}
-            <motion.div
-              variants={{
-                hidden: {},
-                visible: {
-                  transition: {
-                    staggerChildren: 0.05
-                  }
-                }
-              }}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.15 }}
-              className="flex flex-col gap-4 lg:gap-2 w-full max-w-lg lg:items-end lg:text-right mt-8 sm:mt-10"
-            >
+            <div className="flex flex-col gap-4 lg:gap-2 w-full max-w-lg lg:items-end lg:text-right mt-8 sm:mt-10">
               {/* GitHub */}
-              <motion.a
-                variants={{
-                  hidden: { 
-                    opacity: 0, 
-                    y: 8
-                  },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { 
-                      duration: 0.4,
-                      ease: [0.16, 1, 0.3, 1],
-                      delay: 0.25
-                    } 
-                  }
-                }}
-                href="https://github.com/razanazizieh"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open Razan's GitHub profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-              >
-                <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
-                  GITHUB
-                </span>
-              </motion.a>
+              <div className="overflow-hidden block py-0.5">
+                <motion.a
+                  initial={{ y: "100%", opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={VIEWPORT_ONCE_CONFIG}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+                  href="https://github.com/razanazizieh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Razan's GitHub profile in a new browser tab"
+                  className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
+                >
+                  <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
+                    GITHUB
+                  </span>
+                </motion.a>
+              </div>
 
               {/* LinkedIn */}
-              <motion.a
-                variants={{
-                  hidden: { 
-                    opacity: 0, 
-                    y: 8
-                  },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { 
-                      duration: 0.4,
-                      ease: [0.16, 1, 0.3, 1],
-                      delay: 0.30
-                    } 
-                  }
-                }}
-                href="https://www.linkedin.com/in/razan-azizieh"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open Razan's LinkedIn profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-              >
-                <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
-                  LINKEDIN
-                </span>
-              </motion.a>
+              <div className="overflow-hidden block py-0.5">
+                <motion.a
+                  initial={{ y: "100%", opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={VIEWPORT_ONCE_CONFIG}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                  href="https://www.linkedin.com/in/razan-azizieh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Razan's LinkedIn profile in a new browser tab"
+                  className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
+                >
+                  <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
+                    LINKEDIN
+                  </span>
+                </motion.a>
+              </div>
 
               {/* Instagram */}
-              <motion.a
-                variants={{
-                  hidden: { 
-                    opacity: 0, 
-                    y: 8
-                  },
-                  visible: { 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { 
-                      duration: 0.4,
-                      ease: [0.16, 1, 0.3, 1],
-                      delay: 0.35
-                    } 
-                  }
-                }}
-                href="https://instagram.com/_rraz.a"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Open Razan's Instagram profile in a new browser tab"
-                className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
-              >
-                <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
-                  INSTAGRAM
-                </span>
-              </motion.a>
-
-            </motion.div>
+              <div className="overflow-hidden block py-0.5">
+                <motion.a
+                  initial={{ y: "100%", opacity: 0 }}
+                  whileInView={{ y: 0, opacity: 1 }}
+                  viewport={VIEWPORT_ONCE_CONFIG}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
+                  href="https://instagram.com/_rraz.a"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Razan's Instagram profile in a new browser tab"
+                  className="flex justify-start lg:justify-end py-3 lg:py-1.5 touch-manipulation text-[#666666] hover:text-[var(--text-color)] opacity-40 hover:opacity-100 font-bold transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 rounded-sm cursor-pointer select-none"
+                >
+                  <span className="typo-display-sm leading-tight tracking-tight uppercase inline-block">
+                    INSTAGRAM
+                  </span>
+                </motion.a>
+              </div>
+            </div>
           </motion.div>
         </div>
 
-        {/* Minimal Swiss footer: Subtle upward settling */}
-        <motion.footer
-          variants={{
-            hidden: { 
-              opacity: 0, 
-            },
-            visible: { 
-              opacity: 1, 
-              transition: { 
-                duration: 0.25,
-                ease: "easeOut",
-                delay: 0.35 
-              }
-            }
-          }}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false }}
-          className="pt-16 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center typo-mono-sub px-8 gap-4"
-        >
-          <div className="text-[10px] tracking-widest uppercase opacity-40 text-left">
-            2026 © — ALL RIGHTS RESERVED.
+        {/* Minimal Swiss footer */}
+        <footer className="pt-16 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center typo-mono-sub px-8 gap-4">
+          <div className="overflow-hidden block py-0.5">
+            <motion.div
+              initial={{ y: "100%", opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={VIEWPORT_ONCE_CONFIG}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.45 }}
+              className="text-[10px] tracking-widest uppercase opacity-40 text-left"
+            >
+              2026 © — ALL RIGHTS RESERVED.
+            </motion.div>
           </div>
-        </motion.footer>
+        </footer>
 
       </motion.div>
     </section>

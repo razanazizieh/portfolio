@@ -4,12 +4,31 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { Project } from '../types';
 import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 import { PROJECTS_DATA } from '../data';
 import PremiumImage from './PremiumImage';
+
+function ScrollLitCaseStudyParagraph({ children, className }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 92%", "start 55%"],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
+  return (
+    <motion.p
+      ref={ref}
+      style={{ opacity }}
+      className={className}
+    >
+      {children}
+    </motion.p>
+  );
+}
 
 // ==========================================
 // • TYPE A: LIVE INTERACTIVE COMPONENTS
@@ -589,25 +608,29 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
           </motion.div>
 
           <div className="flex flex-col gap-4">
-            <motion.h1
-              id="case-study-title"
-              variants={motionRoles.largeTypography(0.12, shouldReduceMotion)}
-              initial="hidden"
-              animate="visible"
-              className="typo-display-md text-[var(--text-color)]"
-            >
-              {project.title}
-            </motion.h1>
+            <div className="overflow-hidden block py-1">
+              <motion.h1
+                id="case-study-title"
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
+                className="typo-display-md text-[var(--text-color)]"
+              >
+                {project.title}
+              </motion.h1>
+            </div>
 
             {project.subtitle && (
-              <motion.p
-                variants={motionRoles.supportingText(0.18, shouldReduceMotion)}
-                initial="hidden"
-                animate="visible"
-                className="typo-mono-sub mt-2 max-w-2xl leading-relaxed font-normal text-[var(--text-dim)]"
-              >
-                {project.subtitle}
-              </motion.p>
+              <div className="overflow-hidden block py-0.5">
+                <motion.p
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.22 }}
+                  className="typo-mono-sub mt-2 max-w-2xl leading-relaxed font-normal text-[var(--text-dim)]"
+                >
+                  {project.subtitle}
+                </motion.p>
+              </div>
             )}
 
             {(project.live || (isCodeCentric && project.repository)) && (
@@ -678,138 +701,98 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
 
         {/* • OVERVIEW */}
         {project.overview && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Overview
-            </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Overview
+              </motion.h2>
+            </div>
+            <ScrollLitCaseStudyParagraph className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.overview}
-            </p>
-          </motion.section>
+            </ScrollLitCaseStudyParagraph>
+          </section>
         )}
 
         {/* • CHALLENGE */}
         {project.challenge && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Challenge
-            </h2>
-            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Challenge
+              </motion.h2>
+            </div>
+            <ScrollLitCaseStudyParagraph className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
               {project.challenge}
-            </p>
-          </motion.section>
+            </ScrollLitCaseStudyParagraph>
+          </section>
         )}
 
         {/* • SOLUTION */}
         {project.solution && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Solution
-            </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Solution
+              </motion.h2>
+            </div>
+            <ScrollLitCaseStudyParagraph className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.solution}
-            </p>
-          </motion.section>
+            </ScrollLitCaseStudyParagraph>
+          </section>
         )}
 
         {/* • MY ROLE */}
         {project.myRole && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              My Role
-            </h2>
-            <p className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                My Role
+              </motion.h2>
+            </div>
+            <ScrollLitCaseStudyParagraph className="typo-body-regular max-w-2xl text-[var(--text-dim-high)] leading-[1.75]">
               {project.myRole}
-            </p>
-          </motion.section>
+            </ScrollLitCaseStudyParagraph>
+          </section>
         )}
 
         {/* • TECHNICAL HIGHLIGHTS */}
         {project.technicalHighlights && project.technicalHighlights.length > 0 && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Technical Highlights
-            </h2>
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Technical Highlights
+              </motion.h2>
+            </div>
             <ul className="flex flex-col gap-3.5 max-w-2xl pl-5 list-disc text-[var(--text-dim-high)]">
               {project.technicalHighlights.map((highlight, idx) => (
                 <li key={idx} className="typo-body-regular leading-[1.7]">
@@ -817,20 +800,23 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                 </li>
               ))}
             </ul>
-          </motion.section>
+          </section>
         )}
 
         {/* • TECHNOLOGY */}
         {project.technology && project.technology.length > 0 && (
-          <motion.section
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Technology
-            </h2>
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Technology
+              </motion.h2>
+            </div>
             <div className="flex flex-wrap gap-x-6 gap-y-3 max-w-2xl">
               {project.technology.map((tech, idx) => (
                 <motion.span
@@ -846,6 +832,9 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                       transition: { duration: 0.4, ease: MOTION_CURVE_PREMIUM, delay: idx * 0.03 }
                     }
                   }}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={VIEWPORT_ONCE_CONFIG}
                   className="typo-mono-sub font-light flex items-center text-[var(--text-color)]"
                 >
                   {tech}
@@ -853,35 +842,27 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                 </motion.span>
               ))}
             </div>
-          </motion.section>
+          </section>
         )}
 
         {/* • IMPACT */}
         {project.impact && (
-          <motion.section
-            variants={{
-              hidden: {
-                opacity: 0,
-                y: shouldReduceMotion ? 0 : 16,
-              },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.5, ease: MOTION_CURVE_PREMIUM }
-              }
-            }}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-60px" }}
-            className="flex flex-col gap-5 text-left"
-          >
-            <h2 className="typo-mono-label">
-              Impact
-            </h2>
-            <p className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
+          <section className="flex flex-col gap-5 text-left">
+            <div className="overflow-hidden block py-0.5">
+              <motion.h2
+                initial={{ y: "100%", opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                viewport={VIEWPORT_ONCE_CONFIG}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="typo-mono-label"
+              >
+                Impact
+              </motion.h2>
+            </div>
+            <ScrollLitCaseStudyParagraph className="typo-body-lead max-w-2xl text-[var(--text-color)] leading-[1.75]">
               {project.impact}
-            </p>
-          </motion.section>
+            </ScrollLitCaseStudyParagraph>
+          </section>
         )}
 
         {/* Editorial Bottom Navigation */}

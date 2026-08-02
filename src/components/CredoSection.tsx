@@ -3,30 +3,39 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { motion, useReducedMotion } from 'motion/react';
-import { motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
-
-interface DriftingWordsParagraphProps {
-  text: string;
-  align?: 'left' | 'justify' | 'center' | 'right';
-  variants?: any;
-}
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
+import { VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 
 function StaggeredHeaderLine({
   text,
   className,
-  variants
+  delay = 0,
 }: {
   text: string;
   className: string;
-  variants?: any;
+  delay?: number;
 }) {
+  const lineRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: lineRef,
+    offset: ["start 92%", "start 50%"],
+  });
+  const scrollLightingOpacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
   return (
-    <div className="overflow-hidden py-[0.1em] -my-[0.1em] w-full">
+    <div ref={lineRef} className="overflow-hidden py-[0.1em] -my-[0.1em] w-full">
       <motion.h2
         className={`${className} select-text whitespace-normal break-words`}
-        variants={variants}
+        initial={{ y: "100%", opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={VIEWPORT_ONCE_CONFIG}
+        transition={{
+          duration: 0.8,
+          ease: [0.16, 1, 0.3, 1],
+          delay,
+        }}
+        style={{ opacity: scrollLightingOpacity }}
       >
         {text}
       </motion.h2>
@@ -34,7 +43,14 @@ function StaggeredHeaderLine({
   );
 }
 
-function DriftingWordsParagraph({ text, align, variants }: DriftingWordsParagraphProps) {
+function DriftingWordsParagraph({ text, align }: { text: string; align?: 'left' | 'justify' | 'center' | 'right' }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 92%", "start 55%"],
+  });
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
   let alignClass = "md:whitespace-nowrap";
   if (align === "justify") {
     alignClass = "text-justify md:text-justify md:whitespace-normal max-w-2xl";
@@ -47,18 +63,19 @@ function DriftingWordsParagraph({ text, align, variants }: DriftingWordsParagrap
   }
 
   return (
-    <motion.div
-      variants={variants}
-      className="relative mt-0 max-w-none select-text w-full"
-      style={{
-        willChange: "transform, opacity",
-        contain: "layout style",
-      }}
-    >
-      <p className={`font-sans font-light text-[clamp(1rem,1.2vw,1.125rem)] leading-relaxed select-text text-[var(--text-dim-high)] w-full whitespace-normal break-words ${alignClass}`}>
+    <div className="overflow-hidden block py-1">
+      <motion.p
+        ref={ref}
+        initial={{ y: 24, opacity: 0 }}
+        whileInView={{ y: 0, opacity: 1 }}
+        viewport={VIEWPORT_ONCE_CONFIG}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.36 }}
+        style={{ opacity }}
+        className={`font-sans font-light text-[clamp(1rem,1.2vw,1.125rem)] leading-relaxed select-text text-[var(--text-dim-high)] w-full whitespace-normal break-words ${alignClass}`}
+      >
         {text}
-      </p>
-    </motion.div>
+      </motion.p>
+    </div>
   );
 }
 
@@ -78,36 +95,30 @@ export default function CredoSection() {
         <div
           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16"
         >
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={VIEWPORT_ONCE_CONFIG}
-            className="col-span-1 lg:col-span-10 flex flex-col gap-0 select-text"
-          >
+          <div className="col-span-1 lg:col-span-10 flex flex-col gap-0 select-text">
             <StaggeredHeaderLine
               text="STRUCTURE EARNS TRUST"
               className="typo-credo-l1"
-              variants={motionRoles.largeTypography(0.0, shouldReduceMotion)}
+              delay={0.0}
             />
             <StaggeredHeaderLine
               text="PRECISION ENABLES CLARITY"
               className="typo-credo-l2 mt-3"
-              variants={motionRoles.largeTypography(0.12, shouldReduceMotion)}
+              delay={0.12}
             />
             <StaggeredHeaderLine
               text="EVERY DETAIL HAS A PURPOSE"
               className="typo-credo-l3 mt-3"
-              variants={motionRoles.largeTypography(0.24, shouldReduceMotion)}
+              delay={0.24}
             />
 
             <div className="mt-4 sm:mt-5 max-w-xl">
               <DriftingWordsParagraph
                 text="Every project begins differently. The process adapts. Careful thinking remains constant."
                 align="left"
-                variants={motionRoles.supportingText(0.36, shouldReduceMotion)}
               />
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </motion.section>
