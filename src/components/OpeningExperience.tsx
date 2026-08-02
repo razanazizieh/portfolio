@@ -78,7 +78,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
         paddingRight: 'max(20px, 4vw)',
         opacity: heroOpacity,
       }}
-      className="relative w-full min-h-[85vh] bg-[var(--bg-color)] font-sans overflow-hidden py-16 md:py-24 flex flex-col justify-center"
+      className="relative w-full min-h-[85vh] bg-[var(--bg-color)] font-sans overflow-hidden py-20 md:py-28 flex flex-col justify-center"
     >
       <div className="w-full max-w-7xl mx-auto relative z-20 flex flex-col justify-center">
         {/* Unified monolithic architectural block */}
@@ -92,15 +92,15 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
               variants={typographyReveal(0.25)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)]"
+              className="typo-display-hero select-text whitespace-nowrap tracking-[0.11em] font-bold text-[var(--text-color)] mb-3 md:mb-4"
             >
-              RΛZΛN ΛZIZIEH
+              RAZAN AZIZIEH
             </motion.h1>
             <motion.div
               variants={opacityReveal(0.45)}
               initial="hidden"
               animate={shouldAnimate ? "visible" : "hidden"}
-              className="typo-mono-sub select-text mt-2 whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
+              className="typo-mono-sub select-text whitespace-normal md:whitespace-nowrap text-[var(--text-dim)] uppercase tracking-widest text-[10px] sm:text-xs md:text-sm font-semibold opacity-100"
             >
               MSc IN MATHEMATICS & COMPUTER SCIENCE
             </motion.div>
@@ -146,7 +146,7 @@ export default function OpeningExperience({ onCtaClick, loading = false }: Openi
             </div>
 
             {/* Subtle Editorial Descriptor & Bottom-Right CTA */}
-            <div className="w-full mt-6 md:mt-12 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pl-[6vw] md:pl-[150px] lg:pl-[216px]">
+            <div className="w-full mt-12 md:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6 pl-[6vw] md:pl-[150px] lg:pl-[216px] pr-0 sm:pr-[2vw]">
               {/* Subtle Editorial Descriptor */}
               <div className="max-w-[85vw] sm:max-w-[32vw] text-left select-text">
                 <motion.p

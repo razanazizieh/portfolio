@@ -70,30 +70,28 @@ export default function Header({
           : 'text-[var(--text-color)]'
       }`}
     >
-      {/* Top-left Logo 'RAZAN AZIZIEH' */}
-      <motion.div
+      {/* Top-left Logo 'RAZAN AZIZIEH' - Conditionally visible when scrolled past Hero */}
+      <div
         id="logo-name"
         role="button"
         tabIndex={0}
         aria-label="Razan Azizieh - Scroll back to top of the page"
-        style={{
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          x: 0,
-        }}
         onClick={(e) => handleNav(e, activeCaseStudy ? 'works' : 'top')}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             handleNav(e, activeCaseStudy ? 'works' : 'top');
           }
         }}
-        className="branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 before:absolute before:content-[''] before:-inset-y-4 before:-inset-x-3 before:block group"
+        className={`branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 transition-opacity duration-300 ease-in-out group ${
+          (scrolledPastHero || !!activeCaseStudy || forceShowLogo)
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
+        }`}
       >
-        <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] opacity-100 group-hover:opacity-60 transition-opacity duration-300 inline-flex items-center">
+        <span className="font-sans font-bold tracking-[0.1em] uppercase text-xs sm:text-sm md:text-base text-[var(--text-color)] group-hover:opacity-60 transition-opacity duration-300 inline-flex items-center">
           RAZAN AZIZIEH
         </span>
-      </motion.div>
+      </div>
 
       {/* Minimalist text links (About, Works, Connect, Theme) using semantic <nav> */}
       <nav 

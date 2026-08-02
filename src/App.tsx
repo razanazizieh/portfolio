@@ -519,7 +519,7 @@ export default function App() {
           const scrollableHeight = docHeight - winHeight;
 
           setScrolledPastHero(prev => {
-            const next = scrollY > 15;
+            const next = scrollY > 200;
             return next === prev ? prev : next;
           });
 
