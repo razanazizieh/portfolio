@@ -59,7 +59,7 @@ export const PROJECTS_DATA: Project[] = [
     overview:
       "A premium dark-mode portfolio system engineered to balance a high-end editorial structural layout with deep technical presentation.",
     challenge:
-      "Fusing rich typography layout transitions with multi-language synchronization usually results in slow runtime content switching, broken inline alignments, or heavy cumulative layout shifts (CLS).",
+      "Using rich typography layout transitions with multi-language synchronization usually results in slow runtime content switching, broken inline alignments, or heavy cumulative layout shifts (CLS).",
     solution:
       "Created an extremely lightweight, key-value translation infrastructure in Vanilla JavaScript, maintaining strict CSS baseline alignments across both languages while preserving premium clip-path and fade reveal animation states.",
     myRole:
