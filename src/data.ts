@@ -149,7 +149,7 @@ export const PROJECTS_DATA: Project[] = [
     ],
     impact:
       "A polished visual prototype demonstrating advanced full-page layout composition and modern UI design aesthetics.",
-    live: "#",
+    // live: "#",
   },
 ];
 // export const PROJECTS_DATA: Project[] = [
