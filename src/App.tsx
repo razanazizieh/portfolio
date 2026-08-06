@@ -32,7 +32,15 @@ export default function App() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+    } catch (e) {
+      // Ignore localStorage errors
+    }
+    return 'light';
+  });
   const [isFooterReached, setIsFooterReached] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -754,7 +762,7 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.98 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full relative bg-black min-h-screen z-40"
+                className="w-full relative bg-[var(--bg-color)] min-h-screen z-40"
               >
                 <ProjectCaseStudy
                   project={activeCaseStudy}

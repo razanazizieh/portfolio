@@ -8,26 +8,6 @@
 
 @layer base {
   :root,
-  :root[data-theme='dark'],
-  .dark {
-    --bg-color: #000000; /* Pure Matte Black */
-    --text-color: #FFFFFF; /* Pure Crisp White (100% Brightness) */
-    --text-dim: #E5E5E5; /* High-contrast light gray for dark mode */
-    --text-dim-high: #F4F4F5; /* High-contrast light gray for dark mode body text */
-    --border-color: rgba(255, 255, 255, 0.08); /* Fine white divider with low opacity */
-    --card-bg: #000000; /* Pure Matte Black */
-    --card-bg-subtle: rgba(255, 255, 255, 0.03); /* Subtle dark background card */
-    --accent-color: #FFFFFF; /* Pure Crisp White Accent */
-    --text-l1: #FFFFFF; /* Line 1: Pure White (#FFFFFF) */
-    --text-l2: #A1A1AA; /* Line 2: Zinc 400 (#A1A1AA) */
-    --text-l3: #71717A; /* Line 3: Zinc 500 (#71717A) */
-    --text-l4: #3f3f46; /* Zinc 700 */
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
-    --font-mono: 'JetBrains Mono', monospace;
-    --transition-smooth: all 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
   :root[data-theme='light'],
   .light {
     --bg-color: #FFFFFF; /* Pure Crisp White */
@@ -42,6 +22,26 @@
     --text-l2: #333333; /* Line 2: Dark Gray (#333333) */
     --text-l3: #555555; /* Line 3: Muted Slate Gray (#555555) */
     --text-l4: #52525b; /* Zinc 600 */
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --transition-smooth: all 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :root[data-theme='dark'],
+  .dark {
+    --bg-color: #000000; /* Pure Matte Black */
+    --text-color: #FFFFFF; /* Pure Crisp White (100% Brightness) */
+    --text-dim: #E5E5E5; /* High-contrast light gray for dark mode */
+    --text-dim-high: #F4F4F5; /* High-contrast light gray for dark mode body text */
+    --border-color: rgba(255, 255, 255, 0.08); /* Fine white divider with low opacity */
+    --card-bg: #000000; /* Pure Matte Black */
+    --card-bg-subtle: rgba(255, 255, 255, 0.03); /* Subtle dark background card */
+    --accent-color: #FFFFFF; /* Pure Crisp White Accent */
+    --text-l1: #FFFFFF; /* Line 1: Pure White (#FFFFFF) */
+    --text-l2: #A1A1AA; /* Line 2: Zinc 400 (#A1A1AA) */
+    --text-l3: #71717A; /* Line 3: Zinc 500 (#71717A) */
+    --text-l4: #3f3f46; /* Zinc 700 */
   }
 
   body {
