@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'motion/react';
 
 interface NotFoundProps {
@@ -11,29 +11,6 @@ interface NotFoundProps {
 }
 
 export default function NotFound({ handleNav }: NotFoundProps) {
-  
-  // Hide navbar and name elements on mount, restore on unmount
-  useEffect(() => {
-    const navbar = document.querySelector('nav, .navbar, #navbar');
-    const nameElements = document.querySelectorAll('.name, #logo, [class*="name"]');
-
-    if (navbar) {
-      (navbar as HTMLElement).style.display = 'none';
-    }
-    nameElements.forEach(element => {
-      (element as HTMLElement).style.display = 'none';
-    });
-
-    return () => {
-      if (navbar) {
-        (navbar as HTMLElement).style.display = ''; 
-      }
-      nameElements.forEach(element => {
-        (element as HTMLElement).style.display = '';
-      });
-    };
-  }, []);
-
   const handleReturnHome = (e: React.MouseEvent) => {
     e.preventDefault();
     handleNav(e, 'hero');

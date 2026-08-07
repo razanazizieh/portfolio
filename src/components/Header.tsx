@@ -20,6 +20,7 @@ interface HeaderProps {
   logoOpacity: any;
   logoY: any;
   forceShowLogo?: boolean;
+  isNotFound?: boolean;
 }
 
 export default function Header({
@@ -34,8 +35,13 @@ export default function Header({
   mobileMenuToggleRef,
   logoOpacity,
   logoY,
-  forceShowLogo = false
+  forceShowLogo = false,
+  isNotFound = false
 }: HeaderProps) {
+  if (isNotFound) {
+    return null;
+  }
+
   const shouldReduceMotion = useReducedMotion();
   const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
 

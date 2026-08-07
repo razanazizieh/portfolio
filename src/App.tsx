@@ -680,29 +680,34 @@ export default function App() {
       <AmbientMotionGrid />
       
       {/* Persistent Global Editorial Header with flat high-contrast matte background past hero */}
-      <Header
-        theme={theme}
-        setTheme={setTheme}
-        activeSection={activeSection}
-        scrolledPastHero={scrolledPastHero}
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-        handleNav={handleNav}
-        activeCaseStudy={activeCaseStudy}
-        mobileMenuToggleRef={mobileMenuToggleRef}
-        logoOpacity={logoOpacity}
-        logoY={logoY}
-        forceShowLogo={isNotFound || !!activeCaseStudy}
-      />
+      {!isNotFound && (
+        <Header
+          theme={theme}
+          setTheme={setTheme}
+          activeSection={activeSection}
+          scrolledPastHero={scrolledPastHero}
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          handleNav={handleNav}
+          activeCaseStudy={activeCaseStudy}
+          mobileMenuToggleRef={mobileMenuToggleRef}
+          logoOpacity={logoOpacity}
+          logoY={logoY}
+          forceShowLogo={!!activeCaseStudy}
+          isNotFound={isNotFound}
+        />
+      )}
 
       {/* Mobile Menu Overlay */}
-      <MobileMenu
-        isMobileMenuOpen={isMobileMenuOpen}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-        activeSection={activeSection}
-        activeCaseStudy={activeCaseStudy}
-        handleNav={handleNav}
-      />
+      {!isNotFound && (
+        <MobileMenu
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          activeSection={activeSection}
+          activeCaseStudy={activeCaseStudy}
+          handleNav={handleNav}
+        />
+      )}
 
       {/* Immersive Pages Routing with Framer Motion transitions */}
       {isNotFound ? (
@@ -776,12 +781,14 @@ export default function App() {
       )}
 
       {/* Floating high-end context-aware Back to Top Button matching portfolio vibe */}
-      <BackToTop
-        showBackToTop={showBackToTop}
-        isFooterReached={isFooterReached}
-        isMobileMenuOpen={isMobileMenuOpen}
-        handleNav={handleNav}
-      />
+      {!isNotFound && (
+        <BackToTop
+          showBackToTop={showBackToTop}
+          isFooterReached={isFooterReached}
+          isMobileMenuOpen={isMobileMenuOpen}
+          handleNav={handleNav}
+        />
+      )}
 
       {/* Solid Minimalist Block Transition Overlay Layer */}
       <TransitionOverlay step={transitionStep} theme={theme} />
