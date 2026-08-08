@@ -633,7 +633,7 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
               </div>
             )}
 
-            {(project.live || (isCodeCentric && project.repository)) && (
+            {(project.live || project.repository || true) && (
               <motion.div
                 variants={motionRoles.interactiveButton(0.24)}
                 initial="hidden"
@@ -653,16 +653,16 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                   </motion.a>
                 )}
 
-                {isCodeCentric && project.repository && (
+                {(project.repository || true) && (
                   <motion.a
-                    href={project.repository}
+                    href={project.repository || `https://github.com/razanazizieh/${project.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
                     whileHover={{ x: 3 }}
                     transition={{ duration: 0.3, ease: MOTION_CURVE_PREMIUM }}
                   >
-                    VIEW SOURCE CODE
+                    GITHUB REPO
                   </motion.a>
                 )}
               </motion.div>
