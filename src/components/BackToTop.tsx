@@ -43,34 +43,33 @@ export default function BackToTop({
           }}
           onClick={(e) => handleNav(e, 'top')}
           aria-label="Scroll back to top of page"
-          className="fixed bottom-8 md:bottom-10 right-4 md:right-8 z-50 hidden md:flex items-center gap-3.5 bg-transparent border-0 typo-mono-sub font-semibold text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out cursor-pointer pointer-events-auto select-none group focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg-color)] rounded px-2 py-1"
+          className="fixed bottom-8 md:bottom-10 right-4 md:right-8 z-50 hidden md:flex items-center gap-3 bg-transparent border-0 font-mono text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 hover:text-[#FF4500] dark:hover:text-[#FF4500] focus:text-[#FF4500] dark:focus:text-[#FF4500] transition-colors duration-200 cursor-pointer pointer-events-auto select-none group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4500] rounded py-1 px-1.5"
         >
-          <div className="relative flex items-center justify-center h-[32px] w-[6px]">
+          <div className="relative flex items-center justify-center h-[28px] w-[4px]">
             {/* Ultra-fine vertical line with entrance fade/scale */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, scaleY: shouldReduceMotion ? 1 : 0 },
                 visible: { 
-                  opacity: 0.9, 
+                  opacity: 0.7, 
                   scaleY: 1,
                   transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } 
                 }
               }}
-              style={{ width: '1px', height: '32px', backgroundColor: 'currentColor', transformOrigin: 'bottom' }}
-              className="group-hover:opacity-100 transition-opacity duration-300"
+              style={{ width: '1px', height: '28px', backgroundColor: 'currentColor', transformOrigin: 'bottom' }}
+              className="transition-colors duration-200"
             />
           </div>
           <motion.span
             variants={{
-              hidden: { opacity: 0, x: shouldReduceMotion ? 0 : -4 },
+              hidden: { opacity: 0 },
               visible: { 
                 opacity: 1, 
-                x: 0,
                 transition: { duration: 0.42, ease: [0.16, 1, 0.3, 1] } 
               }
             }}
           >
-            Top
+            TOP
           </motion.span>
         </motion.button>
       )}

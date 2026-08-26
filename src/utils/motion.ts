@@ -3,29 +3,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { RefObject } from 'react';
-import { useScroll, useTransform, useMotionValue } from 'motion/react';
-
+import { useScroll, useTransform } from 'motion/react';
 
 /**
- * Standardized Motion Language Definitions
+ * Editorial Motion Language & Choreography
  * 
- * Defines cohesive motion roles according to editorial content hierarchy:
- * - Large Typography: Soft, quiet reveal with micro-clip or subtle 4px translation (600ms)
- * - Editorial Images: Soft opacity fade with subtle 1.015 -> 1.000 scale settle (750ms)
- * - Supporting Text: Micro-translation (3px) + soft opacity fade (500ms)
- * - Interactive Buttons: Instant, responsive opacity reveal (350ms) with 3px hover translation
- * - Navigation: Smooth frame fade (350ms)
- * - Meta Labels: Direct opacity reveal (400ms)
+ * Rules:
+ * - Directed motion with intentional visual rhythm (arrival, discovery, continuity, hierarchy)
+ * - Restrained typography reveals (full block masks, no letter/word splitting)
+ * - Uncovered image exposures (clean clip/depth settle, no curtain/wipe clichés)
+ * - Re-entry support via VIEWPORT_EDITORIAL_CONFIG (allows graceful re-discovery on scroll return)
+ * - Zero layout shifts & reduced-motion accessibility compliance
  */
 
 export const MOTION_CURVE_PREMIUM = [0.16, 1, 0.3, 1] as const;
+export const MOTION_CURVE_SLOW = [0.16, 1, 0.3, 1] as const;
 export const MOTION_CURVE_PREMIUM_STRING = "cubic-bezier(0.16, 1, 0.3, 1)";
+export const MOTION_DURATION_DEFAULT = 0.85;
 
-export const VIEWPORT_ONCE_CONFIG = {
-  once: true,
-  margin: "-60px",
+// Reversible viewport configurations: trigger early when element top hits 85% of screen height
+export const VIEWPORT_REVERSIBLE_CONFIG = {
+  once: false,
+  amount: 0.05,
+  margin: "0px 0px -15% 0px",
 } as const;
+
+export const VIEWPORT_EDITORIAL_CONFIG = {
+  once: false,
+  amount: 0.05,
+  margin: "0px 0px -15% 0px",
+} as const;
+
+// Backward-compatibility alias routed to reversible choreography
+export const VIEWPORT_ONCE_CONFIG = {
+  once: false,
+  amount: 0.05,
+  margin: "0px 0px -15% 0px",
+} as const;
+
+export const FADE_UP_VARIANTS = (delay = 0, shouldReduceMotion = false) => ({
+  hidden: {
+    opacity: shouldReduceMotion ? 1 : 0,
+    y: shouldReduceMotion ? 0 : 45,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.85,
+      ease: MOTION_CURVE_PREMIUM,
+      delay: shouldReduceMotion ? 0 : delay,
+    },
+  },
+});
 
 export type ContentRole =
   | 'largeTypography'
@@ -37,123 +67,144 @@ export type ContentRole =
 
 export const MASK_REVEAL_EASE = [0.16, 1, 0.3, 1] as const;
 
-export const lineMaskVariants = (delay = 0) => ({
+export const getDirectionalVariants = (
+  direction: 'down' | 'up' = 'down',
+  offset = 45,
+  delay = 0,
+  shouldReduceMotion = false
+) => ({
   hidden: {
-    y: "100%",
-    opacity: 0,
+    opacity: shouldReduceMotion ? 1 : 0,
+    y: shouldReduceMotion ? 0 : direction === 'down' ? offset : -offset,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.85,
+      ease: MOTION_CURVE_PREMIUM,
+      delay: shouldReduceMotion ? 0 : delay,
+    },
+  },
+});
+
+export const lineMaskVariants = (delay = 0, shouldReduceMotion = false) => ({
+  hidden: {
+    y: shouldReduceMotion ? 0 : 45,
+    opacity: shouldReduceMotion ? 1 : 0,
   },
   visible: {
     y: 0,
     opacity: 1,
     transition: {
-      duration: 0.8,
-      ease: MASK_REVEAL_EASE,
-      delay,
+      duration: shouldReduceMotion ? 0.01 : 0.85,
+      ease: MOTION_CURVE_PREMIUM,
+      delay: shouldReduceMotion ? 0 : delay,
     },
   },
 });
 
 export const motionRoles = {
-  largeTypography: (delay = 0, _shouldReduceMotion = false) => ({
+  largeTypography: (delay = 0, shouldReduceMotion = false) => ({
     hidden: {
-      opacity: 0,
-      y: 4,
+      opacity: shouldReduceMotion ? 1 : 0,
+      y: shouldReduceMotion ? 0 : 45,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: shouldReduceMotion ? 0.01 : 0.85,
         ease: MOTION_CURVE_PREMIUM,
-        delay,
+        delay: shouldReduceMotion ? 0 : delay,
       },
     },
   }),
 
-  editorialImage: (delay = 0, _shouldReduceMotion = false) => ({
+  editorialImage: (delay = 0, shouldReduceMotion = false) => ({
     hidden: {
-      opacity: 0,
-      scale: 1.015,
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        duration: 0.75,
-        ease: MOTION_CURVE_PREMIUM,
-        delay,
-      },
-    },
-    hover: {
-      scale: 1.012,
-      transition: {
-        duration: 0.6,
-        ease: MOTION_CURVE_PREMIUM,
-      },
-    },
-  }),
-
-  supportingText: (delay = 0, _shouldReduceMotion = false) => ({
-    hidden: {
-      opacity: 0,
-      y: 3,
+      opacity: shouldReduceMotion ? 1 : 0,
+      y: shouldReduceMotion ? 0 : 45,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.5,
+        duration: shouldReduceMotion ? 0.01 : 0.85,
         ease: MOTION_CURVE_PREMIUM,
-        delay,
-      },
-    },
-  }),
-
-  interactiveButton: (delay = 0) => ({
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.35,
-        ease: MOTION_CURVE_PREMIUM,
-        delay,
+        delay: shouldReduceMotion ? 0 : delay,
       },
     },
     hover: {
-      x: 3,
-      transition: {
-        duration: 0.3,
-        ease: MOTION_CURVE_PREMIUM,
-      },
-    },
-  }),
-
-  navigation: (delay = 0) => ({
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.35,
-        ease: MOTION_CURVE_PREMIUM,
-        delay,
-      },
-    },
-  }),
-
-  metaLabel: (delay = 0) => ({
-    hidden: {
-      opacity: 0,
-    },
-    visible: {
-      opacity: 1,
+      scale: shouldReduceMotion ? 1 : 1.015,
       transition: {
         duration: 0.4,
         ease: MOTION_CURVE_PREMIUM,
-        delay,
+      },
+    },
+  }),
+
+  supportingText: (delay = 0, shouldReduceMotion = false) => ({
+    hidden: {
+      opacity: shouldReduceMotion ? 1 : 0,
+      y: shouldReduceMotion ? 0 : 45,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.85,
+        ease: MOTION_CURVE_PREMIUM,
+        delay: shouldReduceMotion ? 0 : delay,
+      },
+    },
+  }),
+
+  interactiveButton: (delay = 0, shouldReduceMotion = false) => ({
+    hidden: {
+      opacity: shouldReduceMotion ? 1 : 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.4,
+        ease: MOTION_CURVE_PREMIUM,
+        delay: shouldReduceMotion ? 0 : delay,
+      },
+    },
+    hover: {
+      x: shouldReduceMotion ? 0 : 2,
+      transition: {
+        duration: 0.25,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
+  }),
+
+  navigation: (delay = 0, shouldReduceMotion = false) => ({
+    hidden: {
+      opacity: shouldReduceMotion ? 1 : 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.4,
+        ease: MOTION_CURVE_PREMIUM,
+        delay: shouldReduceMotion ? 0 : delay,
+      },
+    },
+  }),
+
+  metaLabel: (delay = 0, shouldReduceMotion = false) => ({
+    hidden: {
+      opacity: shouldReduceMotion ? 1 : 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.4,
+        ease: MOTION_CURVE_PREMIUM,
+        delay: shouldReduceMotion ? 0 : delay,
       },
     },
   }),
@@ -264,30 +315,6 @@ export const getMenuLinkVariants = (_shouldReduceMotion: boolean) => ({
     },
   },
 });
-
-export function useCredoScroll(targetRef: RefObject<HTMLDivElement | null>, _shouldReduceMotion: boolean) {
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start end", "end start"]
-  });
-
-  const l1X = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const l2X = useTransform(scrollYProgress, [0, 1], [0, 0]);
-  const l3X = useTransform(scrollYProgress, [0, 1], [0, 0]);
-
-  const fallbackOpacity = useMotionValue(1);
-  const fallbackScale = useMotionValue(1);
-  const fallbackY = useMotionValue(0);
-
-  return {
-    credoL1X: l1X,
-    credoL2X: l2X,
-    credoL3X: l3X,
-    credoExitOpacity: fallbackOpacity,
-    credoExitScale: fallbackScale,
-    credoExitY: fallbackY,
-  };
-}
 
 export function useHeaderLogoScroll() {
   const { scrollY } = useScroll();

@@ -1,544 +1,941 @@
+// /**
+//  * @license
+//  * SPDX-License-Identifier: Apache-2.0
+//  */
+
+// import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+// import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'motion/react';
+// import { PROJECTS_DATA } from '../data';
+// import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
+
+
+// interface ProjectChapterProps {
+//   project: typeof PROJECTS_DATA[0];
+//   index: number;
+//   onOpen: (project: typeof PROJECTS_DATA[0]) => void;
+//   hoveredProjectId: string | null;
+//   setHoveredProjectId: (id: string | null) => void;
+//   focusedProjectId: string | null;
+//   setFocusedProjectId: (id: string | null) => void;
+//   onNavigate: (currentIndex: number, direction: 'next' | 'prev') => void;
+// }
+
+// function ScrollLitNarrative({ children, className }: { children: React.ReactNode; className?: string }) {
+//   const ref = useRef<HTMLParagraphElement>(null);
+//   const { scrollYProgress } = useScroll({
+//     target: ref,
+//     offset: ["start 92%", "start 55%"],
+//   });
+//   const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+
+//   return (
+//     <motion.p
+//       ref={ref}
+//       style={{ opacity }}
+//       className={className}
+//     >
+//       {children}
+//     </motion.p>
+//   );
+// }
+
+// const ProjectChapter = React.memo<ProjectChapterProps>(({
+//   project,
+//   index,
+//   onOpen,
+//   hoveredProjectId,
+//   setHoveredProjectId,
+//   focusedProjectId,
+//   setFocusedProjectId,
+//   onNavigate
+// }) => {
+//   const containerRef = useRef<HTMLDivElement>(null);
+//   const shouldReduceMotion = useReducedMotion();
+//   const isEven = index % 2 === 0;
+
+//   const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobileViewport(window.innerWidth < 768);
+//     };
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   const isAnyProjectActive = hoveredProjectId !== null || focusedProjectId !== null;
+//   const isThisProjectActive = hoveredProjectId === project.id || focusedProjectId === project.id;
+//   const showFaded = !isMobileViewport && isAnyProjectActive && !isThisProjectActive;
+
+//   const [shouldEagerLoad, setShouldEagerLoad] = useState(index < 3);
+//   const [isImageLoaded, setIsImageLoaded] = useState(false);
+//   const imageRef = useRef<HTMLDivElement>(null);
+
+//   const { scrollYProgress } = useScroll({
+//     target: containerRef,
+//     offset: ["start end", "end start"]
+//   });
+
+//   const y = useTransform(
+//     scrollYProgress,
+//     [0, 1],
+//     shouldReduceMotion ? ["0%", "0%"] : ["-5%", "5%"]
+//   );
+
+//   // Swiss-style subtle scroll-driven exit/fading motion as elements leave viewport (Deactivated)
+//   const exitImageY = 0;
+//   const exitTextY = 0;
+//   const exitScale = 1;
+//   const exitOpacity = 1;
+
+//   const getHoverConfig = () => {
+//     if (shouldReduceMotion) return undefined;
+//     return "hover";
+//   };
+
+//   useEffect(() => {
+//     if (index === 0) return;
+
+//     const el = imageRef.current;
+//     if (!el) return;
+
+//     const observer = new IntersectionObserver(
+//       (entries) => {
+//         const [entry] = entries;
+//         if (entry.isIntersecting) {
+//           setShouldEagerLoad(true);
+//           observer.disconnect();
+//         }
+//       },
+//       {
+//         rootMargin: '400px 0px 400px 0px', // Target images immediately adjacent to the current viewport
+//         threshold: 0,
+//       }
+//     );
+
+//     observer.observe(el);
+//     return () => {
+//       observer.disconnect();
+//     };
+//   }, [index]);
+
+//   const handleKeyDown = (e: React.KeyboardEvent) => {
+//     if (e.key === 'Enter') {
+//       e.preventDefault();
+//       onOpen(project);
+//       return;
+//     }
+
+//     const key = e.key.toLowerCase();
+//     if (key === 'arrowdown' || key === 'j') {
+//       e.preventDefault();
+//       onNavigate(index, 'next');
+//     } else if (key === 'arrowup' || key === 'k') {
+//       e.preventDefault();
+//       onNavigate(index, 'prev');
+//     }
+//   };
+
+//   const getNarrative = () => {
+//     return project.overview;
+//   };
+
+//   // Dynamic per-card reveal animations:
+//   // 1. Horizontally unfolds (index 0)
+//   // 2. Appears through masking (index 1)
+//   // 3. Enters diagonally (index 2)
+//   // 4. Reveals image first then text (index 3)
+//   // 5. Reveals text first then image (index 4)
+
+//   const getEditorialContentBlockVariants = () => motionRoles.supportingText(isMobileViewport ? 0 : 0.08, shouldReduceMotion);
+
+//   const getImageVariants = () => motionRoles.editorialImage(isMobileViewport ? 0 : 0.05, shouldReduceMotion);
+
+//   const editorialContentModule = (
+//     <motion.div
+//       variants={getEditorialContentBlockVariants()}
+//       initial="hidden"
+//       whileInView="visible"
+//       viewport={VIEWPORT_ONCE_CONFIG}
+//       className="flex flex-col gap-6 md:gap-8 justify-start w-full text-[var(--text-color)]"
+//     >
+
+//       <div className="w-full text-left">
+//         <div className="overflow-hidden block py-0.5">
+//           <motion.div
+//             initial={{ y: "100%", opacity: 0 }}
+//             whileInView={{ y: 0, opacity: 1 }}
+//             viewport={VIEWPORT_ONCE_CONFIG}
+//             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+//             className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium"
+//           >
+//             <span>{project.category}</span>
+//             <span className="mx-2 opacity-60">|</span>
+//             <span>{project.year}</span>
+//           </motion.div>
+//         </div>
+//         <div className="overflow-hidden block py-1">
+//           <motion.h3
+//             initial={{ y: "100%", opacity: 0 }}
+//             whileInView={{ y: 0, opacity: 1 }}
+//             viewport={VIEWPORT_ONCE_CONFIG}
+//             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+//             className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350"
+//           >
+//             {project.title}
+//           </motion.h3>
+//         </div>
+//       </div>
+
+//       <div className="flex flex-col items-start gap-6 text-left w-full">
+//         <ScrollLitNarrative className="typo-body-regular-dim select-text text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-all duration-300">
+//           {getNarrative()}
+//         </ScrollLitNarrative>
+
+//         <div className="pt-2 flex items-center gap-8 flex-wrap">
+//           <motion.button
+//             type="button"
+//             onClick={(e) => {
+//               e.stopPropagation();
+//               onOpen(project);
+//             }}
+//             aria-label={`Open case study for ${project.title}`}
+//             className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+//             whileHover={{ x: 3 }}
+//             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+//           >
+//             OPEN CASE STUDY
+//           </motion.button>
+
+//           {project.live && (
+//             <motion.a
+//               href={project.live}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               onClick={(e) => e.stopPropagation()}
+//               aria-label={`View live site for ${project.title}`}
+//               className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
+//               whileHover={{ x: 3 }}
+//               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+//             >
+//               VIEW LIVE
+//             </motion.a>
+//           )}
+//         </div>
+//       </div>
+//     </motion.div>
+//   );
+
+//   const imageContainer = (
+//     <motion.div
+//       ref={imageRef}
+//       initial="hidden"
+//       whileInView="visible"
+//       viewport={VIEWPORT_ONCE_CONFIG}
+//       className="relative w-full bg-transparent select-none opacity-100"
+//     >
+
+//       <motion.div
+//         variants={getImageVariants()}
+//         className="relative w-full h-auto bg-transparent opacity-100 flex items-center justify-center overflow-hidden"
+//       >
+//         {project.image ? (
+//           <>
+//             <AnimatePresence>
+//               {!isImageLoaded && (
+//                 <motion.div
+//                   initial={{ opacity: 1 }}
+//                   exit={{ opacity: 0 }}
+//                   transition={{ duration: 0.35 }}
+//                   className="absolute inset-0 bg-transparent flex flex-col items-center justify-center min-h-[220px]"
+//                 >
+//                   <div className="flex flex-col items-center gap-1.5">
+//                     <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--text-dim)] opacity-60">
+//                       RESOLVING PREVIEW
+//                     </span>
+//                     <span className="font-mono text-[8px] text-[var(--text-dim)] opacity-40">
+//                       INDEX_{index + 1}
+//                     </span>
+//                   </div>
+//                 </motion.div>
+//               )}
+//             </AnimatePresence>
+//             <motion.img
+//               src={project.image}
+//               alt={project.title}
+//               onLoad={() => setIsImageLoaded(true)}
+//               loading={shouldEagerLoad ? "eager" : "lazy"}
+//               className={`w-full h-auto max-h-full object-contain object-top transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 !opacity-100 ${
+//                 isThisProjectActive ? 'scale-[1.018]' : 'scale-100'
+//               }`}
+//               style={{ opacity: 1, filter: 'none' }}
+//               referrerPolicy="no-referrer"
+//             />
+//           </>
+//         ) : (
+//           <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-transparent select-none overflow-hidden pb-4">
+//             <svg className="w-1/2 h-1/2 opacity-[0.08] text-[var(--text-dim)] group-hover:opacity-[0.15] transition-opacity duration-500" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+//               <circle cx="200" cy="125" r="85" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 8" />
+//               <circle cx="200" cy="125" r="45" stroke="currentColor" strokeWidth="0.5" />
+//               <line x1="40" y1="125" x2="360" y2="125" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
+//               <line x1="200" y1="15" x2="200" y2="235" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
+//             </svg>
+//             <div className="absolute inset-0 flex items-center justify-center">
+//               <span className="typo-mono-sub text-[var(--text-dim)] opacity-60">
+//                 [UI_IMAGE_PLACEHOLDER: ASPECT_RATIO_PRESERVED]
+//               </span>
+//             </div>
+//           </div>
+//         )}
+//       </motion.div>
+//     </motion.div>
+//   );
+
+//   const renderLayout = () => {
+//     const layoutVariant = index % 4;
+
+//     if (layoutVariant === 0) {
+//       // Index 0: Dominant Featured Showcase (8-col Image, 4-col Text)
+//       return (
+//         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+//           <motion.div
+//             style={{
+//               y: exitImageY,
+//               scale: exitScale,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-8 order-1"
+//           >
+//             {imageContainer}
+//           </motion.div>
+//           <motion.div
+//             style={{
+//               y: exitTextY,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-4 flex flex-col justify-start order-2"
+//           >
+//             {editorialContentModule}
+//           </motion.div>
+//         </div>
+//       );
+//     }
+
+//     if (layoutVariant === 1) {
+//       // Index 1: Offset Narrative Spread (5-col Text Left, 7-col Image Right)
+//       return (
+//         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+//           <motion.div
+//             style={{
+//               y: exitTextY,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-5 flex flex-col justify-start order-2 lg:order-1"
+//           >
+//             {editorialContentModule}
+//           </motion.div>
+//           <motion.div
+//             style={{
+//               y: exitImageY,
+//               scale: exitScale,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-7 order-1 lg:order-2"
+//           >
+//             {imageContainer}
+//           </motion.div>
+//         </div>
+//       );
+//     }
+
+//     if (layoutVariant === 2) {
+//       // Index 2: Asymmetric Left Feature (7-col Image Left, 5-col Text Right)
+//       return (
+//         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+//           <motion.div
+//             style={{
+//               y: exitImageY,
+//               scale: exitScale,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-7 order-1"
+//           >
+//             {imageContainer}
+//           </motion.div>
+//           <motion.div
+//             style={{
+//               y: exitTextY,
+//               opacity: exitOpacity
+//             }}
+//             className="w-full lg:col-span-5 flex flex-col justify-start order-2"
+//           >
+//             {editorialContentModule}
+//           </motion.div>
+//         </div>
+//       );
+//     }
+
+//     // Index 3: Monograph Balanced Spread (6-col Text Left, 6-col Image Right)
+//     return (
+//       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
+//         <motion.div
+//           style={{
+//             y: exitTextY,
+//             opacity: exitOpacity
+//           }}
+//           className="w-full lg:col-span-6 flex flex-col justify-start order-2 lg:order-1"
+//         >
+//           {editorialContentModule}
+//         </motion.div>
+//         <motion.div
+//           style={{
+//             y: exitImageY,
+//             scale: exitScale,
+//             opacity: exitOpacity
+//           }}
+//           className="w-full lg:col-span-6 order-1 lg:order-2"
+//         >
+//           {imageContainer}
+//         </motion.div>
+//       </div>
+//     );
+//   };
+
+//   const rhythmPadding = useMemo(() => {
+//     const mod = index % 4;
+//     if (mod === 0) return "py-14 sm:py-20 md:py-28 lg:py-32";
+//     if (mod === 1) return "pt-8 pb-16 sm:pt-12 sm:pb-22 md:pt-14 md:pb-28";
+//     if (mod === 2) return "py-16 sm:py-24 md:py-32 lg:py-36";
+//     return "pt-10 pb-16 sm:pt-14 sm:pb-20 md:pt-16 md:pb-24";
+//   }, [index]);
+
+//   return (
+//     <motion.div
+//       ref={containerRef}
+//       id={`project-chapter-${project.id}`}
+//       role="button"
+//       tabIndex={0}
+//       aria-label={`Open case study for ${project.title}`}
+//       onKeyDown={handleKeyDown}
+//       onClick={() => onOpen(project)}
+//       onMouseEnter={() => setHoveredProjectId(project.id)}
+//       onMouseLeave={() => setHoveredProjectId(null)}
+//       onFocus={() => setFocusedProjectId(project.id)}
+//       onBlur={() => setFocusedProjectId(null)}
+//       whileHover={getHoverConfig()}
+//       className={`group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 ${rhythmPadding}`}
+//     >
+//       <div className="w-full max-w-7xl mx-auto px-0 sm:px-12 lg:px-16">
+//         {renderLayout()}
+//       </div>
+//     </motion.div>
+//   );
+// });
+
+// ProjectChapter.displayName = 'ProjectChapter';
+
+// interface SelectedWorkProps {
+//   activeProject?: typeof PROJECTS_DATA[0] | null;
+//   onActiveProjectChange?: (project: typeof PROJECTS_DATA[0] | null) => void;
+//   triggerWipe?: (onHalfway: () => void) => void;
+//   activeFilter?: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI';
+//   setActiveFilter?: (filter: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI') => void;
+// }
+
+// export default function SelectedWork({
+//   activeProject,
+//   onActiveProjectChange,
+//   triggerWipe,
+//   activeFilter: propsActiveFilter,
+//   setActiveFilter: propsSetActiveFilter
+// }: SelectedWorkProps = {}) {
+//   const sectionRef = useRef<HTMLDivElement>(null);
+//   const [localSelectedProject, setLocalSelectedProject] = useState<typeof PROJECTS_DATA[0] | null>(null);
+//   const [localActiveFilter, setLocalActiveFilter] = useState<'ALL' | 'FULL-STACK' | 'CODE' | 'UI'>('ALL');
+//   const activeFilter = propsActiveFilter !== undefined ? propsActiveFilter : localActiveFilter;
+//   const setActiveFilter = propsSetActiveFilter !== undefined ? propsSetActiveFilter : setLocalActiveFilter;
+//   const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
+//   const [focusedProjectId, setFocusedProjectId] = useState<string | null>(null);
+//   const [isMobile, setIsMobile] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth < 1024);
+//     };
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   const { scrollYProgress: worksScrollProgress } = useScroll({
+//     target: sectionRef,
+//     offset: ["start end", "end start"]
+//   });
+
+//   const shouldReduceMotion = useReducedMotion();
+//   const [ambientTime, setAmbientTime] = useState(0);
+
+//   useEffect(() => {
+//     if (shouldReduceMotion) return;
+//     let frameId: number;
+//     const start = Date.now();
+//     const update = () => {
+//       const elapsed = (Date.now() - start) / 1000;
+//       setAmbientTime(elapsed);
+//       frameId = requestAnimationFrame(update);
+//     };
+//     frameId = requestAnimationFrame(update);
+//     return () => cancelAnimationFrame(frameId);
+//   }, [shouldReduceMotion]);
+
+//   // Slow horizontal scroll-linked movement creating visual tension
+//   const worksHeadlineDriftX = useTransform(worksScrollProgress, [0, 1], [-30, 35]);
+
+//   // Combined with slow wave breathing to feel alive when idle
+//   const combinedWorksHeadlineX = useTransform(worksHeadlineDriftX, (val) => {
+//     if (shouldReduceMotion || isMobile) return 0;
+//     return val + Math.sin(ambientTime * 0.4) * 6;
+//   });
+
+//   // Scroll-linked continuous exit animation (Deactivated)
+//   const exitOpacity = 1;
+//   const exitY = 0;
+
+//   const selectedProject = activeProject !== undefined ? activeProject : localSelectedProject;
+//   const setSelectedProject = activeProject !== undefined && onActiveProjectChange ? onActiveProjectChange : setLocalSelectedProject;
+
+//   const handleOpenModal = useCallback((project: typeof PROJECTS_DATA[0]) => {
+//     setSelectedProject(project);
+//   }, [setSelectedProject]);
+
+//   const handleCloseModal = useCallback(() => {
+//     setSelectedProject(null);
+//   }, [setSelectedProject]);
+
+//   const filteredProjects = useMemo(() => {
+//     if (activeFilter === 'ALL') return PROJECTS_DATA;
+//     return PROJECTS_DATA.filter((p) => p.category === activeFilter);
+//   }, [activeFilter]);
+
+//   // Preload project images for instantaneous appearance during scroll
+//   useEffect(() => {
+//     filteredProjects.forEach((p) => {
+//       if (p.image) {
+//         const img = new Image();
+//         img.src = p.image;
+//       }
+//     });
+//   }, [filteredProjects]);
+
+//   const handleProjectNavigation = useCallback((currentIndex: number, direction: 'next' | 'prev') => {
+//     const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
+//     if (targetIndex >= 0 && targetIndex < filteredProjects.length) {
+//       const targetProject = filteredProjects[targetIndex];
+//       const targetElement = document.getElementById(`project-chapter-${targetProject.id}`);
+//       if (targetElement) {
+//         targetElement.focus();
+//         targetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+//       }
+//     }
+//   }, [filteredProjects]);
+
+//   const filterCounts = useMemo(() => {
+//     return {
+//       ALL: PROJECTS_DATA.length,
+//       'FULL-STACK': PROJECTS_DATA.filter((p) => p.category === 'FULL-STACK').length,
+//       CODE: PROJECTS_DATA.filter((p) => p.category === 'CODE').length,
+//       UI: PROJECTS_DATA.filter((p) => p.category === 'UI').length,
+//     };
+//   }, []);
+
+//   // Natural keyboard navigation and focus flow are handled via standard DOM tabIndex and sequential focus.
+
+//   return (
+//     <section
+//       ref={sectionRef}
+//       id="works"
+//       className="relative w-full bg-[var(--bg-color)] z-20 text-[var(--text-color)] overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-16 md:pb-24 scroll-mt-20 md:scroll-mt-24"
+//       style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
+//     >
+//       <motion.div
+//         style={{
+//           opacity: shouldReduceMotion ? 1 : exitOpacity,
+//           y: shouldReduceMotion ? 0 : exitY
+//         }}
+//         className="w-full bg-[var(--bg-color)] relative flex flex-col max-w-7xl mx-auto"
+//       >
+//         {/* Works Intro & Structural category filters */}
+//         <div
+//           className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-4 pb-0"
+//         >
+//           <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
+//             <div className="overflow-hidden block py-1">
+//               <motion.h2
+//                 initial={{ y: "100%", opacity: 0 }}
+//                 whileInView={{ y: 0, opacity: 1 }}
+//                 viewport={VIEWPORT_ONCE_CONFIG}
+//                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+//                 className="typo-display-lg select-text text-[var(--text-color)] font-black"
+//               >
+//                 SELECTED WORKS
+//               </motion.h2>
+//             </div>
+//           </div>
+
+//           {/* Typographic Filter Controls */}
+//           <motion.div
+//             role="group"
+//             aria-label="Project filter categories"
+//             initial="hidden"
+//             whileInView="visible"
+//             viewport={VIEWPORT_ONCE_CONFIG}
+//             variants={motionRoles.metaLabel(0.1)}
+//             className="col-span-1 lg:col-span-6 flex flex-nowrap items-center justify-between sm:justify-start lg:justify-end gap-x-1.5 sm:gap-x-4 lg:gap-x-8 typo-mono-filter lg:pl-6 lg:pt-3 w-full max-w-full whitespace-nowrap overflow-x-visible pb-1 lg:pb-0"
+//           >
+
+//             {(['ALL', 'FULL-STACK', 'CODE', 'UI'] as const).map((filterValue) => {
+//                const count = filterCounts[filterValue];
+//                const isActive = activeFilter === filterValue;
+//                const displayName = {
+//                  ALL: 'ALL',
+//                  'FULL-STACK': 'FULL-STACK',
+//                  CODE: 'CODE',
+//                  UI: 'UI'
+//                }[filterValue];
+
+//                const customFilterVariants = {
+//                  hidden: {
+//                    opacity: 0,
+//                    y: shouldReduceMotion ? 0 : 12,
+                   
+//                  },
+//                  visible: {
+//                    opacity: 1,
+//                    y: 0,
+                   
+//                    transition: {
+//                      duration: 0.35,
+//                      ease: [0.16, 1, 0.3, 1]
+//                    }
+//                  }
+//                };
+
+//                return (
+//                  <motion.button
+//                    key={filterValue}
+//                    variants={customFilterVariants}
+//                    onPointerDown={(e) => {
+//                      if (e.button === 0) {
+//                        e.preventDefault();
+//                        setActiveFilter(filterValue);
+//                      }
+//                    }}
+//                    onClick={(e) => {
+//                      if (e.clientX === 0 && e.clientY === 0) {
+//                        setActiveFilter(filterValue);
+//                      }
+//                    }}
+//                    aria-label={`Filter projects by ${displayName}`}
+//                    aria-pressed={isActive}
+//                   className={`relative cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded filter-tab-button shrink-0 py-2 lg:py-1 px-1 sm:px-2 lg:px-0 inline-flex items-center text-[10px] sm:text-xs lg:text-xs ${
+//                     isActive ? 'active' : ''
+//                   }`}
+//                 >
+//                   <span className="inline-flex items-center gap-1 sm:gap-1.5">
+//                     <span>{displayName}</span>
+//                     <span className="typo-mono-sub text-[9px] sm:text-xs font-normal tracking-normal filter-tab-count">
+//                       ({count})
+//                     </span>
+//                   </span>
+//                 </motion.button>
+//               );
+//             })}
+//           </motion.div>
+//         </div>
+
+//         <motion.div layout className="w-full flex flex-col works-sections-container mt-[10px]">
+//           <AnimatePresence mode="popLayout">
+//             {filteredProjects.map((project, index) => (
+//               <motion.div
+//                 key={`${project.id}-${selectedProject ? 'active' : 'inactive'}`}
+//                 layout={shouldReduceMotion ? undefined : "position"}
+//                 initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 15 }}
+//                 animate={{ opacity: 1, y: 0 }}
+//                 transition={{
+//                   layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
+//                   opacity: { duration: 0.25 },
+//                   y: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
+//                 }}
+//                 style={{ display: "block" }}
+//               >
+//                 <ProjectChapter
+//                   project={project}
+//                   index={index}
+//                   onOpen={handleOpenModal}
+//                   hoveredProjectId={hoveredProjectId}
+//                   setHoveredProjectId={setHoveredProjectId}
+//                   focusedProjectId={focusedProjectId}
+//                   setFocusedProjectId={setFocusedProjectId}
+//                   onNavigate={handleProjectNavigation}
+//                 />
+//               </motion.div>
+//             ))}
+//           </AnimatePresence>
+//         </motion.div>
+//       </motion.div>
+//     </section>
+//   );
+// }
+
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useState, useEffect, useMemo, useCallback } from 'react';
-import { motion, AnimatePresence, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { PROJECTS_DATA } from '../data';
-import { MOTION_CURVE_PREMIUM, motionRoles, VIEWPORT_ONCE_CONFIG } from '../utils/motion';
 
+const NOOP = () => {};
 
-interface ProjectChapterProps {
+export type ProjectCompositionRole = 
+  | 'lead-full'          // Project 01: Full-width high-impact showcase container
+  | 'split-left'         // Project 02: Balanced 2-column asymmetric split (Left 7 cols)
+  | 'split-right'        // Project 03: Balanced 2-column asymmetric split (Right 5 cols)
+  | 'feature-full'       // Project 04: Full-width horizontal feature layout
+  | 'split-left-compact' // Project 05: Balanced 2-column split (Left 5 cols)
+  | 'split-right-wide';  // Project 06: Balanced 2-column split (Right 7 cols)
+
+interface ProjectItemProps {
   project: typeof PROJECTS_DATA[0];
-  index: number;
   onOpen: (project: typeof PROJECTS_DATA[0]) => void;
-  hoveredProjectId: string | null;
-  setHoveredProjectId: (id: string | null) => void;
-  focusedProjectId: string | null;
-  setFocusedProjectId: (id: string | null) => void;
-  onNavigate: (currentIndex: number, direction: 'next' | 'prev') => void;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
+  role: ProjectCompositionRole;
+  isPriority?: boolean;
+  index: number;
 }
 
-function ScrollLitNarrative({ children, className }: { children: React.ReactNode; className?: string }) {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 92%", "start 55%"],
-  });
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.3, 1.0]);
+const getRoleClasses = (role: ProjectCompositionRole) => {
+  switch (role) {
+    case 'lead-full':
+      return {
+        container: 'col-span-12 w-full mb-24 sm:mb-32 md:mb-40',
+        titleSize: 'text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.65rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[65ch]',
+        gap: 'gap-5 sm:gap-6',
+      };
+    case 'split-left':
+      return {
+        container: 'col-span-12 lg:col-span-7 mb-24 sm:mb-32 md:mb-40 flex flex-col justify-between',
+        titleSize: 'text-xl sm:text-2xl lg:text-[1.85rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[52ch]',
+        gap: 'gap-4 sm:gap-5',
+      };
+    case 'split-right':
+      return {
+        container: 'col-span-12 lg:col-span-5 mb-24 sm:mb-32 md:mb-40 flex flex-col justify-between',
+        titleSize: 'text-xl sm:text-2xl lg:text-[1.85rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[48ch]',
+        gap: 'gap-4 sm:gap-5',
+      };
+    case 'feature-full':
+      return {
+        container: 'col-span-12 w-full mb-24 sm:mb-32 md:mb-40',
+        titleSize: 'text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.65rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[65ch]',
+        gap: 'gap-5 sm:gap-6',
+      };
+    case 'split-left-compact':
+      return {
+        container: 'col-span-12 lg:col-span-5 mb-16 sm:mb-24 flex flex-col justify-between',
+        titleSize: 'text-xl sm:text-2xl lg:text-[1.75rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[48ch]',
+        gap: 'gap-4 sm:gap-5',
+      };
+    case 'split-right-wide':
+      return {
+        container: 'col-span-12 lg:col-span-7 mb-16 sm:mb-24 flex flex-col justify-between',
+        titleSize: 'text-xl sm:text-2xl lg:text-[1.75rem]',
+        imgWrapper: 'w-full',
+        textMax: 'max-w-[54ch]',
+        gap: 'gap-4 sm:gap-5',
+      };
+  }
+};
 
-  return (
-    <motion.p
-      ref={ref}
-      style={{ opacity }}
-      className={className}
-    >
-      {children}
-    </motion.p>
-  );
-}
-
-const ProjectChapter = React.memo<ProjectChapterProps>(({
+const ProjectItem = React.memo<ProjectItemProps>(({
   project,
-  index,
   onOpen,
-  hoveredProjectId,
-  setHoveredProjectId,
-  focusedProjectId,
-  setFocusedProjectId,
-  onNavigate
+  onHoverStart = NOOP,
+  onHoverEnd = NOOP,
+  role,
+  isPriority = false,
+  index,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const itemRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
-  const isEven = index % 2 === 0;
+  const [mouseParallax, setMouseParallax] = useState({ x: 0, y: 0 });
 
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobileViewport(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const isAnyProjectActive = hoveredProjectId !== null || focusedProjectId !== null;
-  const isThisProjectActive = hoveredProjectId === project.id || focusedProjectId === project.id;
-  const showFaded = !isMobileViewport && isAnyProjectActive && !isThisProjectActive;
-
-  const [shouldEagerLoad, setShouldEagerLoad] = useState(index < 3);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
-  const imageRef = useRef<HTMLDivElement>(null);
-
+  // Scroll progress for vertical image parallax within clip-path frame
   const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
+    target: itemRef,
+    offset: ['start end', 'end start'],
   });
 
-  const y = useTransform(
+  // Spatial parallax: smooth vertical translation between -5% and 5%
+  const imageParallaxY = useTransform(
     scrollYProgress,
     [0, 1],
-    shouldReduceMotion ? ["0%", "0%"] : ["-5%", "5%"]
+    [shouldReduceMotion ? '0%' : '-5%', shouldReduceMotion ? '0%' : '5%']
   );
 
-  // Swiss-style subtle scroll-driven exit/fading motion as elements leave viewport (Deactivated)
-  const exitImageY = 0;
-  const exitTextY = 0;
-  const exitScale = 1;
-  const exitOpacity = 1;
-
-  const getHoverConfig = () => {
-    if (shouldReduceMotion) return undefined;
-    return "hover";
-  };
-
-  useEffect(() => {
-    if (index === 0) return;
-
-    const el = imageRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting) {
-          setShouldEagerLoad(true);
-          observer.disconnect();
-        }
-      },
-      {
-        rootMargin: '400px 0px 400px 0px', // Target images immediately adjacent to the current viewport
-        threshold: 0,
-      }
-    );
-
-    observer.observe(el);
-    return () => {
-      observer.disconnect();
-    };
-  }, [index]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      onOpen(project);
-      return;
-    }
-
-    const key = e.key.toLowerCase();
-    if (key === 'arrowdown' || key === 'j') {
-      e.preventDefault();
-      onNavigate(index, 'next');
-    } else if (key === 'arrowup' || key === 'k') {
-      e.preventDefault();
-      onNavigate(index, 'prev');
-    }
-  };
-
-  const getNarrative = () => {
-    return project.overview;
-  };
-
-  // Dynamic per-card reveal animations:
-  // 1. Horizontally unfolds (index 0)
-  // 2. Appears through masking (index 1)
-  // 3. Enters diagonally (index 2)
-  // 4. Reveals image first then text (index 3)
-  // 5. Reveals text first then image (index 4)
-
-  const getEditorialContentBlockVariants = () => motionRoles.supportingText(isMobileViewport ? 0 : 0.08, shouldReduceMotion);
-
-  const getImageVariants = () => motionRoles.editorialImage(isMobileViewport ? 0 : 0.05, shouldReduceMotion);
-
-  const editorialContentModule = (
-    <motion.div
-      variants={getEditorialContentBlockVariants()}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT_ONCE_CONFIG}
-      className="flex flex-col gap-6 md:gap-8 justify-start w-full text-[var(--text-color)]"
-    >
-
-      <div className="w-full text-left">
-        <div className="overflow-hidden block py-0.5">
-          <motion.div
-            initial={{ y: "100%", opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={VIEWPORT_ONCE_CONFIG}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-wrap items-center typo-mono-label mb-4 text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-colors duration-300 font-medium"
-          >
-            <span>{project.category}</span>
-            <span className="mx-2 opacity-60">|</span>
-            <span>{project.year}</span>
-          </motion.div>
-        </div>
-        <div className="overflow-hidden block py-1">
-          <motion.h3
-            initial={{ y: "100%", opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={VIEWPORT_ONCE_CONFIG}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="typo-display-sm font-extrabold tracking-tight text-[var(--text-color)] uppercase transition-all duration-350"
-          >
-            {project.title}
-          </motion.h3>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-start gap-6 text-left w-full">
-        <ScrollLitNarrative className="typo-body-regular-dim select-text text-[var(--text-dim)] group-hover:text-[var(--text-color)] transition-all duration-300">
-          {getNarrative()}
-        </ScrollLitNarrative>
-
-        <div className="pt-2 flex items-center gap-8 flex-wrap">
-          <motion.button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen(project);
-            }}
-            aria-label={`Open case study for ${project.title}`}
-            className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-            whileHover={{ x: 3 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          >
-            OPEN CASE STUDY
-          </motion.button>
-
-          {project.live && (
-            <motion.a
-              href={project.live}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              aria-label={`View live site for ${project.title}`}
-              className="typo-mono-btn text-[var(--text-dim)] hover:text-[var(--text-color)] opacity-50 hover:opacity-100 transition-all duration-300 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] focus-visible:px-2 focus-visible:py-1 rounded font-semibold select-none min-h-[44px] px-2 py-1 -mx-2 -my-1 cursor-pointer flex items-center gap-1.5"
-              whileHover={{ x: 3 }}
-              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              VIEW LIVE
-            </motion.a>
-          )}
-        </div>
-      </div>
-    </motion.div>
+  const itemOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.22, 0.85, 1],
+    [shouldReduceMotion ? 1 : 0.25, 1, 1, shouldReduceMotion ? 1 : 0.4]
   );
 
-  const imageContainer = (
-    <motion.div
-      ref={imageRef}
-      initial="hidden"
-      whileInView="visible"
-      viewport={VIEWPORT_ONCE_CONFIG}
-      className="relative w-full bg-transparent select-none opacity-100"
-    >
+  // Subtle Mouse Parallax on Desktop
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    if (shouldReduceMotion) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMouseParallax({ x: x * 3, y: y * 3 });
+  }, [shouldReduceMotion]);
 
-      <motion.div
-        variants={getImageVariants()}
-        className="relative w-full h-auto bg-transparent opacity-100 flex items-center justify-center overflow-hidden"
-      >
-        {project.image ? (
-          <>
-            <AnimatePresence>
-              {!isImageLoaded && (
-                <motion.div
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.35 }}
-                  className="absolute inset-0 bg-transparent flex flex-col items-center justify-center min-h-[220px]"
-                >
-                  <div className="flex flex-col items-center gap-1.5">
-                    <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--text-dim)] opacity-60">
-                      RESOLVING PREVIEW
-                    </span>
-                    <span className="font-mono text-[8px] text-[var(--text-dim)] opacity-40">
-                      INDEX_{index + 1}
-                    </span>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <motion.img
-              src={project.image}
-              alt={project.title}
-              onLoad={() => setIsImageLoaded(true)}
-              loading={shouldEagerLoad ? "eager" : "lazy"}
-              className={`w-full h-auto max-h-full object-contain object-top transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 !opacity-100 ${
-                isThisProjectActive ? 'scale-[1.018]' : 'scale-100'
-              }`}
-              style={{ opacity: 1, filter: 'none' }}
-              referrerPolicy="no-referrer"
-            />
-          </>
-        ) : (
-          <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-transparent select-none overflow-hidden pb-4">
-            <svg className="w-1/2 h-1/2 opacity-[0.08] text-[var(--text-dim)] group-hover:opacity-[0.15] transition-opacity duration-500" viewBox="0 0 400 250" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="200" cy="125" r="85" stroke="currentColor" strokeWidth="0.8" strokeDasharray="4 8" />
-              <circle cx="200" cy="125" r="45" stroke="currentColor" strokeWidth="0.5" />
-              <line x1="40" y1="125" x2="360" y2="125" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
-              <line x1="200" y1="15" x2="200" y2="235" stroke="currentColor" strokeWidth="0.6" strokeDasharray="10 6" />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="typo-mono-sub text-[var(--text-dim)] opacity-60">
-                [UI_IMAGE_PLACEHOLDER: ASPECT_RATIO_PRESERVED]
-              </span>
-            </div>
-          </div>
-        )}
-      </motion.div>
-    </motion.div>
-  );
+  const handleMouseLeave = useCallback(() => {
+    setMouseParallax({ x: 0, y: 0 });
+    onHoverEnd();
+  }, [onHoverEnd]);
 
-  const renderLayout = () => {
-    const layoutVariant = index % 4;
-
-    if (layoutVariant === 0) {
-      // Index 0: Dominant Featured Showcase (8-col Image, 4-col Text)
-      return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
-          <motion.div
-            style={{
-              y: exitImageY,
-              scale: exitScale,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-8 order-1"
-          >
-            {imageContainer}
-          </motion.div>
-          <motion.div
-            style={{
-              y: exitTextY,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-4 flex flex-col justify-start order-2"
-          >
-            {editorialContentModule}
-          </motion.div>
-        </div>
-      );
-    }
-
-    if (layoutVariant === 1) {
-      // Index 1: Offset Narrative Spread (5-col Text Left, 7-col Image Right)
-      return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
-          <motion.div
-            style={{
-              y: exitTextY,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-5 flex flex-col justify-start order-2 lg:order-1"
-          >
-            {editorialContentModule}
-          </motion.div>
-          <motion.div
-            style={{
-              y: exitImageY,
-              scale: exitScale,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-7 order-1 lg:order-2"
-          >
-            {imageContainer}
-          </motion.div>
-        </div>
-      );
-    }
-
-    if (layoutVariant === 2) {
-      // Index 2: Asymmetric Left Feature (7-col Image Left, 5-col Text Right)
-      return (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
-          <motion.div
-            style={{
-              y: exitImageY,
-              scale: exitScale,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-7 order-1"
-          >
-            {imageContainer}
-          </motion.div>
-          <motion.div
-            style={{
-              y: exitTextY,
-              opacity: exitOpacity
-            }}
-            className="w-full lg:col-span-5 flex flex-col justify-start order-2"
-          >
-            {editorialContentModule}
-          </motion.div>
-        </div>
-      );
-    }
-
-    // Index 3: Monograph Balanced Spread (6-col Text Left, 6-col Image Right)
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 md:gap-14 lg:gap-16 items-center w-full">
-        <motion.div
-          style={{
-            y: exitTextY,
-            opacity: exitOpacity
-          }}
-          className="w-full lg:col-span-6 flex flex-col justify-start order-2 lg:order-1"
-        >
-          {editorialContentModule}
-        </motion.div>
-        <motion.div
-          style={{
-            y: exitImageY,
-            scale: exitScale,
-            opacity: exitOpacity
-          }}
-          className="w-full lg:col-span-6 order-1 lg:order-2"
-        >
-          {imageContainer}
-        </motion.div>
-      </div>
-    );
-  };
-
-  const rhythmPadding = useMemo(() => {
-    const mod = index % 4;
-    if (mod === 0) return "py-14 sm:py-20 md:py-28 lg:py-32";
-    if (mod === 1) return "pt-8 pb-16 sm:pt-12 sm:pb-22 md:pt-14 md:pb-28";
-    if (mod === 2) return "py-16 sm:py-24 md:py-32 lg:py-36";
-    return "pt-10 pb-16 sm:pt-14 sm:pb-20 md:pt-16 md:pb-24";
-  }, [index]);
+  const roleStyle = getRoleClasses(role);
 
   return (
-    <motion.div
-      ref={containerRef}
+    <motion.article
+      ref={itemRef}
       id={`project-chapter-${project.id}`}
-      role="button"
+      data-project-card="true"
+      data-cursor="VIEW"
       tabIndex={0}
-      aria-label={`Open case study for ${project.title}`}
-      onKeyDown={handleKeyDown}
+      role="button"
+      aria-label={`View case study: ${project.title}`}
       onClick={() => onOpen(project)}
-      onMouseEnter={() => setHoveredProjectId(project.id)}
-      onMouseLeave={() => setHoveredProjectId(null)}
-      onFocus={() => setFocusedProjectId(project.id)}
-      onBlur={() => setFocusedProjectId(null)}
-      whileHover={getHoverConfig()}
-      className={`group relative w-full cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--text-color)] focus-visible:bg-[var(--card-bg-subtle)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] opacity-100 ${rhythmPadding}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(project);
+        }
+      }}
+      onMouseEnter={onHoverStart}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{ opacity: itemOpacity }}
+      className={`group project-card cursor-pointer select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-none flex flex-col ${roleStyle.gap} ${roleStyle.container} will-change-transform`}
     >
-      <div className="w-full max-w-7xl mx-auto px-0 sm:px-12 lg:px-16">
-        {renderLayout()}
+      {/* Project Image Container with Parallax Clip-Path Frame */}
+      <div className={`relative w-full bg-neutral-100 dark:bg-neutral-900/50 overflow-hidden will-change-transform ${roleStyle.imgWrapper}`}>
+        {project.image && (
+          <motion.div 
+            style={{
+              y: imageParallaxY,
+              scale: shouldReduceMotion ? 1 : 1.1,
+              transform: `translate3d(${mouseParallax.x}px, ${mouseParallax.y}px, 0)`,
+              transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            className="w-full h-auto overflow-hidden will-change-transform"
+          >
+            <img
+              src={project.image}
+              alt={project.title}
+              loading={isPriority ? "eager" : "lazy"}
+              fetchPriority={isPriority ? "high" : "auto"}
+              decoding="async"
+              className="project-inner-img w-full h-auto object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.015]"
+              referrerPolicy="no-referrer"
+            />
+          </motion.div>
+        )}
       </div>
-    </motion.div>
+
+      {/* Project Meta & Typography with High-Contrast Editorial Hierarchy */}
+      <div className="flex flex-col gap-2 sm:gap-2.5 text-left w-full select-text">
+        <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] leading-none text-neutral-500 dark:text-neutral-400">
+          <span className="text-neutral-950 dark:text-neutral-50 font-medium">{project.category}</span>
+          <span className="opacity-40">/</span>
+          <span className="opacity-75">{project.year}</span>
+        </div>
+
+        <h3 className={`font-display ${roleStyle.titleSize} font-semibold tracking-tight leading-[1.05] text-neutral-950 dark:text-neutral-50 uppercase group-hover:opacity-70 transition-opacity duration-200 ease-out`}>
+          {project.title}
+        </h3>
+
+        <p className={`font-sans text-sm sm:text-base font-normal text-neutral-600 dark:text-neutral-400 leading-[1.65] ${roleStyle.textMax}`}>
+          {project.overview}
+        </p>
+      </div>
+    </motion.article>
   );
 });
 
-ProjectChapter.displayName = 'ProjectChapter';
+ProjectItem.displayName = 'ProjectItem';
 
 interface SelectedWorkProps {
   activeProject?: typeof PROJECTS_DATA[0] | null;
   onActiveProjectChange?: (project: typeof PROJECTS_DATA[0] | null) => void;
-  triggerWipe?: (onHalfway: () => void) => void;
   activeFilter?: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI';
   setActiveFilter?: (filter: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI') => void;
+  triggerWipe?: (onHalfway: () => void) => void;
 }
 
 export default function SelectedWork({
   activeProject,
   onActiveProjectChange,
-  triggerWipe,
   activeFilter: propsActiveFilter,
-  setActiveFilter: propsSetActiveFilter
+  setActiveFilter: propsSetActiveFilter,
 }: SelectedWorkProps = {}) {
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
   const [localSelectedProject, setLocalSelectedProject] = useState<typeof PROJECTS_DATA[0] | null>(null);
   const [localActiveFilter, setLocalActiveFilter] = useState<'ALL' | 'FULL-STACK' | 'CODE' | 'UI'>('ALL');
   const activeFilter = propsActiveFilter !== undefined ? propsActiveFilter : localActiveFilter;
   const setActiveFilter = propsSetActiveFilter !== undefined ? propsSetActiveFilter : setLocalActiveFilter;
-  const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
-  const [focusedProjectId, setFocusedProjectId] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const { scrollYProgress: worksScrollProgress } = useScroll({
+  // Header scroll progress tracking
+  const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start end", "end start"]
+    offset: ['start end', 'start center'],
   });
 
-  const shouldReduceMotion = useReducedMotion();
-  const [ambientTime, setAmbientTime] = useState(0);
+  const headerY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [shouldReduceMotion ? 0 : 30, 0]
+  );
+  const headerOpacity = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [shouldReduceMotion ? 1 : 0.2, 1]
+  );
 
-  useEffect(() => {
-    if (shouldReduceMotion) return;
-    let frameId: number;
-    const start = Date.now();
-    const update = () => {
-      const elapsed = (Date.now() - start) / 1000;
-      setAmbientTime(elapsed);
-      frameId = requestAnimationFrame(update);
-    };
-    frameId = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(frameId);
-  }, [shouldReduceMotion]);
-
-  // Slow horizontal scroll-linked movement creating visual tension
-  const worksHeadlineDriftX = useTransform(worksScrollProgress, [0, 1], [-30, 35]);
-
-  // Combined with slow wave breathing to feel alive when idle
-  const combinedWorksHeadlineX = useTransform(worksHeadlineDriftX, (val) => {
-    if (shouldReduceMotion || isMobile) return 0;
-    return val + Math.sin(ambientTime * 0.4) * 6;
-  });
-
-  // Scroll-linked continuous exit animation (Deactivated)
-  const exitOpacity = 1;
-  const exitY = 0;
-
-  const selectedProject = activeProject !== undefined ? activeProject : localSelectedProject;
   const setSelectedProject = activeProject !== undefined && onActiveProjectChange ? onActiveProjectChange : setLocalSelectedProject;
 
   const handleOpenModal = useCallback((project: typeof PROJECTS_DATA[0]) => {
     setSelectedProject(project);
   }, [setSelectedProject]);
 
-  const handleCloseModal = useCallback(() => {
-    setSelectedProject(null);
-  }, [setSelectedProject]);
-
   const filteredProjects = useMemo(() => {
     if (activeFilter === 'ALL') return PROJECTS_DATA;
     return PROJECTS_DATA.filter((p) => p.category === activeFilter);
   }, [activeFilter]);
-
-  // Preload project images for instantaneous appearance during scroll
-  useEffect(() => {
-    filteredProjects.forEach((p) => {
-      if (p.image) {
-        const img = new Image();
-        img.src = p.image;
-      }
-    });
-  }, [filteredProjects]);
-
-  const handleProjectNavigation = useCallback((currentIndex: number, direction: 'next' | 'prev') => {
-    const targetIndex = direction === 'next' ? currentIndex + 1 : currentIndex - 1;
-    if (targetIndex >= 0 && targetIndex < filteredProjects.length) {
-      const targetProject = filteredProjects[targetIndex];
-      const targetElement = document.getElementById(`project-chapter-${targetProject.id}`);
-      if (targetElement) {
-        targetElement.focus();
-        targetElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-    }
-  }, [filteredProjects]);
 
   const filterCounts = useMemo(() => {
     return {
@@ -549,141 +946,95 @@ export default function SelectedWork({
     };
   }, []);
 
-  // Natural keyboard navigation and focus flow are handled via standard DOM tabIndex and sequential focus.
+  // Strict Editorial Gallery Sequence:
+  // 1. Lead Full (Project 1)
+  // 2. Split Left 7 cols (Project 2)
+  // 3. Split Right 5 cols (Project 3)
+  // 4. Feature Full (Project 4)
+  // 5. Split Left 5 cols (Project 5)
+  // 6. Split Right 7 cols (Project 6)
+  const ROLES_SEQUENCE: ProjectCompositionRole[] = [
+    'lead-full',
+    'split-left',
+    'split-right',
+    'feature-full',
+    'split-left-compact',
+    'split-right-wide',
+  ];
 
   return (
     <section
       ref={sectionRef}
       id="works"
-      className="relative w-full bg-[var(--bg-color)] z-20 text-[var(--text-color)] overflow-hidden pt-12 sm:pt-16 md:pt-20 pb-16 md:pb-24 scroll-mt-20 md:scroll-mt-24"
-      style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
+      aria-label="Selected Works"
+      style={{
+        paddingLeft: 'max(20px, 4vw)',
+        paddingRight: 'max(20px, 4vw)',
+      }}
+      className="relative w-full z-20 py-24 sm:py-32 md:py-44 lg:py-52 scroll-mt-20 md:scroll-mt-24 select-text"
     >
-      <motion.div
-        style={{
-          opacity: shouldReduceMotion ? 1 : exitOpacity,
-          y: shouldReduceMotion ? 0 : exitY
-        }}
-        className="w-full bg-[var(--bg-color)] relative flex flex-col max-w-7xl mx-auto"
-      >
-        {/* Works Intro & Structural category filters */}
-        <div
-          className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-20 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-4 pb-0"
+      <div className="w-full relative flex flex-col max-w-7xl mx-auto px-0 sm:px-10 lg:px-16">
+        
+        {/* Restrained Editorial Section Header */}
+        <motion.div
+          style={{ y: headerY, opacity: headerOpacity }}
+          className="flex flex-col items-start text-left w-full mb-16 sm:mb-20 md:mb-28 will-change-transform"
         >
-          <div className="col-span-1 lg:col-span-6 flex flex-col items-start justify-start text-left">
-            <div className="overflow-hidden block py-1">
-              <motion.h2
-                initial={{ y: "100%", opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                viewport={VIEWPORT_ONCE_CONFIG}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
-                className="typo-display-lg select-text text-[var(--text-color)] font-black"
-              >
-                SELECTED WORKS
-              </motion.h2>
-            </div>
-          </div>
+          <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-none uppercase block mb-3 sm:mb-4">
+            02 &mdash; SELECTED WORKS
+          </span>
+
+          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.05] select-text mb-6 sm:mb-8">
+            PORTFOLIO
+          </h2>
 
           {/* Typographic Filter Controls */}
-          <motion.div
-            role="group"
-            aria-label="Project filter categories"
-            initial="hidden"
-            whileInView="visible"
-            viewport={VIEWPORT_ONCE_CONFIG}
-            variants={motionRoles.metaLabel(0.1)}
-            className="col-span-1 lg:col-span-6 flex flex-nowrap items-center justify-between sm:justify-start lg:justify-end gap-x-1.5 sm:gap-x-4 lg:gap-x-8 typo-mono-filter lg:pl-6 lg:pt-3 w-full max-w-full whitespace-nowrap overflow-x-visible pb-1 lg:pb-0"
-          >
-
+          <div className="flex items-center justify-start gap-5 sm:gap-7 pb-2 w-full overflow-x-auto no-scrollbar flex-nowrap font-mono text-[11px] tracking-[0.14em] uppercase">
             {(['ALL', 'FULL-STACK', 'CODE', 'UI'] as const).map((filterValue) => {
-               const count = filterCounts[filterValue];
-               const isActive = activeFilter === filterValue;
-               const displayName = {
-                 ALL: 'ALL',
-                 'FULL-STACK': 'FULL-STACK',
-                 CODE: 'CODE',
-                 UI: 'UI'
-               }[filterValue];
+              const count = filterCounts[filterValue];
+              const isActive = activeFilter === filterValue;
 
-               const customFilterVariants = {
-                 hidden: {
-                   opacity: 0,
-                   y: shouldReduceMotion ? 0 : 12,
-                   
-                 },
-                 visible: {
-                   opacity: 1,
-                   y: 0,
-                   
-                   transition: {
-                     duration: 0.35,
-                     ease: [0.16, 1, 0.3, 1]
-                   }
-                 }
-               };
-
-               return (
-                 <motion.button
-                   key={filterValue}
-                   variants={customFilterVariants}
-                   onPointerDown={(e) => {
-                     if (e.button === 0) {
-                       e.preventDefault();
-                       setActiveFilter(filterValue);
-                     }
-                   }}
-                   onClick={(e) => {
-                     if (e.clientX === 0 && e.clientY === 0) {
-                       setActiveFilter(filterValue);
-                     }
-                   }}
-                   aria-label={`Filter projects by ${displayName}`}
-                   aria-pressed={isActive}
-                  className={`relative cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[var(--text-color)] rounded filter-tab-button shrink-0 py-2 lg:py-1 px-1 sm:px-2 lg:px-0 inline-flex items-center text-[10px] sm:text-xs lg:text-xs ${
-                    isActive ? 'active' : ''
+              return (
+                <button
+                  key={filterValue}
+                  type="button"
+                  onClick={() => setActiveFilter(filterValue)}
+                  aria-pressed={isActive}
+                  className={`transition-colors duration-150 ease-out cursor-pointer flex items-center gap-1.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 py-1 whitespace-nowrap shrink-0 ${
+                    isActive
+                      ? 'text-neutral-950 dark:text-neutral-50 font-semibold'
+                      : 'text-neutral-500 dark:text-neutral-400 font-normal hover:text-neutral-950 dark:hover:text-neutral-50'
                   }`}
                 >
-                  <span className="inline-flex items-center gap-1 sm:gap-1.5">
-                    <span>{displayName}</span>
-                    <span className="typo-mono-sub text-[9px] sm:text-xs font-normal tracking-normal filter-tab-count">
-                      ({count})
-                    </span>
-                  </span>
-                </motion.button>
+                  <span>{filterValue}</span>
+                  <span className="text-[10px] opacity-60">({count})</span>
+                </button>
               );
             })}
-          </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Editorial Gallery Grid Layout with Parallax */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 lg:gap-x-12 w-full items-start">
+          {filteredProjects.map((project, index) => {
+            const role = ROLES_SEQUENCE[index % ROLES_SEQUENCE.length];
+
+            return (
+              <ProjectItem
+                key={project.id}
+                project={project}
+                onOpen={handleOpenModal}
+                role={role}
+                isPriority={index === 0}
+                index={index}
+              />
+            );
+          })}
         </div>
 
-        <motion.div layout className="w-full flex flex-col works-sections-container mt-[10px]">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={`${project.id}-${selectedProject ? 'active' : 'inactive'}`}
-                layout={shouldReduceMotion ? undefined : "position"}
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.25 },
-                  y: { duration: 0.35, ease: MOTION_CURVE_PREMIUM }
-                }}
-                style={{ display: "block" }}
-              >
-                <ProjectChapter
-                  project={project}
-                  index={index}
-                  onOpen={handleOpenModal}
-                  hoveredProjectId={hoveredProjectId}
-                  setHoveredProjectId={setHoveredProjectId}
-                  focusedProjectId={focusedProjectId}
-                  setFocusedProjectId={setFocusedProjectId}
-                  onNavigate={handleProjectNavigation}
-                />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </motion.div>
+      </div>
     </section>
   );
 }
+
+

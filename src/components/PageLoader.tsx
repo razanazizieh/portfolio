@@ -38,12 +38,15 @@ export default function PageLoader({ loading }: PageLoaderProps) {
         >
           <motion.div
             id="loader-logo-name"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="branding-container name logo-container typo-loader-text text-[var(--text-color)] select-none whitespace-nowrap"
+            className="branding-container name logo-container select-none whitespace-nowrap"
           >
-            RΛZΛN ΛZIZIEH
+            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold uppercase text-neutral-950 dark:text-neutral-50 tracking-[-0.035em] leading-none select-none">
+              RAZAN AZIZIEH
+            </h1>
           </motion.div>
         </motion.div>
       )}
