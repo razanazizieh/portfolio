@@ -955,7 +955,7 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
     const list: { image: string; label: string }[] = [];
     if (project.image) {
       list.push({ image: project.image, label: "Featured Hero Specimen" });
-    }
+    }/*
     if (project.gallery) {
       project.gallery.forEach((g, idx) => {
         if (!g) return;
@@ -966,7 +966,7 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
           list.push({ image: imgUrl, label: imgLabel });
         }
       });
-    }
+    }*/
     return list;
   }, [project]);
 
