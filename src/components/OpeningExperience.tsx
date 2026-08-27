@@ -182,7 +182,6 @@
 //   );
 // }
 
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -287,7 +286,7 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
             <div className="overflow-hidden block">
               <motion.h1
                 style={{ letterSpacing: nameTracking }}
-                className="hero-curtain-line hero-curtain-delay-0 text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-none select-text will-change-transform"
+                className="hero-curtain-line hero-curtain-delay-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[5.5rem] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-[0.92] tracking-tight select-text will-change-transform"
               >
                 RAZAN AZIZIEH
               </motion.h1>
@@ -298,7 +297,7 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
         {/* 2. Quiet Secondary Colophon: Lateral Axis Separation on Scroll */}
         <motion.div
           style={{ opacity: metaOpacity }}
-          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-y-3 sm:gap-4 pt-5 sm:pt-6 md:pt-8 select-text items-start will-change-transform"
+          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-y-3 sm:gap-4 pt-4 sm:pt-5 md:pt-6 select-text items-start will-change-transform"
         >
           {/* Left Metadata: Drifts Leftward */}
           <motion.div
@@ -333,10 +332,10 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
         {/* 3. Dominant Expressive Typographic Statement (Editorial Headline) */}
         <motion.div
           style={{ opacity: thoughtOpacity }}
-          className="pt-16 sm:pt-20 md:pt-28 lg:pt-36 pb-2 w-full flex flex-col items-start select-text will-change-transform"
+          className="pt-14 sm:pt-18 md:pt-24 lg:pt-32 pb-2 w-full flex flex-col items-start select-text will-change-transform"
         >
           <div className="w-full max-w-6xl text-left select-text">
-            <h2 className="text-[clamp(2.5rem,6.8vw,7.25rem)] font-display tracking-tight uppercase leading-[0.92] select-text">
+            <h2 className="text-[clamp(2.25rem,5.4vw,5.75rem)] font-display tracking-tight uppercase leading-[0.94] select-text">
               <motion.span 
                 style={{ x: thoughtLine1X }}
                 className="overflow-hidden block text-left will-change-transform"

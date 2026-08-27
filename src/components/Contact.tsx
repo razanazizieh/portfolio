@@ -192,77 +192,83 @@
 
 
 
+
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
+import { useIntersectionReveal } from '../hooks/useIntersectionReveal';
+import { MOTION_CURVE_PREMIUM, VIEWPORT_EDITORIAL_CONFIG } from '../utils/motion';
 
 export default function Contact() {
-  const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
-
-  // Scroll tracking for Scene 5: Grounded Resolution & Gravitational Convergence
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end end'],
+  const sectionRef = useRef<HTMLElement>(null);
+  const { ref: revealRef, isVisible } = useIntersectionReveal<HTMLElement>({
+    threshold: 0.15,
+    rootMargin: '0px 0px -60px 0px',
   });
 
-  // Scene 5 Gravitational Convergence
-  const sectionY = useTransform(
-    scrollYProgress,
-    [0, 0.6],
-    [shouldReduceMotion ? 0 : 35, 0]
-  );
-  const sectionOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.45],
-    [shouldReduceMotion ? 1 : 0.2, 1]
-  );
+  const containerVariants = {
+    hidden: { opacity: shouldReduceMotion ? 1 : 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.09,
+        delayChildren: shouldReduceMotion ? 0 : 0.05,
+      },
+    },
+  };
 
-  // Social Links Lateral Convergence
-  const link1X = useTransform(
-    scrollYProgress,
-    [0.1, 0.6],
-    [shouldReduceMotion ? 0 : 45, 0]
-  );
-  const link2X = useTransform(
-    scrollYProgress,
-    [0.15, 0.65],
-    [shouldReduceMotion ? 0 : 45, 0]
-  );
-  const link3X = useTransform(
-    scrollYProgress,
-    [0.2, 0.7],
-    [shouldReduceMotion ? 0 : 45, 0]
-  );
+  const itemFadeUpVariants = {
+    hidden: {
+      opacity: shouldReduceMotion ? 1 : 0,
+      y: shouldReduceMotion ? 0 : 28,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.75,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
+  };
 
   return (
     <section
       id="contact"
-      ref={sectionRef}
-      className="bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between pt-24 sm:pt-36 md:pt-48 pb-20 sm:pb-28 md:pb-36 scroll-mt-20 md:scroll-mt-24"
+      ref={(node) => {
+        // combine refs
+        (sectionRef as React.MutableRefObject<HTMLElement | null>).current = node;
+        (revealRef as React.MutableRefObject<HTMLElement | null>).current = node;
+      }}
+      className={`contact-section ${isVisible ? 'is-visible' : ''} bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between pt-24 sm:pt-36 md:pt-48 pb-20 sm:pb-28 md:pb-36 scroll-mt-20 md:scroll-mt-24`}
       style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
     >
-      <motion.div 
-        style={{ y: sectionY, opacity: sectionOpacity }}
-        className="w-full h-full pt-2 pb-6 bg-[var(--bg-color)] relative flex flex-col justify-between max-w-7xl mx-auto will-change-transform"
-      >
+      <div className="w-full h-full pt-2 pb-6 bg-[var(--bg-color)] relative flex flex-col justify-between max-w-7xl mx-auto">
 
         {/* Structural Editorial 2-Column Layout Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 lg:gap-16 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-2 md:pt-4 pb-0">
 
           {/* Left Column: Micro-label, Heading & Concise Human Context */}
-          <div className="md:col-span-7 lg:col-span-7 flex flex-col items-start justify-start text-left gap-4">
-            <div className="overflow-hidden">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={VIEWPORT_EDITORIAL_CONFIG}
+            className="md:col-span-7 lg:col-span-7 flex flex-col items-start justify-start text-left gap-4 will-change-transform"
+          >
+            <motion.div variants={itemFadeUpVariants} className="overflow-hidden">
               <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-[1.2] uppercase block mb-3">
-                03 &mdash; CONTACT
+               CONTACT
               </span>
-            </div>
+            </motion.div>
 
-            <div className="w-full max-w-2xl overflow-hidden">
+            <motion.div variants={itemFadeUpVariants} className="w-full max-w-2xl overflow-hidden">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] tracking-tight uppercase leading-[1.02]">
                 <span className="block font-display text-neutral-950 dark:text-neutral-50 font-semibold">
                   LET&apos;S BUILD
@@ -271,22 +277,27 @@ export default function Contact() {
                   SOMETHING TOGETHER.
                 </span>
               </h2>
-            </div>
+            </motion.div>
 
-            <div className="mt-3 overflow-hidden">
+            <motion.div variants={itemFadeUpVariants} className="mt-3 overflow-hidden">
               <p className="max-w-md w-full whitespace-normal break-words text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 leading-[1.65]">
                 Always open to interesting ideas, thoughtful conversations, and things worth making.
               </p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Right Column: Prominent Social Links with Kinetic Lateral Response */}
+          {/* Right Column: Prominent Social Links with Staggered Slide-in */}
           <div className="md:col-span-5 lg:col-span-5 flex flex-col items-start md:items-end text-left md:text-right gap-4 md:pt-4">
-            <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-md">
-              
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={VIEWPORT_EDITORIAL_CONFIG}
+              className="flex flex-col gap-3 sm:gap-4 w-full max-w-md"
+            >
               {/* GitHub */}
               <motion.div
-                style={{ x: link1X }}
+                variants={itemFadeUpVariants}
                 className="overflow-hidden will-change-transform"
               >
                 <a
@@ -304,7 +315,7 @@ export default function Contact() {
 
               {/* LinkedIn */}
               <motion.div
-                style={{ x: link2X }}
+                variants={itemFadeUpVariants}
                 className="overflow-hidden will-change-transform"
               >
                 <a
@@ -322,7 +333,7 @@ export default function Contact() {
 
               {/* Instagram */}
               <motion.div
-                style={{ x: link3X }}
+                variants={itemFadeUpVariants}
                 className="overflow-hidden will-change-transform"
               >
                 <a
@@ -337,7 +348,7 @@ export default function Contact() {
                   </span>
                 </a>
               </motion.div>
-            </div>
+            </motion.div>
           </div>
         </div>
 
@@ -353,7 +364,7 @@ export default function Contact() {
           </div>
         </footer>
 
-      </motion.div>
+      </div>
     </section>
   );
 }

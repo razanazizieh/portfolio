@@ -452,158 +452,94 @@ export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Scroll tracking across the editorial spatial canvas for depth
+  // Scroll tracking for subtle spatial breathing
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  // Subtle parallax offsets
   const parallaxHeadline = useTransform(
     scrollYProgress,
     [0.1, 0.9],
     [shouldReduceMotion ? 0 : 20, shouldReduceMotion ? 0 : -20]
   );
-  const parallaxBodyRight = useTransform(
+  const parallaxOffsetBlock = useTransform(
     scrollYProgress,
     [0.1, 0.9],
-    [shouldReduceMotion ? 0 : 35, shouldReduceMotion ? 0 : -25]
+    [shouldReduceMotion ? 0 : 30, shouldReduceMotion ? 0 : -25]
   );
 
   return (
     <section
       ref={sectionRef}
       id="about"
-      aria-label="Perspective and Philosophy"
+      aria-label="About"
       style={{
         paddingLeft: 'max(20px, 4vw)',
         paddingRight: 'max(20px, 4vw)',
       }}
-      className="relative z-20 w-full py-28 sm:py-36 md:py-48 lg:py-60 scroll-mt-20 md:scroll-mt-24 select-text bg-[var(--bg-color)] overflow-hidden"
+      className="relative z-20 w-full py-28 sm:py-36 md:py-48 lg:py-56 scroll-mt-20 md:scroll-mt-24 select-text bg-[var(--bg-color)] overflow-hidden"
     >
       <div className="w-full relative max-w-7xl mx-auto px-0 sm:px-8 lg:px-12">
         
-        {/* ========================================================================= */}
-        {/* Tier 1: Small Editorial Coordinate Marker                                 */}
-        {/* ========================================================================= */}
+        {/* Simple, Consistent Section Label */}
         <motion.div
           initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-10% 0px' }}
           transition={{ duration: 0.6, ease: MOTION_EASE }}
-          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-4 pb-12 sm:pb-16 md:pb-24 select-text"
+          className="w-full pb-10 sm:pb-14 md:pb-20 select-text"
         >
-          <div className="sm:col-span-6 flex items-center">
-            <span className="font-mono text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.16em] uppercase leading-none select-text">
-              01 &mdash; PERSPECTIVE
-            </span>
-          </div>
-
-          <div className="sm:col-span-6 flex sm:justify-end items-center">
-            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 font-normal tracking-[0.16em] uppercase leading-none select-text">
-              [ CONTINUOUS INQUIRY &bull; ESSAY &rsquo;26 ]
-            </span>
-          </div>
+          <span className="font-mono text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.16em] uppercase leading-none select-text block">
+            ABOUT
+          </span>
         </motion.div>
 
-        {/* ========================================================================= */}
-        {/* Tier 2: The Dominant Typographic Idea (Masked Curtain Reveal)             */}
-        {/* ========================================================================= */}
+        {/* Strong Typographic Anchor: Way of Thinking & Spatial Exploration */}
         <motion.div
           style={{ y: parallaxHeadline }}
-          className="w-full pb-20 sm:pb-28 md:pb-36 lg:pb-44 select-text will-change-transform"
+          className="w-full pb-16 sm:pb-24 md:pb-32 lg:pb-36 select-text will-change-transform"
         >
-          <h2 className="font-display tracking-tight uppercase leading-[0.92] text-neutral-950 dark:text-neutral-50 select-text">
-            
-            {/* Line 1: Primary anchor */}
-            <div className="overflow-hidden block">
-              <motion.span
-                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
-                whileInView={{ y: '0%' }}
-                viewport={{ once: true, margin: '-8% 0px' }}
-                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.05 }}
-                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-medium text-neutral-950 dark:text-neutral-50"
-              >
-                OBSERVING HOW
-              </motion.span>
-            </div>
-
-            {/* Line 2: Shifted Offset */}
-            <div className="overflow-hidden block mt-1 sm:mt-2 md:mt-3">
-              <motion.span
-                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
-                whileInView={{ y: '0%' }}
-                viewport={{ once: true, margin: '-8% 0px' }}
-                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.12 }}
-                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-normal text-neutral-500 dark:text-neutral-400 pl-3 sm:pl-10 md:pl-20 lg:pl-32 transition-colors duration-300"
-              >
-                IDEAS BECOME PROCESSES,
-              </motion.span>
-            </div>
-
-            {/* Line 3: Deeper Asymmetrical Offset & Resolution */}
-            <div className="overflow-hidden block mt-1 sm:mt-2 md:mt-3">
-              <motion.span
-                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
-                whileInView={{ y: '0%' }}
-                viewport={{ once: true, margin: '-8% 0px' }}
-                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.2 }}
-                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-medium text-neutral-950 dark:text-neutral-50 pl-6 sm:pl-20 md:pl-36 lg:pl-56"
-              >
-                AND COMPLEXITY TURNS TO CLARITY.
-              </motion.span>
-            </div>
+          <h2 className="font-display tracking-tight uppercase leading-[0.94] text-neutral-950 dark:text-neutral-50 select-text">
+            <span className="block text-[clamp(2.25rem,5.5vw,5.75rem)] font-medium text-neutral-950 dark:text-neutral-50">
+              LOOKING CLOSELY AT
+            </span>
+            <span className="block text-[clamp(2.25rem,5.5vw,5.75rem)] font-normal text-neutral-500 dark:text-neutral-400 pl-3 sm:pl-10 md:pl-20 lg:pl-28 transition-colors duration-300">
+              HOW THINGS CONNECT,
+            </span>
+            <span className="block text-[clamp(2.25rem,5.5vw,5.75rem)] font-medium text-neutral-950 dark:text-neutral-50 pl-6 sm:pl-16 md:pl-32 lg:pl-44">
+              AND WHAT THEY BECOME.
+            </span>
           </h2>
         </motion.div>
 
-        {/* ========================================================================= */}
-        {/* Tier 3: Asymmetrical Spatial Reading Field & Annotations                  */}
-        {/* ========================================================================= */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-14 sm:gap-y-18 md:gap-y-28 lg:gap-y-36 items-start select-text">
+        {/* Asymmetrical Spatial Reading Composition */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-12 sm:gap-y-16 md:gap-y-24 items-start select-text">
           
-          {/* Spatial Block 1: Mathematics & Pattern Formation */}
+          {/* Text Block 1: Context of Rigor and Pattern Perception */}
           <motion.div
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10% 0px' }}
+            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.08 }}
+            className="col-span-12 md:col-span-6 lg:col-span-6 md:col-start-1 lg:col-start-1 flex flex-col items-start text-left select-text"
+          >
+            <p className="font-sans text-lg sm:text-xl md:text-2xl text-neutral-900 dark:text-neutral-100 font-normal leading-[1.62] sm:leading-[1.58] tracking-tight select-text max-w-[36ch]">
+              A background in Mathematics and Computer Science formed the way I observe systems: understanding relationships, analyzing how structures hold together, and distilling complexity into clear, sensible forms.
+            </p>
+          </motion.div>
+
+          {/* Text Block 2: Curiosity, Making, and Open-Ended Exploration */}
+          <motion.div
+            style={{ y: parallaxOffsetBlock }}
             initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-10% 0px' }}
-            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.1 }}
-            className="col-span-12 md:col-span-7 lg:col-span-6 md:col-start-1 lg:col-start-2 flex flex-col items-start text-left select-text"
+            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.18 }}
+            className="col-span-12 md:col-span-6 lg:col-span-6 md:col-start-7 lg:col-start-7 flex flex-col items-start text-left select-text will-change-transform md:pt-12 lg:pt-16"
           >
-            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.18em] mb-4 sm:mb-6 block select-text">
-              01.01 &bull; FOUNDATION
-            </span>
-            <p className="font-sans text-lg sm:text-xl md:text-2xl text-neutral-900 dark:text-neutral-100 font-normal leading-[1.62] sm:leading-[1.58] tracking-tight select-text max-w-[38ch]">
-              A background in Mathematics and Computer Science formed the way I observe systems: looking closely at how things connect, how structures hold together, and how intricate problems can be distilled into something coherent and understandable.
-            </p>
-          </motion.div>
-
-          {/* Spatial Block 2: Exploratory Expansion (Offset Lower Right Field) */}
-          <motion.div
-            style={{ y: parallaxBodyRight }}
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 35 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-10% 0px' }}
-            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.22 }}
-            className="col-span-12 md:col-span-7 lg:col-span-6 md:col-start-6 lg:col-start-7 flex flex-col items-start text-left select-text will-change-transform"
-          >
-            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.18em] mb-4 sm:mb-6 block select-text">
-              01.02 &bull; EXPLORATION
-            </span>
-            <p className="font-sans text-base sm:text-lg md:text-xl font-normal text-neutral-600 dark:text-neutral-400 leading-[1.7] sm:leading-[1.75] tracking-normal select-text max-w-[42ch]">
-              Over time, that analytical curiosity expanded into the spaces between an abstract concept and the experience it creates. Rather than fitting neatly into a single discipline, I remain focused on making the journey feel deliberate, intuitive, and natural—currently expanding into Python and investigating how logic shapes digital interaction.
-            </p>
-          </motion.div>
-
-          {/* Spatial Block 3: Small Editorial Margin Footnote (Asymmetric Anchor) */}
-          <motion.div
-            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: '-10% 0px' }}
-            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.3 }}
-            className="col-span-12 md:col-span-5 lg:col-span-4 md:col-start-2 lg:col-start-3 pt-6 md:pt-12 flex flex-col items-start text-left select-text border-t border-neutral-200/40 dark:border-neutral-800/40"
-          >
-            <p className="font-mono text-[11px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.14em] leading-relaxed select-text">
-              NOTE &mdash; DIRECTION REMAINS OPEN-ENDED, GUIDED BY RIGOROUS EXPLORATION AND ITERATIVE LEARNING.
+            <p className="font-sans text-base sm:text-lg md:text-xl font-normal text-neutral-600 dark:text-neutral-400 leading-[1.7] sm:leading-[1.75] tracking-normal select-text max-w-[40ch]">
+              Over time, that curiosity has guided what I build and explore. I am drawn to the space between an abstract concept and the experience it creates—bringing intention, clarity, and care to the process, while remaining open to wherever continuous learning, research, and new questions lead.
             </p>
           </motion.div>
 
