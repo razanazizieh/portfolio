@@ -6,51 +6,53 @@
 import { useScroll, useTransform } from 'motion/react';
 
 /**
- * Editorial Motion Language & Choreography
+ * Editorial Motion Language & Choreography System
  * 
- * Rules:
- * - Directed motion with intentional visual rhythm (arrival, discovery, continuity, hierarchy)
- * - Restrained typography reveals (full block masks, no letter/word splitting)
- * - Uncovered image exposures (clean clip/depth settle, no curtain/wipe clichés)
- * - Re-entry support via VIEWPORT_EDITORIAL_CONFIG (allows graceful re-discovery on scroll return)
- * - Zero layout shifts & reduced-motion accessibility compliance
+ * Core Philosophy:
+ * - The page is a continuous visual sequence, not disconnected static sections.
+ * - Each section is an authored "scene" with distinct motion behavior and visual rhythm.
+ * - Scrolling directly drives physical state changes (aperture reveals, optical illumination,
+ *   lateral typographic shear, counter-axis parallax, and gravitational convergence).
+ * - High-precision reduced-motion support across all scenes.
  */
 
+// Premium Easing Curves
 export const MOTION_CURVE_PREMIUM = [0.16, 1, 0.3, 1] as const;
+export const MOTION_CURVE_CINEMATIC = [0.19, 1, 0.22, 1] as const;
+export const MOTION_CURVE_ORGANIC = [0.16, 1, 0.3, 1] as const;
 export const MOTION_CURVE_SLOW = [0.16, 1, 0.3, 1] as const;
 export const MOTION_CURVE_PREMIUM_STRING = "cubic-bezier(0.16, 1, 0.3, 1)";
 export const MOTION_DURATION_DEFAULT = 0.85;
 
-// Reversible viewport configurations: trigger early when element top hits 85% of screen height
+// Reversible Viewport Configurations for Editorial Continuity
 export const VIEWPORT_REVERSIBLE_CONFIG = {
   once: false,
   amount: 0.05,
-  margin: "0px 0px -15% 0px",
+  margin: "0px 0px -12% 0px",
 } as const;
 
 export const VIEWPORT_EDITORIAL_CONFIG = {
   once: false,
   amount: 0.05,
-  margin: "0px 0px -15% 0px",
+  margin: "0px 0px -12% 0px",
 } as const;
 
-// Backward-compatibility alias routed to reversible choreography
 export const VIEWPORT_ONCE_CONFIG = {
   once: false,
   amount: 0.05,
-  margin: "0px 0px -15% 0px",
+  margin: "0px 0px -12% 0px",
 } as const;
 
 export const FADE_UP_VARIANTS = (delay = 0, shouldReduceMotion = false) => ({
   hidden: {
     opacity: shouldReduceMotion ? 1 : 0,
-    y: shouldReduceMotion ? 0 : 45,
+    y: shouldReduceMotion ? 0 : 35,
   },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: shouldReduceMotion ? 0.01 : 0.85,
+      duration: shouldReduceMotion ? 0.01 : 0.8,
       ease: MOTION_CURVE_PREMIUM,
       delay: shouldReduceMotion ? 0 : delay,
     },
@@ -69,7 +71,7 @@ export const MASK_REVEAL_EASE = [0.16, 1, 0.3, 1] as const;
 
 export const getDirectionalVariants = (
   direction: 'down' | 'up' = 'down',
-  offset = 45,
+  offset = 35,
   delay = 0,
   shouldReduceMotion = false
 ) => ({
@@ -81,7 +83,7 @@ export const getDirectionalVariants = (
     opacity: 1,
     y: 0,
     transition: {
-      duration: shouldReduceMotion ? 0.01 : 0.85,
+      duration: shouldReduceMotion ? 0.01 : 0.8,
       ease: MOTION_CURVE_PREMIUM,
       delay: shouldReduceMotion ? 0 : delay,
     },
@@ -90,14 +92,14 @@ export const getDirectionalVariants = (
 
 export const lineMaskVariants = (delay = 0, shouldReduceMotion = false) => ({
   hidden: {
-    y: shouldReduceMotion ? 0 : 45,
+    y: shouldReduceMotion ? 0 : 35,
     opacity: shouldReduceMotion ? 1 : 0,
   },
   visible: {
     y: 0,
     opacity: 1,
     transition: {
-      duration: shouldReduceMotion ? 0.01 : 0.85,
+      duration: shouldReduceMotion ? 0.01 : 0.8,
       ease: MOTION_CURVE_PREMIUM,
       delay: shouldReduceMotion ? 0 : delay,
     },
@@ -108,13 +110,13 @@ export const motionRoles = {
   largeTypography: (delay = 0, shouldReduceMotion = false) => ({
     hidden: {
       opacity: shouldReduceMotion ? 1 : 0,
-      y: shouldReduceMotion ? 0 : 45,
+      y: shouldReduceMotion ? 0 : 35,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.85,
+        duration: shouldReduceMotion ? 0.01 : 0.8,
         ease: MOTION_CURVE_PREMIUM,
         delay: shouldReduceMotion ? 0 : delay,
       },
@@ -124,19 +126,19 @@ export const motionRoles = {
   editorialImage: (delay = 0, shouldReduceMotion = false) => ({
     hidden: {
       opacity: shouldReduceMotion ? 1 : 0,
-      y: shouldReduceMotion ? 0 : 45,
+      y: shouldReduceMotion ? 0 : 35,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.85,
+        duration: shouldReduceMotion ? 0.01 : 0.8,
         ease: MOTION_CURVE_PREMIUM,
         delay: shouldReduceMotion ? 0 : delay,
       },
     },
     hover: {
-      scale: shouldReduceMotion ? 1 : 1.015,
+      scale: shouldReduceMotion ? 1 : 1.02,
       transition: {
         duration: 0.4,
         ease: MOTION_CURVE_PREMIUM,
@@ -147,13 +149,13 @@ export const motionRoles = {
   supportingText: (delay = 0, shouldReduceMotion = false) => ({
     hidden: {
       opacity: shouldReduceMotion ? 1 : 0,
-      y: shouldReduceMotion ? 0 : 45,
+      y: shouldReduceMotion ? 0 : 30,
     },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.85,
+        duration: shouldReduceMotion ? 0.01 : 0.75,
         ease: MOTION_CURVE_PREMIUM,
         delay: shouldReduceMotion ? 0 : delay,
       },
@@ -210,7 +212,6 @@ export const motionRoles = {
   }),
 };
 
-// Backward-compatible helpers map to the new role-based motion language
 export const SPRING_PREMIUM_CONFIG = {
   duration: 0.45,
   ease: MOTION_CURVE_PREMIUM,
@@ -220,12 +221,9 @@ export const getPremiumRevealVariants = (delay = 0, shouldReduceMotion = false) 
   motionRoles.supportingText(delay, shouldReduceMotion);
 
 // Timing Constants
-export const DURATION_PRIMARY = 0.6;     // Large typography
-export const DURATION_SECONDARY = 0.5;   // Supporting text
-export const DURATION_SUPPORTING = 0.35;  // Buttons & meta
-
-export const DURATION_LETTER_PRIMARY_1 = 0.35;
-export const DURATION_LETTER_PRIMARY_2 = 0.38;
+export const DURATION_PRIMARY = 0.6;
+export const DURATION_SECONDARY = 0.5;
+export const DURATION_SUPPORTING = 0.35;
 
 export const OFFSET_PRIMARY = 4;
 export const OFFSET_SECONDARY = 3;
@@ -279,38 +277,63 @@ export const getDynamicLineVariants = (shouldReduceMotion: boolean) =>
 export const getParagraphVariants = (shouldReduceMotion: boolean) =>
   motionRoles.supportingText(0, shouldReduceMotion);
 
-export const getMenuVariants = () => motionRoles.navigation(0);
-
-export const getLinksContainerVariants = () => ({
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.04,
-    },
-  },
-  exit: {
-    transition: {
-      staggerChildren: 0.03,
-      staggerDirection: -1,
-    },
-  },
-});
-
-export const getMenuLinkVariants = (_shouldReduceMotion: boolean) => ({
+export const getMenuVariants = (shouldReduceMotion = false) => ({
   hidden: {
     opacity: 0,
+    y: shouldReduceMotion ? 0 : -12,
   },
   visible: {
     opacity: 1,
+    y: 0,
     transition: {
-      duration: DURATION_PRIMARY,
+      duration: shouldReduceMotion ? 0.01 : 0.35,
       ease: MOTION_CURVE_PREMIUM,
     },
   },
   exit: {
     opacity: 0,
+    y: shouldReduceMotion ? 0 : -8,
     transition: {
-      duration: DURATION_SUPPORTING,
+      duration: shouldReduceMotion ? 0.01 : 0.25,
+      ease: MOTION_CURVE_PREMIUM,
+    },
+  },
+});
+
+export const getLinksContainerVariants = (shouldReduceMotion = false) => ({
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: shouldReduceMotion ? 0 : 0.06,
+      delayChildren: shouldReduceMotion ? 0 : 0.08,
+    },
+  },
+  exit: {
+    transition: {
+      staggerChildren: shouldReduceMotion ? 0 : 0.03,
+      staggerDirection: -1,
+    },
+  },
+});
+
+export const getMenuLinkVariants = (shouldReduceMotion = false) => ({
+  hidden: {
+    opacity: 0,
+    y: shouldReduceMotion ? 0 : 16,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.45,
+      ease: MOTION_CURVE_PREMIUM,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: shouldReduceMotion ? 0 : 8,
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.2,
       ease: MOTION_CURVE_PREMIUM,
     },
   },
@@ -322,5 +345,3 @@ export function useHeaderLogoScroll() {
   const logoY = useTransform(scrollY, [60, 240], [0, 0]);
   return { logoOpacity, logoY };
 }
-
-

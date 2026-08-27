@@ -183,7 +183,6 @@
 // }
 
 
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -201,24 +200,35 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Scroll tracking for Hero leave choreography (World 01 -> World 02 transition)
+  // Scroll tracking across the entire hero scene lifecycle
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start start', 'end start'],
   });
 
-  // Spatial leave transforms: Hero gently scales down and shifts upward
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, shouldReduceMotion ? 1 : 0.98]);
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -60]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.85], [1, shouldReduceMotion ? 1 : 0.35]);
+  // Scene 1 Kinetic Choreography: Scrolling directly shifts the physical state of the composition
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, shouldReduceMotion ? 1 : 0.96]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -80]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, shouldReduceMotion ? 1 : 0.25]);
 
-  const nameY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -50]);
-  const nameTracking = useTransform(scrollYProgress, [0, 1], ['-0.04em', shouldReduceMotion ? '-0.04em' : '-0.02em']);
+  // Display Name: Masthead Identity Anchor upward elevation and tracking
+  const nameY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -35]);
+  const nameTracking = useTransform(
+    scrollYProgress,
+    [0, 0.85],
+    ['0.06em', shouldReduceMotion ? '0.06em' : '0.12em']
+  );
 
-  const metaY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -35]);
-  const metaOpacity = useTransform(scrollYProgress, [0, 0.7], [1, shouldReduceMotion ? 1 : 0.1]);
+  // Metadata Row: Lateral separation on scroll
+  const metaLeftX = useTransform(scrollYProgress, [0, 0.8], [0, shouldReduceMotion ? 0 : -20]);
+  const metaRightX = useTransform(scrollYProgress, [0, 0.8], [0, shouldReduceMotion ? 0 : 20]);
+  const metaOpacity = useTransform(scrollYProgress, [0, 0.65], [1, shouldReduceMotion ? 1 : 0.1]);
 
-  const statementY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : -20]);
+  // Editorial Thought (Dominant Expressive Typography): Kinetic opposing glide across lines
+  const thoughtLine1X = useTransform(scrollYProgress, [0, 0.9], [0, shouldReduceMotion ? 0 : -25]);
+  const thoughtLine2X = useTransform(scrollYProgress, [0, 0.9], [0, shouldReduceMotion ? 0 : 20]);
+  const thoughtLine3X = useTransform(scrollYProgress, [0, 0.9], [0, shouldReduceMotion ? 0 : 45]);
+  const thoughtOpacity = useTransform(scrollYProgress, [0, 0.85], [1, shouldReduceMotion ? 1 : 0.2]);
 
   const handleHeroCta = useCallback((e?: React.MouseEvent | React.KeyboardEvent) => {
     if (e) {
@@ -255,13 +265,13 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
       }}
       className="relative w-full min-h-[82vh] lg:min-h-[88vh] bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300 font-sans flex flex-col justify-between pt-28 sm:pt-36 md:pt-40 lg:pt-48 pb-20 sm:pb-24 md:pb-28 lg:pb-32 overflow-hidden cursor-default focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF4500]"
     >
-      {/* Strict Swiss Editorial Grid Canvas with Spatial Parallax */}
+      {/* Strict Swiss Editorial Grid Canvas with Continuous Spatial Parallax */}
       <motion.div
         style={{ scale: heroScale, y: heroY, opacity: heroOpacity }}
         className="w-full max-w-7xl mx-auto flex flex-col justify-between flex-grow px-0 sm:px-12 lg:px-16 will-change-transform"
       >
 
-        {/* 1. Primary Typographic Anchor: Large Display Name as an Architectural Object */}
+        {/* 1. Identity Anchor: Personal Masthead Mark */}
         <motion.div
           style={{ y: nameY }}
           className="w-full select-text will-change-transform"
@@ -277,60 +287,82 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
             <div className="overflow-hidden block">
               <motion.h1
                 style={{ letterSpacing: nameTracking }}
-                className="hero-curtain-line hero-curtain-delay-0 text-[clamp(2.5rem,8.2vw,8.5rem)] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-[0.88] whitespace-nowrap tracking-[-0.035em] select-text"
+                className="hero-curtain-line hero-curtain-delay-0 text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-none select-text will-change-transform"
               >
-                RΛZΛN ΛZIZIEH
+                RAZAN AZIZIEH
               </motion.h1>
             </div>
           </div>
         </motion.div>
 
-        {/* 2. Quiet Secondary Metadata (Colophon / Asymmetric Spatial Annotation) */}
+        {/* 2. Quiet Secondary Colophon: Lateral Axis Separation on Scroll */}
         <motion.div
-          style={{ y: metaY, opacity: metaOpacity }}
-          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-y-3 sm:gap-4 pt-6 sm:pt-8 md:pt-10 select-text items-start will-change-transform"
+          style={{ opacity: metaOpacity }}
+          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-y-3 sm:gap-4 pt-5 sm:pt-6 md:pt-8 select-text items-start will-change-transform"
         >
-          {/* Left Metadata: Scientific / Mathematical Foundation */}
-          <div className="sm:col-span-5 md:col-span-5 flex items-center overflow-hidden">
+          {/* Left Metadata: Drifts Leftward */}
+          <motion.div
+            style={{ x: metaLeftX }}
+            className="sm:col-span-5 md:col-span-5 flex items-center overflow-hidden will-change-transform"
+          >
             <div className="overflow-hidden inline-block">
-              <span className="hero-curtain-line hero-curtain-delay-1 font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-[0.14em] leading-none select-text">
-                M.SC. MATHEMATICS &amp; CS
+              <span className="hero-curtain-line hero-curtain-delay-1 font-mono text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-[0.16em] leading-none select-text">
+                DIGITAL CRAFT &amp; CODE
               </span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Metadata: Collaboration Status & Edition Year */}
-          <div className="sm:col-span-7 md:col-span-7 flex items-center sm:justify-end gap-8 overflow-hidden">
+          {/* Right Metadata: Drifts Rightward */}
+          <motion.div
+            style={{ x: metaRightX }}
+            className="sm:col-span-7 md:col-span-7 flex items-center sm:justify-end gap-6 sm:gap-8 overflow-hidden will-change-transform"
+          >
             <div className="overflow-hidden inline-flex items-center">
-              <span className="hero-curtain-line hero-curtain-delay-2 font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-[0.14em] leading-none select-text">
+              <span className="hero-curtain-line hero-curtain-delay-2 font-mono text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-[0.16em] leading-none select-text">
                 OPEN FOR COLLABORATION
               </span>
             </div>
             <div className="overflow-hidden inline-block">
-              <span className="hero-curtain-line hero-curtain-delay-2 font-mono text-[11px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.14em] leading-none select-text">
+              <span className="hero-curtain-line hero-curtain-delay-2 font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.16em] leading-none select-text">
                 PORTFOLIO &lsquo;26
               </span>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* 3. Core Editorial Thought with Asymmetric Spatial Tension */}
+        {/* 3. Dominant Expressive Typographic Statement (Editorial Headline) */}
         <motion.div
-          style={{ y: statementY }}
-          className="pt-16 sm:pt-20 md:pt-28 lg:pt-32 pb-2 w-full flex flex-col items-start select-text will-change-transform"
+          style={{ opacity: thoughtOpacity }}
+          className="pt-16 sm:pt-20 md:pt-28 lg:pt-36 pb-2 w-full flex flex-col items-start select-text will-change-transform"
         >
           <div className="w-full max-w-6xl text-left select-text">
-            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-[5.25rem] tracking-tight uppercase leading-[0.94] select-text">
-              <span className="overflow-hidden block text-left">
-                <span className="hero-curtain-line hero-curtain-delay-3 block font-display font-medium text-neutral-950 dark:text-neutral-50">
+            <h2 className="text-[clamp(2.5rem,6.8vw,7.25rem)] font-display tracking-tight uppercase leading-[0.92] select-text">
+              <motion.span 
+                style={{ x: thoughtLine1X }}
+                className="overflow-hidden block text-left will-change-transform"
+              >
+                <span className="hero-curtain-line hero-curtain-delay-3 block font-medium text-neutral-950 dark:text-neutral-50">
                   SOMEWHERE BETWEEN
                 </span>
-              </span>
-              <span className="overflow-hidden block mt-2 sm:mt-3 md:mt-4 text-left pl-4 sm:pl-12 md:pl-20 lg:pl-28">
-                <span className="hero-curtain-line hero-curtain-delay-4 block font-display font-normal text-neutral-500 dark:text-neutral-400 transition-colors duration-300">
-                  AN IDEA AND WHAT IT BECOMES.
+              </motion.span>
+
+              <motion.span 
+                style={{ x: thoughtLine2X }}
+                className="overflow-hidden block mt-2 sm:mt-3 md:mt-4 text-left pl-3 sm:pl-10 md:pl-20 lg:pl-28 will-change-transform"
+              >
+                <span className="hero-curtain-line hero-curtain-delay-4 block font-normal text-neutral-500 dark:text-neutral-400 transition-colors duration-300">
+                  AN IDEA AND WHAT IT
                 </span>
-              </span>
+              </motion.span>
+
+              <motion.span 
+                style={{ x: thoughtLine3X }}
+                className="overflow-hidden block mt-2 sm:mt-3 md:mt-4 text-left pl-6 sm:pl-20 md:pl-36 lg:pl-56 will-change-transform"
+              >
+                <span className="hero-curtain-line hero-curtain-delay-4 block font-medium text-neutral-950 dark:text-neutral-50">
+                  BECOMES.
+                </span>
+              </motion.span>
             </h2>
           </div>
         </motion.div>
@@ -339,5 +371,3 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
     </section>
   );
 }
-
-

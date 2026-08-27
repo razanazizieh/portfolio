@@ -330,7 +330,7 @@ export default function Header({
           }
         }}
         className={`branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 transition-opacity duration-300 ease-in-out group ${
-          (scrolledPastHero || !!activeCaseStudy || forceShowLogo)
+          (scrolledPastHero || !!activeCaseStudy || forceShowLogo || isMobileMenuOpen)
             ? 'opacity-100 pointer-events-auto'
             : 'opacity-0 pointer-events-none'
         }`}

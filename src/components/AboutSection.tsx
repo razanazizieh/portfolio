@@ -100,282 +100,513 @@
 //       </div>
 //     </section>
 //   );
+
+
+// /**
+//  * @license
+//  * SPDX-License-Identifier: Apache-2.0
+//  */
+
+// import React, { useRef } from 'react';
+// import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
+// import { MOTION_CURVE_PREMIUM, VIEWPORT_EDITORIAL_CONFIG } from '../utils/motion';
+
+// interface Pillar {
+//   id: string;
+//   title: string;
+//   tagline: string;
+//   detail: string;
+// }
+
+// const PILLARS: Pillar[] = [
+//   {
+//     id: 'user-experience',
+//     title: 'USER INTUITION',
+//     tagline: 'Flow & Cognitive Ergonomics',
+//     detail: 'Designing digital journeys that feel instinctive and friction-free, prioritizing human clarity and meaningful feedback at every interaction point.',
+//   },
+//   {
+//     id: 'interface-craft',
+//     title: 'INTERFACE CRAFT',
+//     tagline: 'Swiss Rigor & Visual Pacing',
+//     detail: 'Composing structured web layouts with deliberate spatial tension, refined typographic hierarchy, and purposeful motion physics.',
+//   },
+//   {
+//     id: 'accessibility',
+//     title: 'ACCESSIBILITY & A11Y',
+//     tagline: 'Universal Usability',
+//     detail: 'Adhering to strict web accessibility standards, robust semantic HTML, and full keyboard navigation so experiences remain universally accessible.',
+//   },
+//   {
+//     id: 'systems-logic',
+//     title: 'SOFTWARE LOGIC',
+//     tagline: 'Engineering & Problem Solving',
+//     detail: 'Structuring scalable React and TypeScript codebases while actively exploring Python scripting, data structures, and algorithmic solutions.',
+//   },
+// ];
+
+// const CAPABILITIES = [
+//   {
+//     area: 'UI/UX & EXPERIENCE DESIGN',
+//     items: [
+//       'UX Flow Architecture',
+//       'Design Systems & Tokens',
+//       'Interactive Prototyping',
+//       'Spatial Hierarchy & Layouts',
+//       'Accessibility (WCAG AA)',
+//     ],
+//   },
+//   {
+//     area: 'FRONT-END DEVELOPMENT',
+//     items: [
+//       'React & TypeScript Ecosystem',
+//       'Tailwind CSS & Motion Physics',
+//       'Accessible UI Components',
+//       'State Management & Data Flow',
+//       'Performance Optimization',
+//     ],
+//   },
+//   {
+//     area: 'ENGINEERING & PYTHON STUDIES',
+//     items: [
+//       'Python Scripting & Automation',
+//       'Algorithmic Problem Solving',
+//       'Data Structures & Logic',
+//       'Git & Collaborative Workflows',
+//       'Continuous Technical Studies',
+//     ],
+//   },
+// ];
+
+// export default function AboutSection() {
+//   const sectionRef = useRef<HTMLElement>(null);
+//   const shouldReduceMotion = useReducedMotion();
+
+//   const { scrollYProgress } = useScroll({
+//     target: sectionRef,
+//     offset: ['start end', 'end start'],
+//   });
+
+//   const headerY = useTransform(
+//     scrollYProgress,
+//     [0, 0.25, 0.75, 1],
+//     [shouldReduceMotion ? 0 : 20, 0, 0, shouldReduceMotion ? 0 : -20]
+//   );
+//   const headerOpacity = useTransform(
+//     scrollYProgress,
+//     [0, 0.2, 0.8, 1],
+//     [shouldReduceMotion ? 1 : 0.2, 1, 1, shouldReduceMotion ? 1 : 0.2]
+//   );
+
+//   const bioY = useTransform(
+//     scrollYProgress,
+//     [0.05, 0.3, 0.75, 1],
+//     [shouldReduceMotion ? 0 : 25, 0, 0, shouldReduceMotion ? 0 : -15]
+//   );
+
+//   const containerVariants = {
+//     hidden: { opacity: shouldReduceMotion ? 1 : 0 },
+//     visible: {
+//       opacity: 1,
+//       transition: {
+//         staggerChildren: shouldReduceMotion ? 0 : 0.09,
+//         delayChildren: shouldReduceMotion ? 0 : 0.05,
+//       },
+//     },
+//   };
+
+//   const itemFadeUpVariants = {
+//     hidden: {
+//       opacity: shouldReduceMotion ? 1 : 0,
+//       y: shouldReduceMotion ? 0 : 28,
+//     },
+//     visible: {
+//       opacity: 1,
+//       y: 0,
+//       transition: {
+//         duration: shouldReduceMotion ? 0.01 : 0.75,
+//         ease: MOTION_CURVE_PREMIUM,
+//       },
+//     },
+//   };
+
+//   return (
+//     <section
+//       ref={sectionRef}
+//       id="about"
+//       aria-label="About Razan Azizieh"
+//       style={{
+//         paddingLeft: 'max(20px, 4vw)',
+//         paddingRight: 'max(20px, 4vw)',
+//       }}
+//       className="relative z-20 flex flex-col justify-center py-24 sm:py-32 md:py-40 lg:py-48 scroll-mt-20 md:scroll-mt-24 select-text bg-[var(--bg-color)]"
+//     >
+//       <div className="w-full relative flex flex-col max-w-7xl mx-auto px-0 sm:px-10 lg:px-16">
+        
+//         {/* 1. Asymmetrical Headline & Biographical Spread */}
+//         <motion.div
+//           variants={containerVariants}
+//           initial="hidden"
+//           whileInView="visible"
+//           viewport={VIEWPORT_EDITORIAL_CONFIG}
+//           className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start pb-20 sm:pb-28 md:pb-32"
+//         >
+//           {/* Top-Left Pinned Minimal Anchor */}
+//           <motion.div
+//             variants={itemFadeUpVariants}
+//             style={{ y: headerY, opacity: headerOpacity }}
+//             className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left select-text md:sticky md:top-28 will-change-transform"
+//           >
+//             <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 select-text block mb-3 font-medium">
+//               01 &mdash; PERSPECTIVE
+//             </span>
+
+//             <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[0.95] select-text mb-6 sm:mb-8">
+//               ABOUT &amp;
+//               <br />
+//               PRACTICE
+//             </h2>
+
+//             {/* Left Typographic Colophon (Clean typographic contrast, no borders) */}
+//             <div className="hidden md:flex flex-col gap-5 pt-4 w-full max-w-[260px]">
+//               <div className="flex flex-col">
+//                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 mb-1">
+//                   DISCIPLINE
+//                 </span>
+//                 <span className="font-sans text-xs uppercase tracking-[0.06em] text-neutral-900 dark:text-neutral-100 font-medium">
+//                   UI/UX Architecture &amp; Digital Craft
+//                 </span>
+//               </div>
+//               <div className="flex flex-col">
+//                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 mb-1">
+//                   TECHNICAL STACK
+//                 </span>
+//                 <span className="font-sans text-xs uppercase tracking-[0.06em] text-neutral-900 dark:text-neutral-100 font-medium">
+//                   React, TypeScript, Tailwind &amp; Python
+//                 </span>
+//               </div>
+//             </div>
+//           </motion.div>
+
+//           {/* Right Half: Expanded Biographical Narrative with Generous Line-heights */}
+//           <motion.div
+//             style={{ y: bioY }}
+//             variants={itemFadeUpVariants}
+//             className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 flex flex-col items-start text-left space-y-10 sm:space-y-12 select-text will-change-transform md:pt-2"
+//           >
+//             {/* Primary Editorial Premise */}
+//             <p className="font-sans text-xl sm:text-2xl md:text-3xl lg:text-[2.15rem] font-normal text-neutral-950 dark:text-neutral-100 leading-[1.38] tracking-tight select-text max-w-[54ch]">
+//               Building digital experiences where human intuition, disciplined design systems, and software engineering converge.
+//             </p>
+
+//             {/* Narrative Blocks (Pure Typographic Hierarchy, No Box Containers) */}
+//             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 w-full">
+//               {/* User Experience & Accessibility */}
+//               <div className="flex flex-col gap-2.5 text-left">
+//                 <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-medium">
+//                   EXPERIENCE &amp; ERGONOMICS
+//                 </span>
+//                 <p className="font-sans text-sm sm:text-base font-normal text-neutral-700 dark:text-neutral-300 leading-[1.78] select-text">
+//                   Crafting web spaces where navigation is instinctive and interaction is effortless. Great interfaces balance cognitive ergonomics, responsive spatial pacing, and universal accessibility (a11y)&mdash;ensuring every screen feels cohesive, clear, and human-centered.
+//                 </p>
+//               </div>
+
+//               {/* Front-End & Python Engineering */}
+//               <div className="flex flex-col gap-2.5 text-left">
+//                 <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-medium">
+//                   ENGINEERING &amp; ALGORITHMS
+//                 </span>
+//                 <p className="font-sans text-sm sm:text-base font-normal text-neutral-600 dark:text-neutral-400 leading-[1.78] select-text">
+//                   Translating creative visions into production-grade React and TypeScript codebases. Passionate about performant component architectures, state management, and algorithmic problem-solving&mdash;actively expanding technical depth through Python engineering studies.
+//                 </p>
+//               </div>
+//             </div>
+//           </motion.div>
+//         </motion.div>
+
+//         {/* 2. Practice Pillars: Pure Open Typography */}
+//         <motion.div
+//           initial={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 35 }}
+//           whileInView={{ opacity: 1, y: 0 }}
+//           viewport={VIEWPORT_EDITORIAL_CONFIG}
+//           transition={{ duration: shouldReduceMotion ? 0.01 : 0.8, ease: MOTION_CURVE_PREMIUM }}
+//           className="pt-16 sm:pt-24 pb-20 sm:pb-28 will-change-transform"
+//         >
+//           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start">
+            
+//             {/* Left Sub-Heading Label */}
+//             <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left">
+//               <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+//                 PRACTICE
+//               </span>
+//               <h3 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-tight mb-3">
+//                 HOW I THINK &amp; BUILD
+//               </h3>
+//               <p className="font-sans text-sm text-neutral-500 dark:text-neutral-400 max-w-[34ch] leading-relaxed hidden md:block">
+//                 A holistic approach uniting intuitive user experience, accessibility standards, and versatile software engineering.
+//               </p>
+//             </div>
+
+//             {/* Right Open Typographic Stack with Stagger */}
+//             <motion.div
+//               variants={containerVariants}
+//               initial="hidden"
+//               whileInView="visible"
+//               viewport={VIEWPORT_EDITORIAL_CONFIG}
+//               className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10"
+//             >
+//               {PILLARS.map((pillar) => (
+//                 <motion.div
+//                   key={pillar.id}
+//                   variants={itemFadeUpVariants}
+//                   className="flex flex-col text-left group will-change-transform"
+//                 >
+//                   <span className="font-mono text-[10px] sm:text-[11px] tracking-[0.14em] uppercase text-neutral-400 dark:text-neutral-500 mb-2 font-medium">
+//                     {pillar.tagline}
+//                   </span>
+
+//                   <h4 className="font-display text-base sm:text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-snug mb-2 group-hover:text-[#FF4500] dark:group-hover:text-[#FF4500] transition-colors duration-200">
+//                     {pillar.title}
+//                   </h4>
+
+//                   <p className="font-sans text-xs sm:text-sm font-normal text-neutral-600 dark:text-neutral-400 leading-[1.72]">
+//                     {pillar.detail}
+//                   </p>
+//                 </motion.div>
+//               ))}
+//             </motion.div>
+//           </div>
+//         </motion.div>
+
+//         {/* 3. Capabilities: Open Typographic Ledger */}
+//         <motion.div
+//           initial={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 35 }}
+//           whileInView={{ opacity: 1, y: 0 }}
+//           viewport={VIEWPORT_EDITORIAL_CONFIG}
+//           transition={{ duration: shouldReduceMotion ? 0.01 : 0.8, ease: MOTION_CURVE_PREMIUM }}
+//           className="pt-16 sm:pt-24 will-change-transform"
+//         >
+//           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start">
+            
+//             {/* Left Sub-Heading Label */}
+//             <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left">
+//               <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+//                 DOMAINS
+//               </span>
+//               <h3 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-tight mb-3">
+//                 CORE CAPABILITIES
+//               </h3>
+//               <p className="font-sans text-sm text-neutral-500 dark:text-neutral-400 max-w-[34ch] leading-relaxed hidden md:block">
+//                 Practices across user research, interface architecture, modern web development, and backend logic exploration.
+//               </p>
+//             </div>
+
+//             {/* Right Open 3-Column Ledger */}
+//             <motion.div
+//               variants={containerVariants}
+//               initial="hidden"
+//               whileInView="visible"
+//               viewport={VIEWPORT_EDITORIAL_CONFIG}
+//               className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 lg:gap-8 text-left"
+//             >
+//               {CAPABILITIES.map((group) => (
+//                 <motion.div
+//                   key={group.area}
+//                   variants={itemFadeUpVariants}
+//                   className="flex flex-col gap-3 will-change-transform"
+//                 >
+//                   <span className="font-mono text-[11px] uppercase tracking-[0.14em] font-medium text-neutral-950 dark:text-neutral-50 pb-1">
+//                     {group.area}
+//                   </span>
+//                   <div className="flex flex-col gap-2">
+//                     {group.items.map((item) => (
+//                       <span
+//                         key={item}
+//                         className="font-sans text-xs sm:text-sm font-normal text-neutral-600 dark:text-neutral-400 leading-normal"
+//                       >
+//                         {item}
+//                       </span>
+//                     ))}
+//                   </div>
+//                 </motion.div>
+//               ))}
+//             </motion.div>
+//           </div>
+//         </motion.div>
+
+//       </div>
+//     </section>
+//   );
 // }
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 
-interface Principle {
-  id: string;
-  num: string;
-  title: string;
-  tagline: string;
-  detail: string;
-}
-
-const PRINCIPLES: Principle[] = [
-  {
-    id: 'user-experience',
-    num: '01',
-    title: 'USER EXPERIENCE & FLOW',
-    tagline: 'Seamless, intuitive interactions',
-    detail: 'Crafting digital journeys that feel natural and effortless, prioritizing user intent and fluid navigation across every touchpoint.',
-  },
-  {
-    id: 'ui-craft',
-    num: '02',
-    title: 'INTERFACE CRAFT',
-    tagline: 'Clean & modern visual structure',
-    detail: 'Building polished web layouts with clear visual spatial balance, modern aesthetics, and subtle motion interactions.',
-  },
-  {
-    id: 'accessibility',
-    num: '03',
-    title: 'ACCESSIBILITY & INCLUSIVITY',
-    tagline: 'Web experiences for everyone',
-    detail: 'Ensuring web standards, proper contrast, and full keyboard navigation so interfaces remain inclusive and usable for all.',
-  },
-  {
-    id: 'architecture',
-    num: '04',
-    title: 'FRONT-END ARCHITECTURE',
-    tagline: 'Scalable & responsive code',
-    detail: 'Developing clean, modular React components built for performance, responsiveness, and long-term maintainability.',
-  },
-];
-
-const CAPABILITIES = [
-  {
-    area: 'INTERFACE & EXPERIENCE',
-    items: ['UX Flow Architecture', 'Responsive Layouts', 'Interactive Prototypes', 'Component Systems'],
-  },
-  {
-    area: 'FRONT-END DEVELOPMENT',
-    items: ['React & JavaScript (ES6+)', 'HTML5 & CSS3 / Tailwind', 'Accessibility (a11y) Standards', 'State & Hook Management'],
-  },
-  {
-    area: 'PRACTICE & WORKFLOW',
-    items: ['User-Centric Architecture', 'Git & Version Control', 'Cross-Browser Optimization', 'Clean Code Structure'],
-  },
-];
+const MOTION_EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function AboutSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
-  const [activePrinciple, setActivePrinciple] = useState<string | null>(null);
 
+  // Scroll tracking across the editorial spatial canvas for depth
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ['start end', 'end start'],
   });
 
-  const headerY = useTransform(
+  // Subtle parallax offsets
+  const parallaxHeadline = useTransform(
     scrollYProgress,
-    [0, 0.25, 0.75, 1],
-    [shouldReduceMotion ? 0 : 25, 0, 0, shouldReduceMotion ? 0 : -25]
+    [0.1, 0.9],
+    [shouldReduceMotion ? 0 : 20, shouldReduceMotion ? 0 : -20]
   );
-  const headerOpacity = useTransform(
+  const parallaxBodyRight = useTransform(
     scrollYProgress,
-    [0, 0.2, 0.8, 1],
-    [shouldReduceMotion ? 1 : 0.1, 1, 1, shouldReduceMotion ? 1 : 0.15]
-  );
-
-  const bioY = useTransform(
-    scrollYProgress,
-    [0.05, 0.3, 0.75, 1],
-    [shouldReduceMotion ? 0 : 35, 0, 0, shouldReduceMotion ? 0 : -20]
+    [0.1, 0.9],
+    [shouldReduceMotion ? 0 : 35, shouldReduceMotion ? 0 : -25]
   );
 
   return (
     <section
       ref={sectionRef}
       id="about"
-      aria-label="About Razan Azizieh"
+      aria-label="Perspective and Philosophy"
       style={{
         paddingLeft: 'max(20px, 4vw)',
         paddingRight: 'max(20px, 4vw)',
       }}
-      className="relative z-20 flex flex-col justify-center min-h-[90vh] py-36 sm:py-48 md:py-56 lg:py-64 scroll-mt-20 md:scroll-mt-24 select-text bg-[var(--bg-color)] "
+      className="relative z-20 w-full py-28 sm:py-36 md:py-48 lg:py-60 scroll-mt-20 md:scroll-mt-24 select-text bg-[var(--bg-color)] overflow-hidden"
     >
-      <div className="w-full relative flex flex-col max-w-7xl mx-auto px-0 sm:px-10 lg:px-16">
+      <div className="w-full relative max-w-7xl mx-auto px-0 sm:px-8 lg:px-12">
         
-        {/* 1. Asymmetric Anchor & Biographical Hero Spread */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start pb-24 sm:pb-32 md:pb-40 border-b border-[var(--border-color)]">
+        {/* ========================================================================= */}
+        {/* Tier 1: Small Editorial Coordinate Marker                                 */}
+        {/* ========================================================================= */}
+        <motion.div
+          initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-10% 0px' }}
+          transition={{ duration: 0.6, ease: MOTION_EASE }}
+          className="w-full grid grid-cols-1 sm:grid-cols-12 gap-4 pb-12 sm:pb-16 md:pb-24 select-text"
+        >
+          <div className="sm:col-span-6 flex items-center">
+            <span className="font-mono text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.16em] uppercase leading-none select-text">
+              01 &mdash; PERSPECTIVE
+            </span>
+          </div>
+
+          <div className="sm:col-span-6 flex sm:justify-end items-center">
+            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 font-normal tracking-[0.16em] uppercase leading-none select-text">
+              [ CONTINUOUS INQUIRY &bull; ESSAY &rsquo;26 ]
+            </span>
+          </div>
+        </motion.div>
+
+        {/* ========================================================================= */}
+        {/* Tier 2: The Dominant Typographic Idea (Masked Curtain Reveal)             */}
+        {/* ========================================================================= */}
+        <motion.div
+          style={{ y: parallaxHeadline }}
+          className="w-full pb-20 sm:pb-28 md:pb-36 lg:pb-44 select-text will-change-transform"
+        >
+          <h2 className="font-display tracking-tight uppercase leading-[0.92] text-neutral-950 dark:text-neutral-50 select-text">
+            
+            {/* Line 1: Primary anchor */}
+            <div className="overflow-hidden block">
+              <motion.span
+                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
+                whileInView={{ y: '0%' }}
+                viewport={{ once: true, margin: '-8% 0px' }}
+                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.05 }}
+                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-medium text-neutral-950 dark:text-neutral-50"
+              >
+                OBSERVING HOW
+              </motion.span>
+            </div>
+
+            {/* Line 2: Shifted Offset */}
+            <div className="overflow-hidden block mt-1 sm:mt-2 md:mt-3">
+              <motion.span
+                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
+                whileInView={{ y: '0%' }}
+                viewport={{ once: true, margin: '-8% 0px' }}
+                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.12 }}
+                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-normal text-neutral-500 dark:text-neutral-400 pl-3 sm:pl-10 md:pl-20 lg:pl-32 transition-colors duration-300"
+              >
+                IDEAS BECOME PROCESSES,
+              </motion.span>
+            </div>
+
+            {/* Line 3: Deeper Asymmetrical Offset & Resolution */}
+            <div className="overflow-hidden block mt-1 sm:mt-2 md:mt-3">
+              <motion.span
+                initial={shouldReduceMotion ? { y: '0%' } : { y: '105%' }}
+                whileInView={{ y: '0%' }}
+                viewport={{ once: true, margin: '-8% 0px' }}
+                transition={{ duration: 0.85, ease: MOTION_EASE, delay: 0.2 }}
+                className="block text-[clamp(2.25rem,6vw,6.5rem)] font-medium text-neutral-950 dark:text-neutral-50 pl-6 sm:pl-20 md:pl-36 lg:pl-56"
+              >
+                AND COMPLEXITY TURNS TO CLARITY.
+              </motion.span>
+            </div>
+          </h2>
+        </motion.div>
+
+        {/* ========================================================================= */}
+        {/* Tier 3: Asymmetrical Spatial Reading Field & Annotations                  */}
+        {/* ========================================================================= */}
+        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-14 sm:gap-y-18 md:gap-y-28 lg:gap-y-36 items-start select-text">
           
-          {/* Top-Left Fixed / Static Label Anchor */}
+          {/* Spatial Block 1: Mathematics & Pattern Formation */}
           <motion.div
-            style={{ y: headerY, opacity: headerOpacity }}
-            className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left select-text md:sticky md:top-28 will-change-transform"
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10% 0px' }}
+            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.1 }}
+            className="col-span-12 md:col-span-7 lg:col-span-6 md:col-start-1 lg:col-start-2 flex flex-col items-start text-left select-text"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 select-text">
-                01 &mdash; PERSPECTIVE
-              </span>
-            </div>
-
-            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[0.95] select-text mb-6 sm:mb-8">
-              ABOUT &amp;
-              <br />
-              PRACTICE
-            </h2>
-
-            {/* Left Spatial Metadata Colophon */}
-            <div className="hidden md:flex flex-col gap-3 pt-6 border-t border-[var(--border-color)] w-full max-w-[240px]">
-              <div className="flex flex-col">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400 dark:text-neutral-500">
-                  CREATIVE FOCUS
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-neutral-900 dark:text-neutral-100 font-medium">
-                  UI/UX &amp; INTERFACE ARCHITECTURE
-                </span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-neutral-400 dark:text-neutral-500">
-                  DEVELOPMENT
-                </span>
-                <span className="font-mono text-[11px] uppercase tracking-[0.08em] text-neutral-900 dark:text-neutral-100 font-medium">
-                  FRONT-END &amp; REACT
-                </span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right Half: Biographical Narrative & Large Typographic Premise */}
-          <motion.div
-            style={{ y: bioY }}
-            className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 flex flex-col items-start text-left space-y-10 sm:space-y-12 md:space-y-14 select-text will-change-transform md:pt-2"
-          >
-            {/* Primary Editorial Premise */}
-            <p className="font-sans text-xl sm:text-2xl md:text-3xl lg:text-[2.25rem] font-normal text-neutral-950 dark:text-neutral-100 leading-[1.35] tracking-[-0.01em] select-text max-w-[54ch]">
-              Building modern web applications—where user clarity, accessibility, and clean front-end architecture come together.
+            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.18em] mb-4 sm:mb-6 block select-text">
+              01.01 &bull; FOUNDATION
+            </span>
+            <p className="font-sans text-lg sm:text-xl md:text-2xl text-neutral-900 dark:text-neutral-100 font-normal leading-[1.62] sm:leading-[1.58] tracking-tight select-text max-w-[38ch]">
+              A background in Mathematics and Computer Science formed the way I observe systems: looking closely at how things connect, how structures hold together, and how intricate problems can be distilled into something coherent and understandable.
             </p>
-
-            {/* Two-Column Micro Narrative in the Right Half */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:gap-10 pt-6 border-t border-[var(--border-color)] w-full">
-              {/* Pillar 1: User Experience */}
-              <div className="flex flex-col gap-3 text-left">
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-400 dark:text-neutral-500">
-                  [ USER EXPERIENCE ]
-                </span>
-                <p className="font-sans text-sm sm:text-base font-normal text-neutral-800 dark:text-neutral-200 leading-[1.7] select-text">
-                  Focused on crafting web layouts and interaction flows that make digital navigation intuitive, engaging, and memorable for people.
-                </p>
-              </div>
-
-              {/* Pillar 2: Front-End Craft */}
-              <div className="flex flex-col gap-3 text-left">
-                <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-400 dark:text-neutral-500">
-                  [ FRONT-END CRAFT ]
-                </span>
-                <p className="font-sans text-sm sm:text-base font-normal text-neutral-600 dark:text-neutral-400 leading-[1.7] select-text">
-                  Bringing ideas to life using React and modern CSS, with emphasis on clean component systems, accessibility (a11y), and responsive performance.
-                </p>
-              </div>
-            </div>
           </motion.div>
-        </div>
 
-        {/* 2. Asymmetrical Section: Core Working Disciplines */}
-        <div className="pt-20 sm:pt-28 md:pt-32 pb-24 sm:pb-32 border-b border-[var(--border-color)]">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start">
-            
-            {/* Left Sub-Anchor */}
-            <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left">
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 mb-2">
-                01.1 &mdash; DISCIPLINES
-              </span>
-              <h3 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-tight mb-4">
-                HOW I THINK &amp; BUILD
-              </h3>
-              <p className="font-sans text-sm text-neutral-500 dark:text-neutral-400 max-w-[34ch] leading-relaxed hidden md:block">
-                A holistic approach combining intuitive user experience, accessibility standards, and robust front-end development.
-              </p>
-            </div>
+          {/* Spatial Block 2: Exploratory Expansion (Offset Lower Right Field) */}
+          <motion.div
+            style={{ y: parallaxBodyRight }}
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10% 0px' }}
+            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.22 }}
+            className="col-span-12 md:col-span-7 lg:col-span-6 md:col-start-6 lg:col-start-7 flex flex-col items-start text-left select-text will-change-transform"
+          >
+            <span className="font-mono text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.18em] mb-4 sm:mb-6 block select-text">
+              01.02 &bull; EXPLORATION
+            </span>
+            <p className="font-sans text-base sm:text-lg md:text-xl font-normal text-neutral-600 dark:text-neutral-400 leading-[1.7] sm:leading-[1.75] tracking-normal select-text max-w-[42ch]">
+              Over time, that analytical curiosity expanded into the spaces between an abstract concept and the experience it creates. Rather than fitting neatly into a single discipline, I remain focused on making the journey feel deliberate, intuitive, and natural—currently expanding into Python and investigating how logic shapes digital interaction.
+            </p>
+          </motion.div>
 
-            {/* Right Sub-Container: 2x2 Matrix Pushed to Right Columns */}
-            <div className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
-              {PRINCIPLES.map((principle) => {
-                const isHovered = activePrinciple === principle.id;
-                return (
-                  <div
-                    key={principle.id}
-                    onMouseEnter={() => setActivePrinciple(principle.id)}
-                    onMouseLeave={() => setActivePrinciple(null)}
-                    className={`group relative p-6 sm:p-7 flex flex-col justify-between text-left transition-all duration-300 rounded-none border ${
-                      isHovered
-                        ? 'border-neutral-950 dark:border-neutral-100 bg-neutral-50/50 dark:bg-neutral-900/30'
-                        : 'border-[var(--border-color)] bg-transparent'
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center justify-between font-mono text-xs text-neutral-400 dark:text-neutral-500 mb-5">
-                        <span className="tracking-[0.14em]">{principle.num}</span>
-                        <span className="text-[10px] tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity">
-                          DISCIPLINE
-                        </span>
-                      </div>
+          {/* Spatial Block 3: Small Editorial Margin Footnote (Asymmetric Anchor) */}
+          <motion.div
+            initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, margin: '-10% 0px' }}
+            transition={{ duration: 0.8, ease: MOTION_EASE, delay: 0.3 }}
+            className="col-span-12 md:col-span-5 lg:col-span-4 md:col-start-2 lg:col-start-3 pt-6 md:pt-12 flex flex-col items-start text-left select-text border-t border-neutral-200/40 dark:border-neutral-800/40"
+          >
+            <p className="font-mono text-[11px] sm:text-xs text-neutral-400 dark:text-neutral-500 uppercase tracking-[0.14em] leading-relaxed select-text">
+              NOTE &mdash; DIRECTION REMAINS OPEN-ENDED, GUIDED BY RIGOROUS EXPLORATION AND ITERATIVE LEARNING.
+            </p>
+          </motion.div>
 
-                      <h4 className="font-display text-base sm:text-lg font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-snug mb-1.5">
-                        {principle.title}
-                      </h4>
-
-                      <p className="font-sans text-xs font-medium uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-4">
-                        {principle.tagline}
-                      </p>
-                    </div>
-
-                    <p className="font-sans text-xs sm:text-sm font-normal text-neutral-600 dark:text-neutral-400 leading-relaxed pt-3 border-t border-[var(--border-color)]">
-                      {principle.detail}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* 3. Asymmetrical Section: Domain Ledger & Technical Stack */}
-        <div className="pt-20 sm:pt-28 md:pt-32">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16 items-start">
-            
-            {/* Left Sub-Anchor */}
-            <div className="md:col-span-4 lg:col-span-5 flex flex-col items-start text-left">
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 mb-2">
-                01.2 &mdash; DOMAIN LEDGER
-              </span>
-              <h3 className="font-display text-2xl sm:text-3xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-tight mb-4">
-                CAPABILITIES &amp; TOOLS
-              </h3>
-              <p className="font-sans text-sm text-neutral-500 dark:text-neutral-400 max-w-[34ch] leading-relaxed hidden md:block">
-                Core technical abilities across user experience, interface building, and modern web engineering.
-              </p>
-            </div>
-
-            {/* Right Sub-Container: 3-column ledger pushed to Right Columns */}
-            <div className="md:col-span-8 lg:col-span-7 md:col-start-5 lg:col-start-6 grid grid-cols-1 sm:grid-cols-3 gap-8 sm:gap-6 lg:gap-8 text-left">
-              {CAPABILITIES.map((group) => (
-                <div key={group.area} className="flex flex-col gap-4">
-                  <span className="font-mono text-[11px] uppercase tracking-[0.14em] font-medium text-neutral-950 dark:text-neutral-50 pb-2 border-b border-[var(--border-color)]">
-                    {group.area}
-                  </span>
-                  <ul className="flex flex-col gap-2.5">
-                    {group.items.map((item) => (
-                      <li
-                        key={item}
-                        className="font-sans text-xs sm:text-sm font-normal text-neutral-700 dark:text-neutral-300"
-                      >
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
       </div>

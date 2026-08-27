@@ -768,9 +768,6 @@
 // }
 
 
-
-
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -968,15 +965,24 @@ export default function App() {
     }
   };
 
+  const unlockScroll = () => {
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+    document.body.style.position = '';
+    document.body.style.pointerEvents = 'auto';
+    document.documentElement.style.overflow = '';
+    document.documentElement.style.height = '';
+    document.documentElement.style.position = '';
+    document.documentElement.style.pointerEvents = 'auto';
+    getLenis()?.start();
+  };
+
   const handleNav = (e: React.SyntheticEvent | { preventDefault: () => void }, targetId: string) => {
     e.preventDefault();
     
     // Unlock body scroll lock immediately for mobile navigation
-    document.body.style.overflow = '';
-    document.body.style.height = '';
-    document.documentElement.style.overflow = '';
-    document.documentElement.style.height = '';
     setIsMobileMenuOpen(false);
+    unlockScroll();
 
     // If not on homepage or a case study or 404 is open, perform transition overlay to homepage
     if (location.pathname !== '/' || activeCaseStudy !== null || isNotFound) {
@@ -986,6 +992,7 @@ export default function App() {
         setIsNotFound(false);
         navigate('/');
         setTimeout(() => {
+          unlockScroll();
           // Reposition scroll behind the curtain
           scrollSection(targetId, shouldReduceMotion ? 'auto' : 'smooth');
           triggerTransitionOverlay(false); // Retract curtain revealing content
@@ -994,6 +1001,7 @@ export default function App() {
     } else {
       // Direct smooth scroll & active section highlight when already on homepage
       setTimeout(() => {
+        unlockScroll();
         scrollSection(targetId, shouldReduceMotion ? 'auto' : 'smooth');
       }, 20);
     }
@@ -1003,24 +1011,13 @@ export default function App() {
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
-      document.body.style.height = '100%';
       document.documentElement.style.overflow = 'hidden';
-      document.documentElement.style.height = '100%';
+      getLenis()?.stop();
     } else {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.body.style.position = '';
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.position = '';
+      unlockScroll();
     }
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.height = '';
-      document.body.style.position = '';
-      document.documentElement.style.overflow = '';
-      document.documentElement.style.height = '';
-      document.documentElement.style.position = '';
+      unlockScroll();
     };
   }, [isMobileMenuOpen]);
 
@@ -1390,6 +1387,8 @@ export default function App() {
       setActiveCaseStudy(null);
       setIsNotFound(true);
     }
+    setIsMobileMenuOpen(false);
+    unlockScroll();
   }, [location.pathname]);
 
   const homepageScrollY = useRef(0);

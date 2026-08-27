@@ -93,7 +93,6 @@
 //     </section>
 //   );
 // }
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -103,92 +102,91 @@ import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 
 export default function StatementSection() {
-  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const shouldReduceMotion = useReducedMotion();
 
-  // Scroll Progress tracking for World 04: Contemplative Pause & Silence
+  // Scroll tracking for Scene 4: Kinetic Typographic Machine
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: containerRef,
     offset: ['start end', 'end start'],
   });
 
-  // Hard clip-path reveal from bottom to top (105% -> 0%) without opacity blur
-  const line1Y = useTransform(
+  // Scene 4 Choreography: Opposing horizontal axes that converge and decompress with scroll
+  const line1X = useTransform(
     scrollYProgress,
-    [0.1, 0.35, 0.72, 0.95],
-    [shouldReduceMotion ? '0%' : '105%', '0%', '0%', shouldReduceMotion ? '0%' : '-105%']
+    [0.1, 0.45, 0.75, 1],
+    [shouldReduceMotion ? 0 : -55, 0, 0, shouldReduceMotion ? 0 : 35]
+  );
+  const line2X = useTransform(
+    scrollYProgress,
+    [0.1, 0.45, 0.75, 1],
+    [shouldReduceMotion ? 0 : 65, 0, 0, shouldReduceMotion ? 0 : -45]
+  );
+  const line3X = useTransform(
+    scrollYProgress,
+    [0.1, 0.45, 0.75, 1],
+    [shouldReduceMotion ? 0 : -25, 0, 0, shouldReduceMotion ? 0 : 20]
   );
 
-  const line2Y = useTransform(
+  const statementY = useTransform(
     scrollYProgress,
-    [0.18, 0.43, 0.72, 0.95],
-    [shouldReduceMotion ? '0%' : '105%', '0%', '0%', shouldReduceMotion ? '0%' : '-105%']
+    [0.1, 0.45, 0.75, 1],
+    [shouldReduceMotion ? 0 : 35, 0, 0, shouldReduceMotion ? 0 : -25]
   );
 
-  const line3Y = useTransform(
+  const statementOpacity = useTransform(
     scrollYProgress,
-    [0.26, 0.51, 0.72, 0.95],
-    [shouldReduceMotion ? '0%' : '105%', '0%', '0%', shouldReduceMotion ? '0%' : '-105%']
+    [0.08, 0.35, 0.75, 0.98],
+    [shouldReduceMotion ? 1 : 0.2, 1, 1, shouldReduceMotion ? 1 : 0.25]
   );
 
   return (
-    <section
-      ref={sectionRef}
+    <div
+      ref={containerRef}
       id="statement"
-      aria-label="Editorial Statement"
+      aria-label="Statement"
       style={{
         paddingLeft: 'max(20px, 4vw)',
         paddingRight: 'max(20px, 4vw)',
       }}
-      className="relative z-10 w-full select-text min-h-[85vh] sm:min-h-screen flex flex-col justify-center my-48 md:my-64 py-24 scroll-mt-20 md:scroll-mt-24"
+      className="relative z-10 w-full select-text py-28 sm:py-36 md:py-48 lg:py-56 scroll-mt-20 md:scroll-mt-24 overflow-visible"
     >
-      <div className="w-full relative flex flex-col max-w-7xl mx-auto px-0 sm:px-10 lg:px-16">
-        {/* Asymmetric Typographic Composition — A Contemplative Architectural Pause */}
-        <div className="w-full max-w-5xl text-left select-text">
-          {/* Index Colophon */}
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 mb-6 block select-text">
-            03 &mdash; CREDO
-          </span>
+      <div className="w-full relative max-w-7xl mx-auto px-0 sm:px-10 lg:px-16">
+        <motion.div
+          style={{ y: statementY, opacity: statementOpacity }}
+          className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-3 sm:gap-y-4 md:gap-y-5 select-text will-change-transform"
+        >
+          {/* Line 1: Drifts from Left Axis into Optical Balance */}
+          <motion.div
+            style={{ x: line1X }}
+            className="md:col-span-10 lg:col-span-9 md:col-start-1 will-change-transform"
+          >
+            <span className="block font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.85rem] xl:text-[3.35rem] font-medium tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.12] sm:leading-[1.1] select-text">
+              EVERYTHING THAT CAN BE
+            </span>
+          </motion.div>
 
-          {/* Line 1 */}
-          <div className="overflow-hidden py-1">
-            <motion.div
-              style={{ y: line1Y }}
-              className="will-change-transform"
-            >
-              <span className="block font-display text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] font-normal tracking-tight text-neutral-500 dark:text-neutral-400 uppercase leading-[1.1]">
-                EVERYTHING THAT CAN BE
-              </span>
-            </motion.div>
-          </div>
+          {/* Line 2: Opposing Lateral Drift from Right Axis */}
+          <motion.div
+            style={{ x: line2X }}
+            className="md:col-span-10 lg:col-span-9 md:col-start-2 lg:col-start-3 will-change-transform"
+          >
+            <span className="block font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.85rem] xl:text-[3.35rem] font-normal tracking-tight text-neutral-600 dark:text-neutral-400 uppercase leading-[1.12] sm:leading-[1.1] select-text">
+              THOUGHT AT ALL CAN BE
+            </span>
+          </motion.div>
 
-          {/* Line 2 */}
-          <div className="overflow-hidden py-1 mt-2 sm:mt-3 md:mt-4">
-            <motion.div
-              style={{ y: line2Y }}
-              className="will-change-transform"
-            >
-              <span className="block font-display text-2xl sm:text-4xl md:text-5xl lg:text-[3.75rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.02] pl-6 sm:pl-16 md:pl-24 lg:pl-32">
-                THOUGHT AT ALL CAN BE
-              </span>
-            </motion.div>
-          </div>
-
-          {/* Line 3 */}
-          <div className="overflow-hidden py-1 mt-2 sm:mt-3 md:mt-4">
-            <motion.div
-              style={{ y: line3Y }}
-              className="will-change-transform"
-            >
-              <span className="block font-display text-3xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[0.98]">
-                THOUGHT CLEARLY.
-              </span>
-            </motion.div>
-          </div>
-        </div>
+          {/* Line 3: Resolves Rightward with Centered Weight */}
+          <motion.div
+            style={{ x: line3X }}
+            className="md:col-span-9 lg:col-span-8 md:col-start-3 lg:col-start-5 will-change-transform"
+          >
+            <span className="block font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.85rem] xl:text-[3.35rem] font-medium tracking-tight text-neutral-950 dark:text-neutral-100 uppercase leading-[1.12] sm:leading-[1.1] select-text">
+              THOUGHT CLEARLY
+            </span>
+          </motion.div>
+        </motion.div>
       </div>
-    </section>
+    </div>
   );
 }
-
-

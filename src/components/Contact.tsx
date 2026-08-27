@@ -191,28 +191,65 @@
 // }
 
 
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { useIntersectionReveal } from '../hooks/useIntersectionReveal';
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 
 export default function Contact() {
-  const { ref: sectionRef, isVisible } = useIntersectionReveal<HTMLElement>({
-    threshold: 0.15,
-    rootMargin: '0px 0px -60px 0px',
+  const sectionRef = useRef<HTMLElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  // Scroll tracking for Scene 5: Grounded Resolution & Gravitational Convergence
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end end'],
   });
+
+  // Scene 5 Gravitational Convergence
+  const sectionY = useTransform(
+    scrollYProgress,
+    [0, 0.6],
+    [shouldReduceMotion ? 0 : 35, 0]
+  );
+  const sectionOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.45],
+    [shouldReduceMotion ? 1 : 0.2, 1]
+  );
+
+  // Social Links Lateral Convergence
+  const link1X = useTransform(
+    scrollYProgress,
+    [0.1, 0.6],
+    [shouldReduceMotion ? 0 : 45, 0]
+  );
+  const link2X = useTransform(
+    scrollYProgress,
+    [0.15, 0.65],
+    [shouldReduceMotion ? 0 : 45, 0]
+  );
+  const link3X = useTransform(
+    scrollYProgress,
+    [0.2, 0.7],
+    [shouldReduceMotion ? 0 : 45, 0]
+  );
 
   return (
     <section
       id="contact"
       ref={sectionRef}
-      className={`contact-section ${isVisible ? 'is-visible' : ''} bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between pt-16 sm:pt-24 md:pt-32 pb-16 sm:pb-24 md:pb-32 scroll-mt-20 md:scroll-mt-24`}
+      className="bg-[var(--bg-color)] text-[var(--text-color)] relative z-10 flex flex-col justify-between pt-24 sm:pt-36 md:pt-48 pb-20 sm:pb-28 md:pb-36 scroll-mt-20 md:scroll-mt-24"
       style={{ paddingLeft: "max(20px, 4vw)", paddingRight: "max(20px, 4vw)" }}
     >
-      <div className="w-full h-full pt-2 pb-6 bg-[var(--bg-color)] relative flex flex-col justify-between max-w-7xl mx-auto">
+      <motion.div 
+        style={{ y: sectionY, opacity: sectionOpacity }}
+        className="w-full h-full pt-2 pb-6 bg-[var(--bg-color)] relative flex flex-col justify-between max-w-7xl mx-auto will-change-transform"
+      >
 
         {/* Structural Editorial 2-Column Layout Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-12 lg:gap-16 items-start relative z-10 w-full px-0 sm:px-12 lg:px-16 pt-2 md:pt-4 pb-0">
@@ -220,13 +257,13 @@ export default function Contact() {
           {/* Left Column: Micro-label, Heading & Concise Human Context */}
           <div className="md:col-span-7 lg:col-span-7 flex flex-col items-start justify-start text-left gap-4">
             <div className="overflow-hidden">
-              <span className="contact-headline-reveal font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-[1.2] uppercase block mb-3">
-                04 &mdash; CONTACT
+              <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-[1.2] uppercase block mb-3">
+                03 &mdash; CONTACT
               </span>
             </div>
 
             <div className="w-full max-w-2xl overflow-hidden">
-              <h2 className="contact-headline-reveal text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] tracking-tight uppercase leading-[1.02]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] tracking-tight uppercase leading-[1.02]">
                 <span className="block font-display text-neutral-950 dark:text-neutral-50 font-semibold">
                   LET&apos;S BUILD
                 </span>
@@ -237,73 +274,86 @@ export default function Contact() {
             </div>
 
             <div className="mt-3 overflow-hidden">
-              <p className="contact-content-reveal max-w-md w-full whitespace-normal break-words text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 leading-[1.65]">
+              <p className="max-w-md w-full whitespace-normal break-words text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 leading-[1.65]">
                 Always open to interesting ideas, thoughtful conversations, and things worth making.
               </p>
             </div>
           </div>
 
-          {/* Right Column: Prominent Social Links with Staggered Slide-in */}
+          {/* Right Column: Prominent Social Links with Kinetic Lateral Response */}
           <div className="md:col-span-5 lg:col-span-5 flex flex-col items-start md:items-end text-left md:text-right gap-4 md:pt-4">
             <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-md">
+              
               {/* GitHub */}
-              <div className="overflow-hidden">
+              <motion.div
+                style={{ x: link1X }}
+                className="overflow-hidden will-change-transform"
+              >
                 <a
                   href="https://github.com/razanazizieh"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Open Razan's GitHub profile in a new browser tab"
-                  className="contact-content-reveal contact-link-stagger-1 flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:opacity-60 focus:opacity-60 transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none"
+                  className="flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:text-[#FF4500] dark:hover:text-[#FF4500] focus:opacity-60 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none group"
                 >
-                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block">
+                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block group-hover:translate-x-1 md:group-hover:-translate-x-1 transition-transform duration-300 ease-out">
                     GITHUB
                   </span>
                 </a>
-              </div>
+              </motion.div>
 
               {/* LinkedIn */}
-              <div className="overflow-hidden">
+              <motion.div
+                style={{ x: link2X }}
+                className="overflow-hidden will-change-transform"
+              >
                 <a
                   href="https://www.linkedin.com/in/razan-azizieh"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Open Razan's LinkedIn profile in a new browser tab"
-                  className="contact-content-reveal contact-link-stagger-2 flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:opacity-60 focus:opacity-60 transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none"
+                  className="flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:text-[#FF4500] dark:hover:text-[#FF4500] focus:opacity-60 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none group"
                 >
-                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block">
+                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block group-hover:translate-x-1 md:group-hover:-translate-x-1 transition-transform duration-300 ease-out">
                     LINKEDIN
                   </span>
                 </a>
-              </div>
+              </motion.div>
 
               {/* Instagram */}
-              <div className="overflow-hidden">
+              <motion.div
+                style={{ x: link3X }}
+                className="overflow-hidden will-change-transform"
+              >
                 <a
                   href="https://instagram.com/_rraz.a"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Open Razan's Instagram profile in a new browser tab"
-                  className="contact-content-reveal contact-link-stagger-3 flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:opacity-60 focus:opacity-60 transition-opacity duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none"
+                  className="flex items-center justify-between md:justify-end py-2 text-neutral-950 dark:text-neutral-50 hover:text-[#FF4500] dark:hover:text-[#FF4500] focus:opacity-60 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded cursor-pointer select-none group"
                 >
-                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block">
+                  <span className="font-display text-xl sm:text-2xl lg:text-[1.75rem] font-medium leading-tight tracking-tight uppercase inline-block group-hover:translate-x-1 md:group-hover:-translate-x-1 transition-transform duration-300 ease-out">
                     INSTAGRAM
                   </span>
                 </a>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
 
         {/* Minimal Swiss footer */}
-        <footer className="pt-20 sm:pt-24 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-0 sm:px-12 lg:px-16 gap-4">
-          <div className="contact-content-reveal contact-footer-stagger">
+        <footer className="pt-24 sm:pt-32 w-full flex flex-col sm:flex-row justify-between items-start sm:items-center px-0 sm:px-12 lg:px-16 gap-4">
+          <div className="w-full flex justify-between items-center text-left">
             <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 text-left">
               &copy; 2026 RAZAN AZIZIEH &mdash; ALL RIGHTS RESERVED
+            </div>
+            <div className="font-mono text-[11px] tracking-[0.14em] uppercase text-neutral-400 dark:text-neutral-500 hidden sm:block">
+              SYRIA
             </div>
           </div>
         </footer>
 
-      </div>
+      </motion.div>
     </section>
   );
 }

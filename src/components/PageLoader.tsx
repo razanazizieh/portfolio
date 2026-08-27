@@ -18,15 +18,15 @@ export default function PageLoader({ loading }: PageLoaderProps) {
       {loading && (
         <motion.div
           key="page-loader"
+          aria-hidden="true"
           className="page-loader bg-[var(--bg-color)]"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: 'fixed',
-            top: 0,
-            left: 0,
+            inset: 0,
             width: '100vw',
             height: '100vh',
             background: 'var(--bg-color)',
@@ -34,19 +34,20 @@ export default function PageLoader({ loading }: PageLoaderProps) {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
+            pointerEvents: 'none',
           }}
         >
           <motion.div
             id="loader-logo-name"
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -8 }}
+            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="branding-container name logo-container select-none whitespace-nowrap"
+            className="w-full flex justify-center items-center select-none px-4 sm:px-12 text-center"
           >
-            <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold uppercase text-neutral-950 dark:text-neutral-50 tracking-[-0.035em] leading-none select-none">
+            <span className="text-[clamp(2.5rem,8.2vw,8.5rem)] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-[0.88] whitespace-nowrap tracking-[-0.035em] select-none">
               RAZAN AZIZIEH
-            </h1>
+            </span>
           </motion.div>
         </motion.div>
       )}

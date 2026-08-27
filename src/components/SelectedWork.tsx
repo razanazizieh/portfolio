@@ -689,24 +689,26 @@
 // }
 
 
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import React, { useRef, useState, useMemo, useCallback } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { PROJECTS_DATA } from '../data';
+import { MOTION_CURVE_PREMIUM, VIEWPORT_EDITORIAL_CONFIG } from '../utils/motion';
 
 const NOOP = () => {};
 
 export type ProjectCompositionRole = 
-  | 'lead-full'          // Project 01: Full-width high-impact showcase container
-  | 'split-left'         // Project 02: Balanced 2-column asymmetric split (Left 7 cols)
-  | 'split-right'        // Project 03: Balanced 2-column asymmetric split (Right 5 cols)
-  | 'feature-full'       // Project 04: Full-width horizontal feature layout
-  | 'split-left-compact' // Project 05: Balanced 2-column split (Left 5 cols)
-  | 'split-right-wide';  // Project 06: Balanced 2-column split (Right 7 cols)
+  | 'lead-full'          // Full-width high-impact showcase container
+  | 'split-left'         // Balanced 2-column asymmetric split (Left 7 cols)
+  | 'split-right'        // Balanced 2-column asymmetric split (Right 5 cols)
+  | 'feature-full'       // Full-width horizontal feature layout
+  | 'split-left-compact' // Balanced 2-column split (Left 5 cols)
+  | 'split-right-wide';  // Balanced 2-column split (Right 7 cols)
 
 interface ProjectItemProps {
   project: typeof PROJECTS_DATA[0];
@@ -722,7 +724,7 @@ const getRoleClasses = (role: ProjectCompositionRole) => {
   switch (role) {
     case 'lead-full':
       return {
-        container: 'col-span-12 w-full mb-24 sm:mb-32 md:mb-40',
+        container: 'col-span-12 w-full mb-20 sm:mb-28 md:mb-36',
         titleSize: 'text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.65rem]',
         imgWrapper: 'w-full',
         textMax: 'max-w-[65ch]',
@@ -730,7 +732,7 @@ const getRoleClasses = (role: ProjectCompositionRole) => {
       };
     case 'split-left':
       return {
-        container: 'col-span-12 lg:col-span-7 mb-24 sm:mb-32 md:mb-40 flex flex-col justify-between',
+        container: 'col-span-12 lg:col-span-7 mb-20 sm:mb-28 md:mb-36 flex flex-col justify-between',
         titleSize: 'text-xl sm:text-2xl lg:text-[1.85rem]',
         imgWrapper: 'w-full',
         textMax: 'max-w-[52ch]',
@@ -738,7 +740,7 @@ const getRoleClasses = (role: ProjectCompositionRole) => {
       };
     case 'split-right':
       return {
-        container: 'col-span-12 lg:col-span-5 mb-24 sm:mb-32 md:mb-40 flex flex-col justify-between',
+        container: 'col-span-12 lg:col-span-5 mb-20 sm:mb-28 md:mb-36 flex flex-col justify-between',
         titleSize: 'text-xl sm:text-2xl lg:text-[1.85rem]',
         imgWrapper: 'w-full',
         textMax: 'max-w-[48ch]',
@@ -746,7 +748,7 @@ const getRoleClasses = (role: ProjectCompositionRole) => {
       };
     case 'feature-full':
       return {
-        container: 'col-span-12 w-full mb-24 sm:mb-32 md:mb-40',
+        container: 'col-span-12 w-full mb-20 sm:mb-28 md:mb-36',
         titleSize: 'text-2xl sm:text-3xl md:text-[2.25rem] lg:text-[2.65rem]',
         imgWrapper: 'w-full',
         textMax: 'max-w-[65ch]',
@@ -784,23 +786,24 @@ const ProjectItem = React.memo<ProjectItemProps>(({
   const shouldReduceMotion = useReducedMotion();
   const [mouseParallax, setMouseParallax] = useState({ x: 0, y: 0 });
 
-  // Scroll progress for vertical image parallax within clip-path frame
+  // Scroll progress for vertical image parallax within frame
   const { scrollYProgress } = useScroll({
     target: itemRef,
     offset: ['start end', 'end start'],
   });
 
-  // Spatial parallax: smooth vertical translation between -5% and 5%
+  // Spatial parallax: smooth vertical translation between -4% and 4%
   const imageParallaxY = useTransform(
     scrollYProgress,
     [0, 1],
-    [shouldReduceMotion ? '0%' : '-5%', shouldReduceMotion ? '0%' : '5%']
+    [shouldReduceMotion ? '0%' : '-4%', shouldReduceMotion ? '0%' : '4%']
   );
 
-  const itemOpacity = useTransform(
+  // Dynamic clip path reveal on entry
+  const clipProgress = useTransform(
     scrollYProgress,
-    [0, 0.22, 0.85, 1],
-    [shouldReduceMotion ? 1 : 0.25, 1, 1, shouldReduceMotion ? 1 : 0.4]
+    [0, 0.25],
+    [shouldReduceMotion ? 'inset(0% 0% 0% 0%)' : 'inset(10% 0% 10% 0%)', 'inset(0% 0% 0% 0%)']
   );
 
   // Subtle Mouse Parallax on Desktop
@@ -823,6 +826,7 @@ const ProjectItem = React.memo<ProjectItemProps>(({
     <motion.article
       ref={itemRef}
       id={`project-chapter-${project.id}`}
+      layout="position"
       data-project-card="true"
       data-cursor="VIEW"
       tabIndex={0}
@@ -838,16 +842,28 @@ const ProjectItem = React.memo<ProjectItemProps>(({
       onMouseEnter={onHoverStart}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{ opacity: itemOpacity }}
+      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, y: 35 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={VIEWPORT_EDITORIAL_CONFIG}
+      exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: -20, scale: 0.98 }}
+      transition={{
+        duration: shouldReduceMotion ? 0.01 : 0.75,
+        ease: MOTION_CURVE_PREMIUM,
+        layout: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+        delay: shouldReduceMotion ? 0 : Math.min(index * 0.06, 0.24),
+      }}
       className={`group project-card cursor-pointer select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-none flex flex-col ${roleStyle.gap} ${roleStyle.container} will-change-transform`}
     >
-      {/* Project Image Container with Parallax Clip-Path Frame */}
-      <div className={`relative w-full bg-neutral-100 dark:bg-neutral-900/50 overflow-hidden will-change-transform ${roleStyle.imgWrapper}`}>
+      {/* Project Image Container with Smooth Parallax & Viewport Scale-Up */}
+      <motion.div 
+        style={{ clipPath: clipProgress }}
+        className={`relative w-full bg-neutral-100 dark:bg-neutral-900/50 overflow-hidden will-change-transform ${roleStyle.imgWrapper}`}
+      >
         {project.image && (
           <motion.div 
             style={{
               y: imageParallaxY,
-              scale: shouldReduceMotion ? 1 : 1.1,
+              scale: shouldReduceMotion ? 1 : 1.08,
               transform: `translate3d(${mouseParallax.x}px, ${mouseParallax.y}px, 0)`,
               transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
@@ -859,12 +875,12 @@ const ProjectItem = React.memo<ProjectItemProps>(({
               loading={isPriority ? "eager" : "lazy"}
               fetchPriority={isPriority ? "high" : "auto"}
               decoding="async"
-              className="project-inner-img w-full h-auto object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.015]"
+              className="project-inner-img w-full h-auto object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.02]"
               referrerPolicy="no-referrer"
             />
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
       {/* Project Meta & Typography with High-Contrast Editorial Hierarchy */}
       <div className="flex flex-col gap-2 sm:gap-2.5 text-left w-full select-text">
@@ -918,7 +934,7 @@ export default function SelectedWork({
   const headerY = useTransform(
     scrollYProgress,
     [0, 1],
-    [shouldReduceMotion ? 0 : 30, 0]
+    [shouldReduceMotion ? 0 : 25, 0]
   );
   const headerOpacity = useTransform(
     scrollYProgress,
@@ -946,21 +962,21 @@ export default function SelectedWork({
     };
   }, []);
 
-  // Strict Editorial Gallery Sequence:
-  // 1. Lead Full (Project 1)
-  // 2. Split Left 7 cols (Project 2)
-  // 3. Split Right 5 cols (Project 3)
-  // 4. Feature Full (Project 4)
-  // 5. Split Left 5 cols (Project 5)
-  // 6. Split Right 7 cols (Project 6)
-  const ROLES_SEQUENCE: ProjectCompositionRole[] = [
-    'lead-full',
-    'split-left',
-    'split-right',
-    'feature-full',
-    'split-left-compact',
-    'split-right-wide',
-  ];
+  const getDynamicRole = useCallback((index: number, totalCount: number): ProjectCompositionRole => {
+    if (totalCount === 1) return 'lead-full';
+    if (totalCount === 2) {
+      return index === 0 ? 'split-left' : 'split-right';
+    }
+    const sequence: ProjectCompositionRole[] = [
+      'lead-full',
+      'split-left',
+      'split-right',
+      'feature-full',
+      'split-left-compact',
+      'split-right-wide',
+    ];
+    return sequence[index % sequence.length];
+  }, []);
 
   return (
     <section
@@ -977,19 +993,64 @@ export default function SelectedWork({
         
         {/* Restrained Editorial Section Header */}
         <motion.div
+          variants={{
+            hidden: { opacity: shouldReduceMotion ? 1 : 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: shouldReduceMotion ? 0 : 0.08,
+                delayChildren: shouldReduceMotion ? 0 : 0.04,
+              },
+            },
+          }}
+          initial="hidden"
+          whileInView="visible"
+          viewport={VIEWPORT_EDITORIAL_CONFIG}
           style={{ y: headerY, opacity: headerOpacity }}
           className="flex flex-col items-start text-left w-full mb-16 sm:mb-20 md:mb-28 will-change-transform"
         >
-          <span className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-none uppercase block mb-3 sm:mb-4">
+          <motion.span
+            variants={{
+              hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: shouldReduceMotion ? 0.01 : 0.75, ease: MOTION_CURVE_PREMIUM },
+              },
+            }}
+            className="font-mono text-[11px] text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.14em] leading-none uppercase block mb-3 sm:mb-4"
+          >
             02 &mdash; SELECTED WORKS
-          </span>
+          </motion.span>
 
-          <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.05] select-text mb-6 sm:mb-8">
+          <motion.h2
+            variants={{
+              hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 25 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: shouldReduceMotion ? 0.01 : 0.75, ease: MOTION_CURVE_PREMIUM },
+              },
+            }}
+            className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.05] select-text mb-6 sm:mb-8"
+          >
             PORTFOLIO
-          </h2>
+          </motion.h2>
 
-          {/* Typographic Filter Controls */}
-          <div className="flex items-center justify-start gap-5 sm:gap-7 pb-2 w-full overflow-x-auto no-scrollbar flex-nowrap font-mono text-[11px] tracking-[0.14em] uppercase">
+          {/* Typographic Filter Controls with Active Pill Indicator */}
+          <motion.div 
+            variants={{
+              hidden: { opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 15 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: shouldReduceMotion ? 0.01 : 0.7, ease: MOTION_CURVE_PREMIUM },
+              },
+            }}
+            role="tablist"
+            aria-label="Filter projects by discipline"
+            className="flex items-center justify-start gap-4 sm:gap-6 pb-2 w-full overflow-x-auto no-scrollbar flex-nowrap font-mono text-[11px] tracking-[0.14em] uppercase"
+          >
             {(['ALL', 'FULL-STACK', 'CODE', 'UI'] as const).map((filterValue) => {
               const count = filterCounts[filterValue];
               const isActive = activeFilter === filterValue;
@@ -998,43 +1059,59 @@ export default function SelectedWork({
                 <button
                   key={filterValue}
                   type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls="works-gallery-grid"
                   onClick={() => setActiveFilter(filterValue)}
-                  aria-pressed={isActive}
-                  className={`transition-colors duration-150 ease-out cursor-pointer flex items-center gap-1.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 py-1 whitespace-nowrap shrink-0 ${
+                  className={`relative py-1.5 px-2.5 transition-colors duration-200 ease-out cursor-pointer flex items-center gap-1.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'text-neutral-950 dark:text-neutral-50 font-semibold'
                       : 'text-neutral-500 dark:text-neutral-400 font-normal hover:text-neutral-950 dark:hover:text-neutral-50'
                   }`}
                 >
+                  {/* Subtle animated active underline / indicator */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeFilterIndicator"
+                      transition={{ duration: 0.35, ease: MOTION_CURVE_PREMIUM }}
+                      className="absolute inset-0 bg-neutral-100 dark:bg-neutral-900 border-b-2 border-neutral-950 dark:border-neutral-50 -z-10"
+                    />
+                  )}
                   <span>{filterValue}</span>
-                  <span className="text-[10px] opacity-60">({count})</span>
+                  <span className={`text-[10px] ${isActive ? 'opacity-90' : 'opacity-50'}`}>
+                    ({count})
+                  </span>
                 </button>
               );
             })}
-          </div>
+          </motion.div>
         </motion.div>
 
-        {/* Editorial Gallery Grid Layout with Parallax */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 lg:gap-x-12 w-full items-start">
-          {filteredProjects.map((project, index) => {
-            const role = ROLES_SEQUENCE[index % ROLES_SEQUENCE.length];
+        {/* Editorial Gallery Grid Layout with Animated Layout Shifts */}
+        <motion.div
+          id="works-gallery-grid"
+          layout="position"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-x-8 lg:gap-x-12 w-full items-start"
+        >
+          <AnimatePresence mode="popLayout" initial={false}>
+            {filteredProjects.map((project, index) => {
+              const role = getDynamicRole(index, filteredProjects.length);
 
-            return (
-              <ProjectItem
-                key={project.id}
-                project={project}
-                onOpen={handleOpenModal}
-                role={role}
-                isPriority={index === 0}
-                index={index}
-              />
-            );
-          })}
-        </div>
+              return (
+                <ProjectItem
+                  key={project.id}
+                  project={project}
+                  onOpen={handleOpenModal}
+                  role={role}
+                  isPriority={index === 0}
+                  index={index}
+                />
+              );
+            })}
+          </AnimatePresence>
+        </motion.div>
 
       </div>
     </section>
   );
 }
-
-

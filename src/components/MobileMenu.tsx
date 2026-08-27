@@ -102,6 +102,13 @@
 //     </AnimatePresence>
 //   );
 // }
+
+
+
+
+
+
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -109,7 +116,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { getMenuVariants, getLinksContainerVariants, getMenuLinkVariants } from '../utils/motion';
+import { MOTION_CURVE_PREMIUM } from '../utils/motion';
 import { Project } from '../types';
 
 interface MobileMenuProps {
@@ -135,20 +142,52 @@ export default function MobileMenu({
 }: MobileMenuProps) {
   const shouldReduceMotion = useReducedMotion();
 
-  const menuVariants = getMenuVariants(shouldReduceMotion);
-  const linksContainerVariants = getLinksContainerVariants(shouldReduceMotion);
-  const menuLinkVariants = getMenuLinkVariants(shouldReduceMotion);
+  // Restrained overlay transition - quiet fade without heavy movement
+  const overlayVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.24,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.18,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
+  };
 
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [isMobileMenuOpen]);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.04,
+        delayChildren: shouldReduceMotion ? 0 : 0.03,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: shouldReduceMotion ? 0 : 6,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.3,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
+  };
 
   // Close on Escape key
   useEffect(() => {
@@ -164,6 +203,11 @@ export default function MobileMenu({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
+  const handleLinkClick = (e: React.MouseEvent | React.TouchEvent, targetId: string) => {
+    setIsMobileMenuOpen(false);
+    handleNav(e, targetId);
+  };
+
   return (
     <AnimatePresence>
       {isMobileMenuOpen && (
@@ -172,62 +216,59 @@ export default function MobileMenu({
           role="dialog"
           aria-modal="true"
           aria-label="Navigation Menu"
-          variants={menuVariants}
+          variants={overlayVariants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-40 bg-[#FAFAFA] dark:bg-[#0A0A0A] flex flex-col justify-between pt-28 pb-10 md:hidden text-left select-none"
+          className="fixed inset-0 z-40 bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col justify-start pt-24 sm:pt-28 pb-8 md:hidden text-left select-none overflow-y-auto"
           style={{
-            paddingLeft: 'max(20px, 4vw)',
-            paddingRight: 'max(20px, 4vw)',
+            paddingLeft: 'max(16px, 4vw)',
+            paddingRight: 'max(16px, 4vw)',
+            touchAction: 'manipulation',
           }}
         >
-          {/* Confident Editorial Mobile Navigation Stack */}
+          {/* Refined Compact Editorial Navigation */}
           <motion.nav
-            variants={linksContainerVariants}
-            className="flex-1 flex flex-col justify-center w-full space-y-6 sm:space-y-7 text-left"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col items-start gap-2 sm:gap-3 w-full py-4 text-left"
           >
             {NAV_ITEMS.map((item) => {
-              const isActive = (item.id === 'works' && !!activeCaseStudy) || (activeSection === item.id && !activeCaseStudy);
+              const isActive =
+                (item.id === 'works' && !!activeCaseStudy) ||
+                (activeSection === item.id && !activeCaseStudy);
 
               return (
                 <motion.div
                   key={item.id}
-                  variants={menuLinkVariants}
-                  className="w-full text-left overflow-hidden"
+                  variants={itemVariants}
+                  className="w-full text-left"
                 >
-                  <a
-                    href={`#${item.id}`}
-                    onClick={(e) => {
-                      setIsMobileMenuOpen(false);
-                      handleNav(e, item.id);
-                    }}
+                  <button
+                    type="button"
+                    onClick={(e) => handleLinkClick(e, item.id)}
                     aria-label={`Navigate to ${item.label} section`}
-                    className={`inline-block py-1 font-display text-2xl sm:text-3xl font-medium tracking-tight uppercase transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none ${
+                    className={`min-h-[44px] py-1.5 px-2 -ml-2 flex items-center transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none text-left group ${
                       isActive
-                        ? 'text-neutral-950 dark:text-neutral-50 font-semibold'
-                        : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
+                        ? 'text-neutral-950 dark:text-neutral-50'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
                     }`}
                   >
-                    {item.label}
-                  </a>
+                    <span
+                      className={`font-display text-lg sm:text-xl font-medium tracking-tight uppercase leading-tight transition-transform duration-200 ease-out ${
+                        isActive
+                          ? 'text-neutral-950 dark:text-neutral-50'
+                          : 'group-hover:translate-x-1'
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                  </button>
                 </motion.div>
               );
             })}
           </motion.nav>
-
-          {/* Bottom Monospace Metadata (No decorative dividers or separators) */}
-          <motion.div
-            variants={menuLinkVariants}
-            className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
-          >
-            <div className="font-mono text-[11px] sm:text-xs tracking-[0.12em] leading-normal uppercase text-neutral-500 dark:text-neutral-400 font-medium">
-              M.SC. MATHEMATICS &amp; CS
-            </div>
-            <div className="font-mono text-[11px] sm:text-xs tracking-[0.12em] leading-normal uppercase text-neutral-400 dark:text-neutral-500">
-              PORTFOLIO &lsquo;26
-            </div>
-          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>
