@@ -1339,8 +1339,8 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
         )}
 
         {/* Editorial Bottom Navigation */}
-        <div className="mt-16 sm:mt-24 select-none pt-8">
-          <div className="flex flex-wrap items-center justify-between gap-4 sm:gap-6 w-full">
+        <div className="mt-16 sm:mt-24 select-none pt-8 border-t border-neutral-200/40 dark:border-neutral-800/40">
+          <div className="flex items-center justify-between gap-4 sm:gap-6 w-full">
             {/* Previous Project Link */}
             <button
               onPointerDown={(e) => {
@@ -1355,9 +1355,10 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                 }
               }}
               aria-label={`Go to previous project: ${prevProject.title}`}
-              className="font-mono font-medium text-xs tracking-[0.12em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center bg-transparent border-none outline-none py-1 select-none whitespace-nowrap"
+              className="font-mono font-medium text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center gap-2 bg-transparent border-none outline-none py-1 select-none whitespace-nowrap group"
             >
-              <span>PREVIOUS ({prevProject.title})</span>
+              <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:-translate-x-1">&larr;</span>
+              <span>PREVIOUS</span>
             </button>
             
             {/* Next Project Link */}
@@ -1374,9 +1375,10 @@ export default function ProjectCaseStudy({ project, activeFilter = 'ALL', onClos
                 }
               }}
               aria-label={`Go to next project: ${nextProject.title}`}
-              className="font-mono font-medium text-xs tracking-[0.12em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center bg-transparent border-none outline-none py-1 select-none whitespace-nowrap"
+              className="font-mono font-medium text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center gap-2 bg-transparent border-none outline-none py-1 select-none whitespace-nowrap group"
             >
-              <span>NEXT ({nextProject.title})</span>
+              <span>NEXT</span>
+              <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1">&rarr;</span>
             </button>
           </div>
         </div>
