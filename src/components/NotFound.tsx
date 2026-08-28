@@ -90,8 +90,8 @@ export default function NotFound({ handleNav }: NotFoundProps) {
             }}
             className="font-sans text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 max-w-[42ch] mx-auto leading-[1.65]"
           >
-            Work in progress. Great things take a little time (and coffee). Back
-            very soon!
+            Work in progress. Great things take a little time (and coffee ☕).
+            Back very soon! 🤍 very soon!
           </motion.p>
         </div>
 
