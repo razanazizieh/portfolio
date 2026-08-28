@@ -62,7 +62,7 @@ export default function NotFound({ handleNav }: NotFoundProps) {
             NOT FOUND
           </motion.div>
 
-          <motion.p
+          {/* <motion.p
             initial={{
               y: shouldReduceMotion ? 0 : 20,
               opacity: shouldReduceMotion ? 1 : 0,
@@ -76,11 +76,27 @@ export default function NotFound({ handleNav }: NotFoundProps) {
             className="font-sans text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 max-w-[42ch] mx-auto leading-[1.65]"
           >
             The page you are looking for does not exist or has been relocated.
+          </motion.p> */}
+          <motion.p
+            initial={{
+              y: shouldReduceMotion ? 0 : 20,
+              opacity: shouldReduceMotion ? 1 : 0,
+            }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{
+              duration: shouldReduceMotion ? 0.01 : 0.6,
+              ease: MOTION_CURVE_PREMIUM,
+              delay: 0.14,
+            }}
+            className="font-sans text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 max-w-[42ch] mx-auto leading-[1.65]"
+          >
+            Work in progress. Great things take a little time (and coffee). Back
+            very soon!
           </motion.p>
         </div>
 
         {/* Clear Return Route */}
-        <motion.div
+        {/* <motion.div
           initial={{
             y: shouldReduceMotion ? 0 : 20,
             opacity: shouldReduceMotion ? 1 : 0,
@@ -100,7 +116,7 @@ export default function NotFound({ handleNav }: NotFoundProps) {
           >
             RETURN HOME
           </button>
-        </motion.div>
+        </motion.div> */}
       </div>
     </div>
   );
