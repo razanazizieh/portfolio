@@ -50,43 +50,7 @@ export const PROJECTS_DATA: Project[] = [
     live: "https://razanazizieh.github.io/vortex/",
     repository: "https://github.com/razanazizieh/vortex",
   },
-  {
-    id: "bilingual-engine",
-    title: "BILINGUAL PORTFOLIO ENGINE",
-    category: "FULL-STACK",
-    year: "2026",
-    projectType: "Full Stack",
-    overview:
-      "A premium dark-mode portfolio system engineered to balance a high-end editorial structural layout with deep technical presentation.",
-    challenge:
-      "Using rich typography layout transitions with multi-language synchronization usually results in slow runtime content switching, broken inline alignments, or heavy cumulative layout shifts (CLS).",
-    solution:
-      "Created an extremely lightweight, key-value translation infrastructure in Vanilla JavaScript, maintaining strict CSS baseline alignments across both languages while preserving premium clip-path and fade reveal animation states.",
-    myRole:
-      "Leveraged Stitches for the initial UI orchestration, then manually refactored the entire codebase in VS Code. Designed additional clean utility pages, engineered the bilingual translation infrastructure, and fully optimized the site for SEO, Accessibility (A11y), and fluid responsiveness.",
-    technicalHighlights: [
-      "Bespoke manual code refinement and refactoring in VS Code",
-      "Custom-built JavaScript translation architecture (EN/DE)",
-      "Fully integrated legal compliance utility pages",
-    ],
-    technology: [
-      "HTML5",
-      "CSS3",
-      "Tailwind CSS",
-      "Vanilla JavaScript",
-      "Stitches",
-    ],
-    image: sarahPortfolioImage,
-    gallery: [
-      { label: "Bilingual Landing Layout", image: sarahPortfolioImage },
-      { label: "Integrated Localization Framework", image: specimenImage },
-      { label: "System Layout & Interface Detail", image: razanLegacyImage },
-    ],
-    impact:
-      "A production-ready bilingual portfolio engine featuring high typography readability and smooth language toggling.",
-    live: "https://razanazizieh.github.io/sarah-portfolio/",
-    repository: "https://github.com/razanazizieh/sarah-portfolio",
-  },
+
   {
     id: "minimalist-portfolio",
     title: "MINIMALIST CANVAS PORTFOLIO",
@@ -150,6 +114,43 @@ export const PROJECTS_DATA: Project[] = [
     impact:
       "A polished visual prototype demonstrating advanced full-page layout composition and modern UI design aesthetics.",
     // live: "#",
+  },
+  {
+    id: "bilingual-engine",
+    title: "BILINGUAL PORTFOLIO ENGINE",
+    category: "FULL-STACK",
+    year: "2026",
+    projectType: "Full Stack",
+    overview:
+      "A premium dark-mode portfolio system engineered to balance a high-end editorial structural layout with deep technical presentation.",
+    challenge:
+      "Using rich typography layout transitions with multi-language synchronization usually results in slow runtime content switching, broken inline alignments, or heavy cumulative layout shifts (CLS).",
+    solution:
+      "Created an extremely lightweight, key-value translation infrastructure in Vanilla JavaScript, maintaining strict CSS baseline alignments across both languages while preserving premium clip-path and fade reveal animation states.",
+    myRole:
+      "Leveraged Stitches for the initial UI orchestration, then manually refactored the entire codebase in VS Code. Designed additional clean utility pages, engineered the bilingual translation infrastructure, and fully optimized the site for SEO, Accessibility (A11y), and fluid responsiveness.",
+    technicalHighlights: [
+      "Bespoke manual code refinement and refactoring in VS Code",
+      "Custom-built JavaScript translation architecture (EN/DE)",
+      "Fully integrated legal compliance utility pages",
+    ],
+    technology: [
+      "HTML5",
+      "CSS3",
+      "Tailwind CSS",
+      "Vanilla JavaScript",
+      "Stitches",
+    ],
+    image: sarahPortfolioImage,
+    gallery: [
+      { label: "Bilingual Landing Layout", image: sarahPortfolioImage },
+      { label: "Integrated Localization Framework", image: specimenImage },
+      { label: "System Layout & Interface Detail", image: razanLegacyImage },
+    ],
+    impact:
+      "A production-ready bilingual portfolio engine featuring high typography readability and smooth language toggling.",
+    live: "https://razanazizieh.github.io/sarah-portfolio/",
+    repository: "https://github.com/razanazizieh/sarah-portfolio",
   },
 ];
 // export const PROJECTS_DATA: Project[] = [

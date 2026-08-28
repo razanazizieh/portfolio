@@ -1,10 +1,5 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import React from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 
 interface PageLoaderProps {
   loading: boolean;
@@ -25,16 +20,16 @@ export default function PageLoader({ loading }: PageLoaderProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            position: 'fixed',
+            position: "fixed",
             inset: 0,
-            width: '100vw',
-            height: '100vh',
-            background: 'var(--bg-color)',
+            width: "100vw",
+            height: "100vh",
+            background: "var(--bg-color)",
             zIndex: 9999,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            pointerEvents: 'none',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            pointerEvents: "none",
           }}
         >
           <motion.div

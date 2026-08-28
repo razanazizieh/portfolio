@@ -1,15 +1,10 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from 'react';
-import { motion, useScroll, useSpring, useReducedMotion } from 'motion/react';
+import React from "react";
+import { motion, useScroll, useSpring, useReducedMotion } from "motion/react";
 
 export default function ScrollProgressBar() {
   const shouldReduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
-  
+
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 400,
     damping: 40,
@@ -25,14 +20,9 @@ export default function ScrollProgressBar() {
   );
 }
 
-
-
-
 // import React from 'react';
 
 // export default function ScrollProgressBar() {
 //   // Orange top border removed per minimal editorial specifications
 //   return null;
 // }
-
-

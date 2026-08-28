@@ -1,14 +1,9 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import React from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 
 interface ThemeToggleProps {
-  theme: 'dark' | 'light';
-  setTheme: React.Dispatch<React.SetStateAction<'dark' | 'light'>>;
+  theme: "dark" | "light";
+  setTheme: React.Dispatch<React.SetStateAction<"dark" | "light">>;
   className?: string;
   onMouseEnter?: () => void;
   style?: React.CSSProperties;
@@ -17,14 +12,14 @@ interface ThemeToggleProps {
 export default function ThemeToggle({
   theme,
   setTheme,
-  className = '',
+  className = "",
   onMouseEnter,
   style,
 }: ThemeToggleProps) {
   const shouldReduceMotion = useReducedMotion();
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (
@@ -38,8 +33,16 @@ export default function ThemeToggle({
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={theme}
-          initial={shouldReduceMotion ? { opacity: 0 } : { rotate: -45, opacity: 0, scale: 0.82 }}
-          animate={shouldReduceMotion ? { opacity: 1 } : { rotate: 0, opacity: 1, scale: 1 }}
+          initial={
+            shouldReduceMotion
+              ? { opacity: 0 }
+              : { rotate: -45, opacity: 0, scale: 0.82 }
+          }
+          animate={
+            shouldReduceMotion
+              ? { opacity: 1 }
+              : { rotate: 0, opacity: 1, scale: 1 }
+          }
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className="flex items-center justify-center font-sans text-sm leading-none select-none font-normal"
         >

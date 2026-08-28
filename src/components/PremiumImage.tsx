@@ -1,11 +1,9 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import { VIEWPORT_EDITORIAL_CONFIG, MOTION_CURVE_PREMIUM } from '../utils/motion';
+import React, { useState } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import {
+  VIEWPORT_EDITORIAL_CONFIG,
+  MOTION_CURVE_PREMIUM,
+} from "../utils/motion";
 
 interface PremiumImageProps {
   src: string;
@@ -19,8 +17,8 @@ interface PremiumImageProps {
 export default function PremiumImage({
   src,
   alt,
-  className = '',
-  aspectRatio = '',
+  className = "",
+  aspectRatio = "",
   isPriority = false,
 }: PremiumImageProps) {
   const shouldReduceMotion = useReducedMotion();
@@ -42,7 +40,7 @@ export default function PremiumImage({
       className={`relative w-full select-none cursor-default ${aspectRatio} bg-transparent border-none outline-none shadow-none p-0 m-0 overflow-hidden will-change-[transform,opacity]`}
     >
       <div
-        className={`relative w-full ${aspectRatio ? 'h-full overflow-hidden' : 'h-auto'} bg-transparent p-0 m-0 flex items-center justify-center overflow-hidden`}
+        className={`relative w-full ${aspectRatio ? "h-full overflow-hidden" : "h-auto"} bg-transparent p-0 m-0 flex items-center justify-center overflow-hidden`}
       >
         {/* Skeleton placeholder during initial load */}
         <AnimatePresence>
@@ -71,11 +69,14 @@ export default function PremiumImage({
           initial={{ scale: shouldReduceMotion ? 1 : 1.08 }}
           whileInView={{ scale: 1 }}
           viewport={VIEWPORT_EDITORIAL_CONFIG}
-          transition={{ duration: shouldReduceMotion ? 0.01 : 1.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: shouldReduceMotion ? 0.01 : 1.2,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           className={`w-full h-auto max-h-full ${
-            className.includes('object-') ? '' : 'object-contain object-top'
+            className.includes("object-") ? "" : "object-contain object-top"
           } transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
+            isLoaded ? "opacity-100" : "opacity-0"
           } ${className} will-change-transform`}
           referrerPolicy="no-referrer"
         />

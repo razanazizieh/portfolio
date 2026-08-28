@@ -39,9 +39,54 @@ export const VIEWPORT_EDITORIAL_CONFIG = {
 
 export const VIEWPORT_ONCE_CONFIG = {
   once: false,
-  amount: 0.05,
-  margin: "0px 0px -12% 0px",
+  amount: 0.08,
+  margin: "0px 0px -10% 0px",
 } as const;
+
+export const SECTION_SCROLL_REVEAL_CONTAINER = (stagger = 0.08, delay = 0, shouldReduceMotion = false) => ({
+  hidden: { opacity: shouldReduceMotion ? 1 : 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: shouldReduceMotion ? 0 : stagger,
+      delayChildren: shouldReduceMotion ? 0 : delay,
+    },
+  },
+});
+
+export const SECTION_SLIDE_UP_VARIANTS = (offset = 36, delay = 0, shouldReduceMotion = false) => ({
+  hidden: {
+    opacity: shouldReduceMotion ? 1 : 0,
+    y: shouldReduceMotion ? 0 : offset,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.85,
+      ease: MOTION_CURVE_PREMIUM,
+      delay: shouldReduceMotion ? 0 : delay,
+    },
+  },
+});
+
+export const BIO_LINE_WIPE_VARIANTS = (offset = 32, delay = 0, shouldReduceMotion = false) => ({
+  hidden: {
+    opacity: shouldReduceMotion ? 1 : 0,
+    y: shouldReduceMotion ? 0 : offset,
+    clipPath: shouldReduceMotion ? 'none' : 'inset(0% 0% 100% 0%)',
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    clipPath: 'inset(0% 0% 0% 0%)',
+    transition: {
+      duration: shouldReduceMotion ? 0.01 : 0.9,
+      ease: MOTION_CURVE_CINEMATIC,
+      delay: shouldReduceMotion ? 0 : delay,
+    },
+  },
+});
 
 export const FADE_UP_VARIANTS = (delay = 0, shouldReduceMotion = false) => ({
   hidden: {

@@ -1,21 +1,16 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
-import gsap from 'gsap';
+import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import gsap from "gsap";
 
 export default function ContextualCursorPill() {
   const shouldReduceMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(false);
-  const [activeLabel, setActiveLabel] = useState<string>('');
+  const [activeLabel, setActiveLabel] = useState<string>("");
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   const cursorRef = useRef<HTMLDivElement>(null);
   const isVisibleRef = useRef(false);
-  const activeLabelRef = useRef('');
+  const activeLabelRef = useRef("");
 
   // GSAP quickTo setters for weight-based inertial physics
   const xTo = useRef<((value: number) => void) | null>(null);
@@ -23,7 +18,7 @@ export default function ContextualCursorPill() {
 
   useEffect(() => {
     // Detect touch / coarse pointer devices
-    const mediaQuery = window.matchMedia('(hover: none) or (pointer: coarse)');
+    const mediaQuery = window.matchMedia("(hover: none) or (pointer: coarse)");
     setIsTouchDevice(mediaQuery.matches);
 
     const handleMediaChange = (e: MediaQueryListEvent) => {
@@ -31,7 +26,7 @@ export default function ContextualCursorPill() {
     };
 
     if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleMediaChange);
+      mediaQuery.addEventListener("change", handleMediaChange);
     }
 
     if (mediaQuery.matches || shouldReduceMotion) {
@@ -40,11 +35,22 @@ export default function ContextualCursorPill() {
 
     if (cursorRef.current) {
       // Set initial centering transform via GSAP
-      gsap.set(cursorRef.current, { xPercent: -50, yPercent: -50, x: -100, y: -100 });
+      gsap.set(cursorRef.current, {
+        xPercent: -50,
+        yPercent: -50,
+        x: -100,
+        y: -100,
+      });
 
       // Initialize quickTo setters with cinematic easing curve
-      xTo.current = gsap.quickTo(cursorRef.current, "x", { duration: 0.35, ease: "power3.out" });
-      yTo.current = gsap.quickTo(cursorRef.current, "y", { duration: 0.35, ease: "power3.out" });
+      xTo.current = gsap.quickTo(cursorRef.current, "x", {
+        duration: 0.35,
+        ease: "power3.out",
+      });
+      yTo.current = gsap.quickTo(cursorRef.current, "y", {
+        duration: 0.35,
+        ease: "power3.out",
+      });
     }
 
     const handlePointerMove = (e: PointerEvent) => {
@@ -63,9 +69,9 @@ export default function ContextualCursorPill() {
       }
 
       // Check if pointer is within a designated contextual zone
-      const zone = target.closest('[data-cursor]');
+      const zone = target.closest("[data-cursor]");
       if (zone) {
-        const label = zone.getAttribute('data-cursor');
+        const label = zone.getAttribute("data-cursor");
         if (label) {
           if (!isVisibleRef.current) {
             isVisibleRef.current = true;
@@ -92,15 +98,22 @@ export default function ContextualCursorPill() {
       }
     };
 
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    document.documentElement.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, {
+      passive: true,
+    });
+    document.documentElement.addEventListener("mouseleave", handleMouseLeave, {
+      passive: true,
+    });
 
     return () => {
       if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener('change', handleMediaChange);
+        mediaQuery.removeEventListener("change", handleMediaChange);
       }
-      window.removeEventListener('pointermove', handlePointerMove);
-      document.documentElement.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener(
+        "mouseleave",
+        handleMouseLeave,
+      );
     };
   }, [shouldReduceMotion]);
 

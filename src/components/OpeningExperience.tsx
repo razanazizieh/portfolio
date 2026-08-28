@@ -182,10 +182,7 @@
 //   );
 // }
 
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+ 
 
 import React, { useCallback, useRef } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
@@ -259,15 +256,15 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
       tabIndex={0}
       role="button"
       style={{
-        paddingLeft: 'max(20px, 4vw)',
-        paddingRight: 'max(20px, 4vw)',
+        paddingLeft: 'max(16px, 4vw)',
+        paddingRight: 'max(16px, 4vw)',
       }}
       className="relative w-full min-h-[82vh] lg:min-h-[88vh] bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300 font-sans flex flex-col justify-between pt-28 sm:pt-36 md:pt-40 lg:pt-48 pb-20 sm:pb-24 md:pb-28 lg:pb-32 overflow-hidden cursor-default focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF4500]"
     >
       {/* Strict Swiss Editorial Grid Canvas with Continuous Spatial Parallax */}
       <motion.div
         style={{ scale: heroScale, y: heroY, opacity: heroOpacity }}
-        className="w-full max-w-7xl mx-auto flex flex-col justify-between flex-grow px-0 sm:px-12 lg:px-16 will-change-transform"
+        className="w-full max-w-7xl mx-auto flex flex-col justify-between flex-grow px-0 sm:px-8 lg:px-12 will-change-transform"
       >
 
         {/* 1. Identity Anchor: Personal Masthead Mark */}
@@ -306,7 +303,7 @@ export default function OpeningExperience({ onCtaClick }: OpeningExperienceProps
           >
             <div className="overflow-hidden inline-block">
               <span className="hero-curtain-line hero-curtain-delay-1 font-mono text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-[0.16em] leading-none select-text">
-                DIGITAL CRAFT &amp; CODE
+                APPLIED MATHEMATICS &amp; FRONT-END ENGINEERING
               </span>
             </div>
           </motion.div>

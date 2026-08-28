@@ -1,15 +1,13 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React from 'react';
-import { motion, useReducedMotion } from 'motion/react';
-import { MOTION_CURVE_PREMIUM, VIEWPORT_EDITORIAL_CONFIG } from '../utils/motion';
+import React from "react";
+import { motion, useReducedMotion } from "motion/react";
+import {
+  MOTION_CURVE_PREMIUM,
+  VIEWPORT_EDITORIAL_CONFIG,
+} from "../utils/motion";
 
 interface RevealHeadingProps {
   text: string;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span';
+  as?: "h1" | "h2" | "h3" | "h4" | "p" | "span";
   className?: string;
   wordClassName?: string;
   stagger?: number;
@@ -20,8 +18,8 @@ interface RevealHeadingProps {
 
 export default function RevealHeading({
   text,
-  as = 'h2',
-  className = '',
+  as = "h2",
+  className = "",
   delay = 0,
   cursorData,
 }: RevealHeadingProps) {
@@ -32,7 +30,10 @@ export default function RevealHeading({
     <div className="overflow-hidden w-full">
       <MotionComponent
         data-cursor={cursorData}
-        initial={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 45 }}
+        initial={{
+          opacity: shouldReduceMotion ? 1 : 0,
+          y: shouldReduceMotion ? 0 : 45,
+        }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={VIEWPORT_EDITORIAL_CONFIG}
         transition={{
@@ -47,4 +48,3 @@ export default function RevealHeading({
     </div>
   );
 }
-
