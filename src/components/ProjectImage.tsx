@@ -1,173 +1,265 @@
-import React, { useEffect, useState, useRef, useMemo, memo } from "react";
-import { motion, MotionValue, useReducedMotion } from "motion/react";
-import { EditorialArchetype } from "./ProjectCard";
+import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import { motion, AnimatePresence, useReducedMotion, MotionValue } from 'motion/react';
+import { EditorialArchetype } from './ProjectCard';
+import { RhythmPreset, ImageRhythmProfile } from '../types';
+import { getResponsiveImageProps } from '../assets/imageManifest';
+
+export type RhythmFamily = 'monumental' | 'detail' | 'interruption' | 'quiet';
 
 interface ProjectImageSequenceProps {
   images: string[];
   title: string;
   aspectClass: string;
-  archetype: EditorialArchetype;
+  archetype?: EditorialArchetype;
   scrollYProgress?: MotionValue<number>;
   containerClipPath?: MotionValue<string>;
+  containerScale?: MotionValue<number>;
+  containerOpacity?: MotionValue<number>;
   mouseParallax?: { x: number; y: number };
   isPriority?: boolean;
+  isHeroFeatured?: boolean;
   projectIndex?: number;
   isHovered?: boolean;
+  fit?: 'cover' | 'contain';
+  rhythm?: RhythmPreset | Partial<ImageRhythmProfile>;
+  rhythmFamily?: RhythmFamily;
   className?: string;
+  id?: string;
+  isInView?: boolean;
 }
 
-export const ProjectImage = memo<ProjectImageSequenceProps>(
-  ({
-    images,
-    title,
-    aspectClass,
-    archetype: _archetype,
-    scrollYProgress: _scrollYProgress,
-    containerClipPath,
-    mouseParallax = { x: 0, y: 0 },
-    isPriority = false,
-    projectIndex = 0,
-    isHovered: _isHovered = false,
-    className = "",
-  }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const shouldReduceMotion = useReducedMotion();
-    const [activeFrameIndex, setActiveFrameIndex] = useState(0);
-    const [isInView, setIsInView] = useState(false);
+// Compute deterministic, authored intervals and phase delays for each project
+function computeProjectRhythm(keySeed: string, index: number = 0) {
+  let hash = 0;
+  const str = keySeed || `project-${index}`;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const absHash = Math.abs(hash);
 
-    // Deduplicate and filter valid image URLs (First frame is always the primary cover)
-    const validFrames = useMemo(() => {
-      const unique = Array.from(new Set(images.filter(Boolean)));
-      return unique.length > 0 ? unique : [""];
-    }, [images]);
+  // Authored sequence intervals (between 2.8s and 3.8s) for a deliberate, cinematic pace
+  const intervalPatterns = [3000, 3600, 3200, 3800, 2900, 3400, 3100];
+  const interval = intervalPatterns[(absHash + index) % intervalPatterns.length];
 
-    // Viewport intersection observer to ensure autonomous cycling runs ONLY when in or near viewport
-    useEffect(() => {
-      const el = containerRef.current;
-      if (!el || typeof IntersectionObserver === "undefined") {
-        setIsInView(true);
-        return;
+  // Authored initial phase offset delays (between 700ms and 2300ms) so projects never cycle synchronously
+  const phasePatterns = [700, 1600, 1000, 2300, 1300, 1900, 850];
+  const initialPhaseDelay = phasePatterns[(absHash + index) % phasePatterns.length];
+
+  return { interval, initialPhaseDelay };
+}
+
+export const ProjectImage = memo<ProjectImageSequenceProps>(({
+  images,
+  title,
+  aspectClass,
+  archetype,
+  containerClipPath,
+  containerScale,
+  containerOpacity,
+  mouseParallax = { x: 0, y: 0 },
+  isPriority = false,
+  isHeroFeatured = false,
+  projectIndex = 0,
+  fit = 'cover',
+  className = '',
+  id,
+  isInView,
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const shouldReduceMotion = useReducedMotion();
+
+  // Self-contained intersection detection with generous root margin if parent doesn't provide isInView
+  const [internalInView, setInternalInView] = useState(false);
+
+  useEffect(() => {
+    if (isInView !== undefined) return;
+    const el = containerRef.current;
+    if (!el || typeof window === 'undefined' || !('IntersectionObserver' in window)) {
+      setInternalInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInternalInView(entry.isIntersecting);
+      },
+      {
+        root: null,
+        rootMargin: '240px 0px 240px 0px', // Pre-activate slightly before entering viewport
+        threshold: 0.05,
       }
+    );
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          setIsInView(entry.isIntersecting);
-        },
-        {
-          rootMargin: "160px 0px 160px 0px",
-          threshold: 0.05,
-        },
-      );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isInView]);
 
-      observer.observe(el);
-      return () => observer.disconnect();
-    }, []);
+  const activeInView = isInView !== undefined ? isInView : internalInView;
 
-    // Preload secondary and tertiary frames for flicker-free, instant transitions
-    useEffect(() => {
-      if (typeof window === "undefined" || validFrames.length <= 1) return;
-      validFrames.slice(1).forEach((src) => {
-        if (!src) return;
+  // Canonical valid frames: images[0] is strictly ALWAYS the cover
+  const frames = useMemo(() => {
+    const list = (images || []).filter(Boolean);
+    const unique = Array.from(new Set(list));
+    return unique.length > 0 ? unique : [''];
+  }, [images]);
+
+  const [activeFrameIndex, setActiveFrameIndex] = useState<number>(0);
+  const totalFrames = frames.length;
+
+  // Compute project-specific authored timing parameters
+  const { interval, initialPhaseDelay } = useMemo(() => {
+    return computeProjectRhythm(id || title, projectIndex);
+  }, [id, title, projectIndex]);
+
+  // Track preloaded frames to avoid redundant network requests
+  const preloadedFramesRef = useRef<Set<number>>(new Set([0]));
+
+  // Preload the next sequence image JUST-IN-TIME (only when card is in view and has multiple frames)
+  useEffect(() => {
+    if (!activeInView || totalFrames <= 1 || shouldReduceMotion) return;
+
+    const nextIndex = (activeFrameIndex + 1) % totalFrames;
+    if (!preloadedFramesRef.current.has(nextIndex)) {
+      preloadedFramesRef.current.add(nextIndex);
+      const nextUrl = frames[nextIndex];
+      if (nextUrl) {
+        const responsive = getResponsiveImageProps(nextUrl, archetype, isHeroFeatured);
         const img = new Image();
-        img.src = src;
-      });
-    }, [validFrames]);
-
-    // Reset to cover frame whenever project or valid frames change
-    useEffect(() => {
-      setActiveFrameIndex(0);
-    }, [validFrames]);
-
-    // Dynamic Kinetic Slideshow Rotation Timer: 2.8s Interval
-    useEffect(() => {
-      if (shouldReduceMotion || validFrames.length <= 1 || !isInView) {
-        return;
+        if (responsive.webpSrcSet) {
+          img.srcset = responsive.webpSrcSet;
+          img.sizes = responsive.sizes;
+        } else if (responsive.srcSet) {
+          img.srcset = responsive.srcSet;
+          img.sizes = responsive.sizes;
+        }
+        img.src = responsive.src;
       }
+    }
+  }, [activeInView, activeFrameIndex, totalFrames, frames, archetype, isHeroFeatured, shouldReduceMotion]);
 
-      // Exact 2.8s interval for lively, responsive rotation
-      const intervalDuration = 2800;
-      // Stagger initial cycle start across projects so cards don't jump simultaneously
-      const initialDelay = 500 + ((projectIndex * 350) % 1000);
+  // Reset to canonical cover whenever the frames array changes (e.g. on filter change)
+  useEffect(() => {
+    setActiveFrameIndex(0);
+    preloadedFramesRef.current = new Set([0]);
+  }, [frames]);
 
-      let intervalId: NodeJS.Timeout | null = null;
+  // Autonomous continuous sequence progression ONLY while active in view
+  useEffect(() => {
+    // If only one frame, reduced motion, or card is off-screen: pause rotation
+    if (totalFrames <= 1 || shouldReduceMotion || !activeInView) {
+      return;
+    }
 
-      const timeoutId = setTimeout(() => {
-        setActiveFrameIndex((prev) => (prev + 1) % validFrames.length);
-        intervalId = setInterval(() => {
-          setActiveFrameIndex((prev) => (prev + 1) % validFrames.length);
-        }, intervalDuration);
-      }, initialDelay);
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let initialTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-      return () => {
-        clearTimeout(timeoutId);
-        if (intervalId) clearInterval(intervalId);
-      };
-    }, [isInView, shouldReduceMotion, validFrames.length, projectIndex]);
+    // Start with authored phase delay so projects don't all cycle synchronously
+    initialTimeoutId = setTimeout(() => {
+      setActiveFrameIndex((prev) => (prev + 1) % totalFrames);
+
+      // Subsequent transitions follow the project's distinct steady interval
+      intervalId = setInterval(() => {
+        setActiveFrameIndex((prev) => (prev + 1) % totalFrames);
+      }, interval);
+    }, initialPhaseDelay);
+
+    return () => {
+      if (initialTimeoutId) clearTimeout(initialTimeoutId);
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [totalFrames, shouldReduceMotion, activeInView, interval, initialPhaseDelay]);
+
+  // Render a responsive, modern WebP picture element with layout stability
+  const renderResponsivePicture = (frameUrl: string, frameIndex: number) => {
+    const isCover = frameIndex === 0;
+    const isEager = isPriority && isCover;
+    const responsive = getResponsiveImageProps(frameUrl, archetype, isHeroFeatured);
 
     return (
-      <motion.div
-        ref={containerRef}
-        style={containerClipPath ? { clipPath: containerClipPath } : undefined}
-        className={`relative w-full ${aspectClass} bg-neutral-100 dark:bg-neutral-900/60 overflow-hidden select-none will-change-transform ${className}`}
-      >
-        {/* Slideshow image layers with smooth cross-fade easing and strict object-cover fit */}
-        {validFrames.map((src, idx) => {
-          const isActive = idx === activeFrameIndex;
-          return (
-            <div
-              key={`${src}-${idx}`}
-              className="w-full h-full absolute inset-0 overflow-hidden pointer-events-none"
-              style={{
-                opacity: isActive ? 1 : 0,
-                zIndex: isActive ? 2 : 1,
-                transform: `translate3d(${mouseParallax.x}px, ${mouseParallax.y}px, 0)`,
-                transition:
-                  "opacity 650ms cubic-bezier(0.16, 1, 0.3, 1), transform 280ms cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-              aria-hidden={!isActive}
-            >
-              <img
-                src={src}
-                alt={
-                  idx === 0
-                    ? `${title} - Primary Frame`
-                    : `${title} - Detail Specimen ${idx}`
-                }
-                loading={isPriority && idx === 0 ? "eager" : "lazy"}
-                fetchPriority={isPriority && idx === 0 ? "high" : "auto"}
-                decoding="async"
-                className="w-full h-full object-cover object-center block select-none transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-          );
-        })}
-
-        {/* Frame indicator dots when multiple images exist */}
-        {validFrames.length > 1 && (
-          <div className="absolute bottom-3 left-3.5 z-10 flex items-center gap-1.5 pointer-events-none">
-            {validFrames.map((_, idx) => (
-              <span
-                key={idx}
-                className={`h-1 transition-all duration-300 ease-out rounded-full ${
-                  idx === activeFrameIndex
-                    ? "w-4 bg-white shadow-sm"
-                    : "w-1 bg-white/40"
-                }`}
-              />
-            ))}
-          </div>
+      <picture className="w-full h-full block pointer-events-none select-none">
+        {responsive.webpSrcSet && (
+          <source
+            type="image/webp"
+            srcSet={responsive.webpSrcSet}
+            sizes={responsive.sizes}
+          />
         )}
-
-        {/* Refined typography hover label: VIEW PROJECT ↗ */}
-        <div className="absolute bottom-3.5 right-3.5 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transform translate-y-1 group-hover:translate-y-0 transition-all duration-300 ease-out">
-          <span className="font-mono text-xs tracking-widest uppercase px-3 py-1.5 bg-neutral-950/85 dark:bg-neutral-900/90 text-white backdrop-blur-md border border-white/15 shadow-sm inline-flex items-center gap-1.5">
-            VIEW
-          </span>
-        </div>
-      </motion.div>
+        {responsive.srcSet && (
+          <source
+            srcSet={responsive.srcSet}
+            sizes={responsive.sizes}
+          />
+        )}
+        <img
+          src={responsive.src}
+          alt={isCover ? `${title} - Specimen` : `${title} - Specimen Frame ${frameIndex + 1}`}
+          loading={isEager ? 'eager' : 'lazy'}
+          fetchPriority={isEager ? 'high' : 'auto'}
+          decoding="async"
+          className={`w-full h-full ${
+            fit === 'contain' ? 'object-contain object-center' : 'object-cover object-top'
+          } block select-none`}
+          referrerPolicy="no-referrer"
+        />
+      </picture>
     );
-  },
-);
+  };
 
-ProjectImage.displayName = "ProjectImage";
+  return (
+    <motion.div
+      ref={containerRef}
+      style={{
+        ...(containerClipPath ? { clipPath: containerClipPath } : {}),
+        ...(containerScale ? { scale: containerScale } : {}),
+        ...(containerOpacity ? { opacity: containerOpacity } : {}),
+      }}
+      className={`relative w-full ${aspectClass} bg-neutral-100 dark:bg-neutral-900/60 overflow-hidden select-none will-change-[transform,clip-path,opacity] ${className}`}
+    >
+      {/* For single frame or reduced motion: Render static canonical cover */}
+      {totalFrames <= 1 || shouldReduceMotion ? (
+        <div className="w-full h-full absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div
+            className="w-full h-full"
+            style={{
+              transform: `translate3d(${mouseParallax.x}px, ${mouseParallax.y}px, 0)`,
+            }}
+          >
+            {renderResponsivePicture(frames[0], 0)}
+          </div>
+        </div>
+      ) : (
+        /* Autonomous continuous multi-frame sequence with calm, continuous crossfade dissolution */
+        <div className="w-full h-full absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <AnimatePresence initial={false} mode="sync">
+            <motion.div
+              key={`${frames[activeFrameIndex]}-${activeFrameIndex}`}
+              initial={{
+                opacity: 0,
+              }}
+              animate={{
+                opacity: 1,
+              }}
+              exit={{
+                opacity: 0,
+                transition: { duration: 1.05, ease: [0.22, 1, 0.36, 1] },
+              }}
+              transition={{
+                duration: 1.05,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="absolute inset-0 w-full h-full will-change-[opacity]"
+              style={{
+                transform: `translate3d(${mouseParallax.x}px, ${mouseParallax.y}px, 0)`,
+              }}
+            >
+              {renderResponsivePicture(frames[activeFrameIndex], activeFrameIndex)}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
+    </motion.div>
+  );
+});
+
+ProjectImage.displayName = 'ProjectImage';

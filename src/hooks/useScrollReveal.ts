@@ -1,7 +1,4 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+
 
 import { useEffect, useRef, RefObject } from 'react';
 import gsap from 'gsap';

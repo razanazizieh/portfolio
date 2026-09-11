@@ -1,19 +1,22 @@
-import React from "react";
-import { useReducedMotion } from "motion/react";
-import { Project } from "../types";
-import ThemeToggle from "./ThemeToggle";
+
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React from 'react';
+import { useReducedMotion } from 'motion/react';
+import { Project } from '../types';
+import ThemeToggle from './ThemeToggle';
 
 interface HeaderProps {
-  theme: "dark" | "light";
-  setTheme: React.Dispatch<React.SetStateAction<"dark" | "light">>;
+  theme: 'dark' | 'light';
+  setTheme: React.Dispatch<React.SetStateAction<'dark' | 'light'>>;
   activeSection: string;
   scrolledPastHero: boolean;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  handleNav: (
-    e: React.SyntheticEvent | { preventDefault: () => void },
-    targetId: string,
-  ) => void;
+  handleNav: (e: React.SyntheticEvent | { preventDefault: () => void }, targetId: string) => void;
   activeCaseStudy: Project | null;
   mobileMenuToggleRef: React.RefObject<HTMLButtonElement | null>;
   forceShowLogo?: boolean;
@@ -33,12 +36,8 @@ export default function Header({
   activeCaseStudy,
   mobileMenuToggleRef,
   forceShowLogo = false,
-  isNotFound = false,
+  isNotFound = false
 }: HeaderProps) {
-  if (isNotFound) {
-    return null;
-  }
-
   const shouldReduceMotion = useReducedMotion();
   const [hoveredNav, setHoveredNav] = React.useState<string | null>(null);
 
@@ -51,83 +50,72 @@ export default function Header({
   };
 
   const getNavFontWeight = (id: string, isActive?: boolean) => {
-    if (hoveredNav !== null) {
-      return hoveredNav === id ? 700 : 500;
-    }
-    return isActive ? 700 : 500;
+    return 400;
   };
 
   return (
-    <header
+    <header 
+      data-no-cursor="true"
       style={{
-        display: "flex",
-        background:
-          scrolledPastHero || !!activeCaseStudy
-            ? theme === "light"
-              ? "rgba(255, 255, 255, 0.96)"
-              : "rgba(10, 10, 10, 0.96)"
-            : "transparent",
-        paddingLeft: "max(16px, 4vw)",
-        paddingRight: "max(16px, 4vw)",
+        display: 'flex',
+        background: (scrolledPastHero || !!activeCaseStudy || isNotFound)
+          ? theme === 'light' ? 'rgba(255, 255, 255, 0.96)' : 'rgba(10, 10, 10, 0.96)'
+          : 'transparent',
       }}
-      className={`fixed top-0 left-0 right-0 z-50 flex justify-between items-center py-5 select-none transition-all duration-300 ${
-        scrolledPastHero || !!activeCaseStudy
-          ? "text-[var(--text-color)] backdrop-blur-md"
-          : "text-[var(--text-color)]"
+      className={`fixed top-0 left-0 right-0 z-[100] py-5 select-none transition-all duration-300 ${
+        (scrolledPastHero || !!activeCaseStudy || isNotFound)
+          ? 'text-[var(--text-color)] backdrop-blur-md' 
+          : 'text-[var(--text-color)]'
       }`}
     >
-      {/* Top-left Logo 'RAZAN AZIZIEH' - Pure Editorial Typographic Object */}
-      <div
-        id="logo-name"
-        role="button"
-        tabIndex={0}
-        aria-label="Razan Azizieh - Scroll back to top of the page"
-        onClick={(e) => handleNav(e, activeCaseStudy ? "works" : "top")}
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 flex justify-between items-center">
+        {/* Top-left Logo 'RAZAN AZIZIEH' - Pure Editorial Typographic Object */}
+        <div
+          id="logo-name"
+          role="button"
+          tabIndex={0}
+          aria-label="Razan Azizieh - Scroll back to top of the page"
+        onClick={(e) => handleNav(e, activeCaseStudy ? 'works' : isNotFound ? 'hero' : 'top')}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleNav(e, activeCaseStudy ? "works" : "top");
+          if (e.key === 'Enter') {
+            handleNav(e, activeCaseStudy ? 'works' : isNotFound ? 'hero' : 'top');
           }
         }}
         className={`branding-container name logo-container relative pointer-events-auto cursor-pointer interactive-hover focus:outline-none rounded px-2 py-1 transition-opacity duration-300 ease-in-out group ${
-          scrolledPastHero ||
-          !!activeCaseStudy ||
-          forceShowLogo ||
-          isMobileMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+          (scrolledPastHero || !!activeCaseStudy || forceShowLogo || isMobileMenuOpen || isNotFound)
+            ? 'opacity-100 pointer-events-auto'
+            : 'opacity-0 pointer-events-none'
         }`}
       >
-        <span className="font-display font-semibold tracking-tight uppercase text-xs sm:text-sm md:text-base text-neutral-950 dark:text-neutral-50 group-hover:opacity-60 transition-opacity duration-200 inline-block select-none">
+        <span className="font-display font-light tracking-tighter uppercase text-xs sm:text-sm md:text-base text-neutral-950 dark:text-neutral-50 group-hover:opacity-60 transition-opacity duration-200 inline-block select-none">
           RAZAN AZIZIEH
         </span>
       </div>
 
       {/* Minimalist text links (ABOUT, WORKS, CONTACT, Theme) using semantic <nav> */}
-      <nav
-        aria-label="Primary Navigation"
+      <nav 
+        aria-label="Primary Navigation" 
         onMouseLeave={() => setHoveredNav(null)}
-        className="hidden md:flex items-center gap-7 lg:gap-8 font-mono text-[11px] tracking-[0.12em] uppercase pointer-events-auto transition-all duration-300 ease-out"
+        className="hidden md:flex items-center gap-7 lg:gap-8 font-mono text-xs tracking-[0.14em] uppercase pointer-events-auto transition-all duration-300 ease-out"
       >
         {activeCaseStudy ? (
           <a
             href="#works"
-            onClick={(e) => handleNav(e, "works")}
-            onMouseEnter={() => setHoveredNav("back")}
+            onClick={(e) => handleNav(e, 'works')}
+            onMouseEnter={() => setHoveredNav('back')}
             aria-label="Back to Works"
-            style={{
-              opacity: getNavOpacity("back", true),
-              fontWeight: getNavFontWeight("back", true),
+            style={{ 
+              opacity: getNavOpacity('back', true),
+              fontWeight: getNavFontWeight('back', true),
             }}
-            className="relative pointer-events-auto cursor-pointer bg-transparent border-0 transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 px-2 py-1 rounded block text-[11px] tracking-[0.12em] uppercase text-neutral-950 dark:text-neutral-50 hover:opacity-100"
+            className="relative pointer-events-auto cursor-pointer bg-transparent border-0 transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 px-2 py-1 rounded block text-xs tracking-[0.14em] uppercase text-neutral-950 dark:text-neutral-50 hover:opacity-100"
           >
             BACK TO WORKS
           </a>
         ) : (
           navLinks.map((label) => {
             const targetId = label.toLowerCase();
-            const isActive =
-              activeSection === targetId ||
-              (targetId === "works" && !!activeCaseStudy);
+            const isActive = activeSection === targetId || (targetId === 'works' && !!activeCaseStudy);
 
             return (
               <a
@@ -136,14 +124,14 @@ export default function Header({
                 onClick={(e) => handleNav(e, targetId)}
                 onMouseEnter={() => setHoveredNav(targetId)}
                 aria-label={`Navigate to ${targetId} section`}
-                style={{
+                style={{ 
                   opacity: getNavOpacity(targetId, isActive),
                   fontWeight: getNavFontWeight(targetId, isActive),
                 }}
-                className={`relative pointer-events-auto bg-transparent border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 px-2 py-1 rounded block transition-all duration-200 ease-in-out text-[11px] uppercase tracking-[0.12em] ${
-                  isActive
-                    ? "text-neutral-950 dark:text-neutral-50"
-                    : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50"
+                className={`relative pointer-events-auto bg-transparent border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 px-2 py-1 rounded block transition-all duration-200 ease-in-out text-xs uppercase tracking-[0.14em] ${
+                  isActive 
+                    ? 'text-neutral-950 dark:text-neutral-50' 
+                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
                 }`}
               >
                 {label}
@@ -155,10 +143,10 @@ export default function Header({
         <ThemeToggle
           theme={theme}
           setTheme={setTheme}
-          onMouseEnter={() => setHoveredNav("theme")}
-          style={{
-            opacity: getNavOpacity("theme", false),
-            fontWeight: getNavFontWeight("theme", false),
+          onMouseEnter={() => setHoveredNav('theme')}
+          style={{ 
+            opacity: getNavOpacity('theme', false),
+            fontWeight: getNavFontWeight('theme', false),
           }}
           className="px-2 py-1 text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50"
         />
@@ -173,9 +161,9 @@ export default function Header({
         />
         {activeCaseStudy ? (
           <button
-            onClick={(e) => handleNav(e, "works")}
+            onClick={(e) => handleNav(e, 'works')}
             aria-label="Back to Works"
-            className="font-mono text-[11px] font-medium tracking-[0.12em] uppercase text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors duration-200 h-11 px-2 flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-md cursor-pointer select-none"
+            className="font-mono text-xs font-normal tracking-[0.14em] uppercase text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 transition-colors duration-200 h-11 px-2 flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-md cursor-pointer select-none"
           >
             BACK
           </button>
@@ -183,18 +171,15 @@ export default function Header({
           <button
             ref={mobileMenuToggleRef}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label={
-              isMobileMenuOpen
-                ? "Close navigation menu"
-                : "Open navigation menu"
-            }
+            aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={isMobileMenuOpen}
             aria-controls="mobile-menu"
-            className="font-mono text-[11px] font-medium tracking-[0.12em] uppercase transition-colors duration-200 h-11 min-w-[44px] px-2 flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-md cursor-pointer select-none text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50"
+            className="font-mono text-xs font-normal tracking-[0.14em] uppercase transition-colors duration-200 h-11 min-w-[44px] px-2 flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded-md cursor-pointer select-none text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50"
           >
-            {isMobileMenuOpen ? "CLOSE" : "MENU"}
+            {isMobileMenuOpen ? 'CLOSE' : 'MENU'}
           </button>
         )}
+      </div>
       </div>
     </header>
   );

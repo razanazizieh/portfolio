@@ -1,30 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-} from "motion/react";
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "../types";
-import {
-  MOTION_CURVE_PREMIUM,
-  motionRoles,
-  VIEWPORT_EDITORIAL_CONFIG,
-} from "../utils/motion";
+import { MOTION_CURVE_PREMIUM, REVEAL_VIEWPORT_CONFIG } from "../utils/motion";
 import { PROJECTS_DATA } from "../data";
 import PremiumImage from "./PremiumImage";
-import RevealHeading from "./RevealHeading";
-
-function ScrollLitCaseStudyParagraph({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return <p className={className}>{children}</p>;
-}
+import MagneticElement from "./MagneticElement";
+import DeterministicShuffle from "./DeterministicShuffle";
 
 interface ProjectCaseStudyProps {
   project: Project;
@@ -40,82 +22,85 @@ export default function ProjectCaseStudy({
   const shouldReduceMotion = useReducedMotion();
   const navigate = useNavigate();
 
-  // Conditional check to identify projects categorized as "code-centric" or "back-end"
-  const isCodeCentric = project.category === "CODE";
-
-  // Collect all images safely for lightbox viewing, handling both string paths and object configurations
-  const allImages = React.useMemo(() => {
-    const list: { image: string; label: string }[] = [];
+  // Collect all gallery images safely
+  const galleryItems = useMemo(() => {
+    if (project.gallery && project.gallery.length > 0) {
+      return project.gallery;
+    }
+    if (project.images && project.images.length > 0) {
+      return project.images.map((img, i) => ({
+        image: img,
+        label: i === 0 ? "Featured View" : `Detail View ${i + 1}`,
+      }));
+    }
     if (project.image) {
-      list.push({ image: project.image, label: "Featured Hero Specimen" });
-    } /*
-    if (project.gallery) {
-      project.gallery.forEach((g, idx) => {
-        if (!g) return;
-        const imgUrl = typeof g === 'string' ? g : g.image;
-        const imgLabel = typeof g === 'string' ? `Specimen View ${idx + 1}` : g.label;
-
-        if (imgUrl && imgUrl !== project.image) {
-          list.push({ image: imgUrl, label: imgLabel });
-        }
-      });
-    }*/
-    return list;
+      return [{ image: project.image, label: "Featured View" }];
+    }
+    return [];
   }, [project]);
 
+  const leadImage = galleryItems[0]?.image || project.image;
+  const secondaryImages = galleryItems.slice(1);
+
   // Filter projects based on active matrix category for internal cycling
-  const filteredNavProjects = React.useMemo(() => {
+  const filteredNavProjects = useMemo(() => {
     if (activeFilter === "ALL") return PROJECTS_DATA;
     return PROJECTS_DATA.filter((p) => p.category === activeFilter);
   }, [activeFilter]);
 
   // Determine current active navigation parameters
-  const activeIdx = React.useMemo(() => {
+  const activeIdx = useMemo(() => {
     const idx = filteredNavProjects.findIndex((p) => p.id === project.id);
     if (idx !== -1) return idx;
     return PROJECTS_DATA.findIndex((p) => p.id === project.id);
   }, [filteredNavProjects, project.id]);
 
-  const activeList = React.useMemo(() => {
+  const activeList = useMemo(() => {
     const idx = filteredNavProjects.findIndex((p) => p.id === project.id);
     if (idx !== -1) return filteredNavProjects;
     return PROJECTS_DATA;
   }, [filteredNavProjects, project.id]);
 
-  // Cycle strictly and internally within activeFiltered list using standard mathematical modulo
-  const prevProject = React.useMemo(() => {
+  // Cycle strictly within activeFiltered list using standard modulo logic
+  const prevIdx = useMemo(() => {
     const len = activeList.length;
-    if (len === 0) return project;
-    const prevIdx = (activeIdx - 1 + len) % len;
-    return activeList[prevIdx];
-  }, [activeList, activeIdx, project]);
+    if (len === 0) return 0;
+    return (activeIdx - 1 + len) % len;
+  }, [activeList.length, activeIdx]);
 
-  const nextProject = React.useMemo(() => {
+  const nextIdx = useMemo(() => {
     const len = activeList.length;
-    if (len === 0) return project;
-    const nextIdx = (activeIdx + 1) % len;
-    return activeList[nextIdx];
-  }, [activeList, activeIdx, project]);
+    if (len === 0) return 0;
+    return (activeIdx + 1) % len;
+  }, [activeList.length, activeIdx]);
+
+  const prevProject = useMemo(() => {
+    return activeList[prevIdx] || project;
+  }, [activeList, prevIdx, project]);
+
+  const nextProject = useMemo(() => {
+    return activeList[nextIdx] || project;
+  }, [activeList, nextIdx, project]);
 
   const lastInteractionTime = useRef(0);
 
-  const handlePrevClick = () => {
+  const handlePrevClick = useCallback(() => {
     const now = Date.now();
     if (now - lastInteractionTime.current < 300) return;
     lastInteractionTime.current = now;
 
     window.scrollTo(0, 0);
-    navigate(`/project/${prevProject.id}`);
-  };
+    navigate(`/work/${prevProject.id}`);
+  }, [navigate, prevProject.id]);
 
-  const handleNextClick = () => {
+  const handleNextClick = useCallback(() => {
     const now = Date.now();
     if (now - lastInteractionTime.current < 300) return;
     lastInteractionTime.current = now;
 
     window.scrollTo(0, 0);
-    navigate(`/project/${nextProject.id}`);
-  };
+    navigate(`/work/${nextProject.id}`);
+  }, [navigate, nextProject.id]);
 
   // Scroll to top on mount or when project changes and manage dynamic document titles
   useEffect(() => {
@@ -141,414 +126,576 @@ export default function ProjectCaseStudy({
         onClose();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
-        window.scrollTo(0, 0);
-        navigate(`/project/${prevProject.id}`);
+        handlePrevClick();
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
-        window.scrollTo(0, 0);
-        navigate(`/project/${nextProject.id}`);
+        handleNextClick();
       }
     };
     window.addEventListener("keydown", handleKeyDownGlobal);
     return () => {
       window.removeEventListener("keydown", handleKeyDownGlobal);
     };
-  }, [onClose, navigate, prevProject.id, nextProject.id]);
+  }, [onClose, handlePrevClick, handleNextClick]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
-      transition={{ duration: 0.55, ease: MOTION_CURVE_PREMIUM }}
-      className="relative w-full min-h-screen bg-[var(--bg-color)] select-text focus:outline-none flex flex-col overflow-x-hidden"
+    <article
+      data-case-study="true"
+      data-no-cursor="true"
+      itemScope
+      itemType="https://schema.org/TechArticle"
+      className="relative w-full min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] select-text focus:outline-none flex flex-col overflow-x-hidden font-sans"
     >
-      {/* Editorial Page Container */}
-      <div
-        style={{
-          paddingLeft: "max(20px, 4vw)",
-          paddingRight: "max(20px, 4vw)",
-        }}
-        className="w-full max-w-4xl mx-auto px-0 sm:px-4 md:px-8 pb-32 pt-24 sm:pt-32 flex-1 flex flex-col gap-16 md:gap-24"
-      >
-        {/* • HERO HEADER SECTION */}
-        <section className="flex flex-col gap-6 text-left">
-          <motion.div
-            variants={motionRoles.metaLabel(0.05)}
-            initial="hidden"
-            animate="visible"
-            className="font-mono text-[11px] sm:text-xs uppercase tracking-[0.12em] leading-none text-neutral-500 dark:text-neutral-400 flex items-center gap-2 font-medium"
-          >
-            <span>{project.category}</span>
-            <span className="opacity-40">/</span>
+      <meta itemProp="author" content="Razan Azizieh" />
+      <meta itemProp="datePublished" content="2024-01-15T08:00:00+00:00" />
+      <meta itemProp="dateModified" content="2026-09-06T05:07:58+00:00" />
+      <meta itemProp="inLanguage" content="en-US" />
+      {/* 1. Top Sub-Nav Bar: Instant Return + Contextual Index */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-28 sm:pt-36 md:pt-40 pb-10 sm:pb-14 select-text">
+        <motion.div
+          initial={
+            shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }
+          }
+          animate={{ opacity: 1, y: 0 }}
+          transition={{
+            duration: shouldReduceMotion ? 0.01 : 0.65,
+            ease: MOTION_CURVE_PREMIUM,
+            delay: shouldReduceMotion ? 0 : 0.02,
+          }}
+          className="flex items-center justify-between font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 mb-8 sm:mb-12 select-none"
+        >
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-neutral-700 dark:text-neutral-300 font-normal">
+              {project.category}
+            </span>
+            <span className="opacity-40">·</span>
             <span>{project.year}</span>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          <div className="flex flex-col gap-4">
-            <div className="w-full">
-              <RevealHeading
+        {/* 12-Column Asymmetrical Composition matching AboutSection and Contact */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-y-10 md:gap-x-8 lg:gap-x-12 items-start w-full">
+          {/* Left Column (8 cols): Balanced Display Title and Subtitle */}
+          <div className="col-span-12 md:col-span-8 lg:col-span-8 flex flex-col gap-5 text-left">
+            <motion.div
+              initial={
+                shouldReduceMotion
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 18 }
+              }
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: shouldReduceMotion ? 0.01 : 0.75,
+                ease: MOTION_CURVE_PREMIUM,
+                delay: shouldReduceMotion ? 0 : 0.08,
+              }}
+              className="w-full"
+            >
+              <DeterministicShuffle
                 text={project.title}
                 as="h1"
-                className="font-display text-3xl sm:text-4xl md:text-[3rem] font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 uppercase leading-[1.05]"
-                triggerStart="top 95%"
+                className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light tracking-tighter uppercase leading-[0.98] text-neutral-900 dark:text-white cursor-pointer"
               />
-            </div>
+            </motion.div>
 
             {project.subtitle && (
               <motion.p
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 16 }
+                }
+                animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  duration: 0.8,
+                  duration: 0.75,
                   ease: MOTION_CURVE_PREMIUM,
-                  delay: 0.15,
+                  delay: 0.18,
                 }}
-                className="font-sans text-base sm:text-lg font-normal text-neutral-600 dark:text-neutral-400 leading-[1.65] max-w-[62ch]"
+                className="font-sans text-base sm:text-lg md:text-xl font-light text-neutral-700 dark:text-neutral-300 leading-[1.65] max-w-[52ch]"
               >
                 {project.subtitle}
               </motion.p>
             )}
+          </div>
 
+          {/* Right Column (4 cols): Restrained Metadata & Typographic Links with sequential staggered reveals */}
+          <div className="col-span-12 md:col-span-4 lg:col-span-4 flex flex-col items-start md:items-end text-left md:text-right gap-5 pt-1">
+            {/* Disciplines & Roles */}
+            {project.myRole && (
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 14 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.65,
+                  ease: MOTION_CURVE_PREMIUM,
+                  delay: 0.24,
+                }}
+                className="flex flex-col items-start md:items-end gap-1"
+              >
+                <span className="font-mono text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  ROLE & DISCIPLINES
+                </span>
+                <span className="font-sans text-sm sm:text-base text-neutral-800 dark:text-neutral-200">
+                  {project.myRole}
+                </span>
+              </motion.div>
+            )}
+
+            {/* Stack & Technologies */}
+            {project.technology && project.technology.length > 0 && (
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 14 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.65,
+                  ease: MOTION_CURVE_PREMIUM,
+                  delay: 0.32,
+                }}
+                className="flex flex-col items-start md:items-end gap-1"
+              >
+                <span className="font-mono text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  TECHNOLOGIES
+                </span>
+                <span className="font-mono text-xs sm:text-[13px] tracking-[0.08em] uppercase text-neutral-700 dark:text-neutral-300">
+                  {project.technology.join(" · ")}
+                </span>
+              </motion.div>
+            )}
+
+            {/* Editorial Typographic Links without text scramble */}
             {(project.live || project.repository) && (
               <motion.div
-                variants={motionRoles.interactiveButton(0.24)}
-                initial="hidden"
-                animate="visible"
-                className="flex items-center gap-6 flex-wrap mt-4 pt-1"
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 14 }
+                }
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.65,
+                  ease: MOTION_CURVE_PREMIUM,
+                  delay: 0.40,
+                }}
+                className="flex flex-col items-start md:items-end gap-1.5 pt-2"
               >
-                {project.live && (
-                  <a
-                    href={project.live}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Open live site for ${project.title}`}
-                    className="font-mono text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-950 dark:text-neutral-50 hover:opacity-60 focus:opacity-60 transition-opacity duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 py-1 cursor-pointer select-none"
-                  >
-                    LIVE SITE
-                  </a>
-                )}
-
-                {project.repository && (
-                  <a
-                    href={project.repository}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Open GitHub repository for ${project.title}`}
-                    className="font-mono text-[11px] tracking-[0.14em] uppercase font-medium text-neutral-950 dark:text-neutral-50 hover:opacity-60 focus:opacity-60 transition-opacity duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 py-1 cursor-pointer select-none"
-                  >
-                    SOURCE CODE
-                  </a>
-                )}
+                <span className="font-mono text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  PROJECT LINKS
+                </span>
+                <div className="flex flex-col items-start md:items-end gap-1">
+                  {project.live && (
+                    <MagneticElement strength={0.2} activeScale={1.02}>
+                      <a
+                        href={project.live}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open live site for ${project.title} in a new tab`}
+                        className="flex items-center py-1 text-neutral-900 dark:text-white hover:text-neutral-500 dark:hover:text-neutral-400 focus:opacity-60 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none"
+                      >
+                        <span className="font-display text-base sm:text-lg md:text-xl font-light tracking-tight uppercase inline-block">
+                          LIVE SITE
+                        </span>
+                      </a>
+                    </MagneticElement>
+                  )}
+                  {project.repository && (
+                    <MagneticElement strength={0.2} activeScale={1.02}>
+                      <a
+                        href={project.repository}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open source code repository for ${project.title} in a new tab`}
+                        className="flex items-center py-1 text-neutral-900 dark:text-white hover:text-neutral-500 dark:hover:text-neutral-400 focus:opacity-60 transition-colors duration-200 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none"
+                      >
+                        <span className="font-display text-base sm:text-lg md:text-xl font-light tracking-tight uppercase inline-block">
+                          SOURCE CODE
+                        </span>
+                      </a>
+                    </MagneticElement>
+                  )}
+                </div>
               </motion.div>
             )}
           </div>
+        </div>
+      </section>
 
-          {/* Main Visual Showcase: Vertical Image Stack */}
-          {!isCodeCentric && allImages.length > 0 && (
-            <div className="w-full flex flex-col gap-16 sm:gap-24 my-8 sm:my-12">
-              {allImages.map((item, idx) => (
-                <motion.figure
-                  key={item.image || idx}
-                  variants={motionRoles.editorialImage(0, shouldReduceMotion)}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={VIEWPORT_EDITORIAL_CONFIG}
-                  className="w-full flex flex-col gap-3 group/editorial rounded-none cursor-default select-none"
+      {/* 2. Hero Lead Showcase: Seamless Image Presentation */}
+      {leadImage && (
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 my-6 sm:my-10 md:my-14 text-left select-none">
+          <motion.div
+            initial={
+              shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 }
+            }
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              duration: shouldReduceMotion ? 0.01 : 0.85,
+              ease: MOTION_CURVE_PREMIUM,
+              delay: shouldReduceMotion ? 0 : 0.44,
+            }}
+            className="w-full"
+          >
+            <PremiumImage
+              src={leadImage}
+              alt={`${project.title} — Primary View`}
+              borderNone={true}
+              isPriority={true}
+              className="w-full h-auto object-cover object-top"
+            />
+          </motion.div>
+        </section>
+      )}
+
+      {/* 3. Editorial Narrative: 12-Column Asymmetrical Grid with standardized vertical spacing */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-20 sm:py-32 select-text">
+        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-y-12 sm:gap-y-16 md:gap-y-20 md:gap-x-8 lg:gap-x-12 items-start text-left">
+          {/* Primary Statement: Overview with Direct Answer Architecture */}
+          {project.overview && (
+            <div className="col-span-12 md:col-span-11 lg:col-span-10">
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 18 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={REVEAL_VIEWPORT_CONFIG}
+                transition={{
+                  duration: shouldReduceMotion ? 0.01 : 0.75,
+                  ease: MOTION_CURVE_PREMIUM,
+                }}
+                className="flex flex-col gap-4"
+              >
+                <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  SYSTEM ARCHITECTURE OVERVIEW
+                </span>
+                <h2
+                  className="font-display text-xl sm:text-2xl md:text-3xl font-light tracking-tighter uppercase leading-[1.2] text-neutral-900 dark:text-white"
+                  itemProp="description"
                 >
-                  <div className="w-full rounded-none overflow-hidden border-none outline-none shadow-none bg-transparent">
-                    <PremiumImage
-                      src={item.image}
-                      alt={`${project.title} — ${item.label}`}
-                      borderNone={true}
-                      isPriority={idx === 0}
-                      className="rounded-none transition-transform duration-700 ease-out group-hover/editorial:scale-[1.012] object-contain object-top w-full h-auto"
-                    />
-                  </div>
-                  <figcaption className="flex items-center mt-1 px-0 font-mono text-[10px] sm:text-[11px] tracking-[0.12em] uppercase text-neutral-400 dark:text-neutral-500 font-medium">
-                    FIG. {String(idx + 1).padStart(2, "0")} —{" "}
-                    {item.label.toUpperCase()}
-                  </figcaption>
-                </motion.figure>
-              ))}
+                  {project.overview}
+                </h2>
+                {/* Direct Answer First Paragraph (30-50 words, high citation extraction density) */}
+                <p className="font-sans text-base sm:text-lg text-neutral-700 dark:text-neutral-300 font-light leading-[1.7] max-w-[65ch]">
+                  <strong className="font-normal text-neutral-900 dark:text-white">
+                    {project.title}
+                  </strong>{" "}
+                  is a custom-built{" "}
+                  <strong className="font-normal text-neutral-900 dark:text-white">
+                    {project.projectType || project.category}
+                  </strong>{" "}
+                  architecture engineered utilizing{" "}
+                  <strong className="font-normal text-neutral-900 dark:text-white">
+                    {project.technology?.join(", ")}
+                  </strong>
+                  . Designed for optimal interactive speed, it ensures seamless
+                  state management and strict layout stability across all target
+                  devices.
+                </p>
+              </motion.div>
             </div>
           )}
-        </section>
 
-        {/* • OVERVIEW */}
-        {project.overview && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
+          {/* Staggered Editorial Blocks: The Challenge and Solution with Query-Framed Headings */}
+          {project.challenge && (
+            <div className="col-span-12 md:col-span-7 lg:col-span-6">
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 18 }
+                }
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
+                viewport={REVEAL_VIEWPORT_CONFIG}
                 transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
+                  duration: shouldReduceMotion ? 0.01 : 0.75,
                   ease: MOTION_CURVE_PREMIUM,
+                  delay: shouldReduceMotion ? 0 : 0.1,
                 }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
+                className="flex flex-col gap-3"
               >
-                OVERVIEW
-              </motion.h2>
+                <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  ARCHITECTURAL CHALLENGE
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
+                  What Architectural Challenge Does This System Solve?
+                </h3>
+                <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7] max-w-[48ch]">
+                  <strong className="text-neutral-900 dark:text-white font-normal">
+                    Core Challenge:{" "}
+                  </strong>
+                  {project.challenge}
+                </p>
+              </motion.div>
             </div>
-            <ScrollLitCaseStudyParagraph className="font-sans text-base sm:text-lg font-normal text-neutral-700 dark:text-neutral-300 leading-[1.72] max-w-[62ch]">
-              {project.overview}
-            </ScrollLitCaseStudyParagraph>
-          </section>
-        )}
+          )}
 
-        {/* • CHALLENGE */}
-        {project.challenge && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
+          {project.solution && (
+            <div className="col-span-12 md:col-span-5 lg:col-span-5 md:col-start-8 lg:col-start-8">
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 18 }
+                }
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
+                viewport={REVEAL_VIEWPORT_CONFIG}
                 transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
+                  duration: shouldReduceMotion ? 0.01 : 0.75,
                   ease: MOTION_CURVE_PREMIUM,
+                  delay: shouldReduceMotion ? 0 : 0.18,
                 }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
+                className="flex flex-col gap-3"
               >
-                CHALLENGE
-              </motion.h2>
+                <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  ENGINEERED SOLUTION
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
+                  What Engineering Solution Was Implemented?
+                </h3>
+                <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7] max-w-[44ch]">
+                  <strong className="text-neutral-900 dark:text-white font-normal">
+                    Engineered Solution:{" "}
+                  </strong>
+                  {project.solution}
+                </p>
+              </motion.div>
             </div>
-            <ScrollLitCaseStudyParagraph className="font-sans text-base sm:text-lg font-normal text-neutral-700 dark:text-neutral-300 leading-[1.72] max-w-[62ch]">
-              {project.challenge}
-            </ScrollLitCaseStudyParagraph>
-          </section>
-        )}
+          )}
 
-        {/* • SOLUTION */}
-        {project.solution && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
-                transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
-                  ease: MOTION_CURVE_PREMIUM,
-                }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
-              >
-                SOLUTION
-              </motion.h2>
-            </div>
-            <ScrollLitCaseStudyParagraph className="font-sans text-base sm:text-lg font-normal text-neutral-700 dark:text-neutral-300 leading-[1.72] max-w-[62ch]">
-              {project.solution}
-            </ScrollLitCaseStudyParagraph>
-          </section>
-        )}
-
-        {/* • MY ROLE */}
-        {project.myRole && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
-                transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
-                  ease: MOTION_CURVE_PREMIUM,
-                }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
-              >
-                MY ROLE
-              </motion.h2>
-            </div>
-            <ScrollLitCaseStudyParagraph className="font-sans text-base sm:text-lg font-normal text-neutral-700 dark:text-neutral-300 leading-[1.72] max-w-[62ch]">
-              {project.myRole}
-            </ScrollLitCaseStudyParagraph>
-          </section>
-        )}
-
-        {/* • TECHNICAL HIGHLIGHTS */}
-        {project.technicalHighlights &&
-          project.technicalHighlights.length > 0 && (
-            <section className="flex flex-col gap-3 text-left">
-              <div>
-                <motion.h2
-                  initial={{
-                    opacity: shouldReduceMotion ? 1 : 0,
-                    y: shouldReduceMotion ? 0 : 20,
-                  }}
+          {/* Technical Highlights: Clean Sequence with Ordered List */}
+          {project.technicalHighlights &&
+            project.technicalHighlights.length > 0 && (
+              <div className="col-span-12 md:col-span-10 lg:col-span-9 pt-2 sm:pt-4">
+                <motion.div
+                  initial={
+                    shouldReduceMotion
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 0, y: 18 }
+                  }
                   whileInView={{ opacity: 1, y: 0 }}
-                  viewport={VIEWPORT_EDITORIAL_CONFIG}
+                  viewport={REVEAL_VIEWPORT_CONFIG}
                   transition={{
-                    duration: shouldReduceMotion ? 0.01 : 0.6,
+                    duration: shouldReduceMotion ? 0.01 : 0.75,
                     ease: MOTION_CURVE_PREMIUM,
                   }}
-                  className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
+                  className="flex flex-col gap-4"
                 >
-                  TECHNICAL HIGHLIGHTS
-                </motion.h2>
+                  <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                    TECHNICAL HIGHLIGHTS & PARAMETERS
+                  </span>
+                  <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
+                    What Key Technical Parameters Were Achieved?
+                  </h3>
+                  <ol className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-5 sm:gap-y-6 list-none p-0">
+                    {project.technicalHighlights.map((highlight, idx) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-3.5 text-left"
+                      >
+                        <span className="font-mono text-xs text-neutral-500 dark:text-neutral-400 mt-1 select-none font-normal min-w-[20px]">
+                          {String(idx + 1).padStart(2, "0")}
+                        </span>
+                        <p className="font-sans text-base font-light text-neutral-700 dark:text-neutral-300 leading-[1.65]">
+                          {highlight}
+                        </p>
+                      </li>
+                    ))}
+                  </ol>
+                </motion.div>
               </div>
-              <ul className="flex flex-col gap-2.5 max-w-[62ch] pl-4 list-disc text-neutral-700 dark:text-neutral-300">
-                {project.technicalHighlights.map((highlight, idx) => (
-                  <li
-                    key={idx}
-                    className="font-sans text-base sm:text-lg font-normal leading-[1.72]"
-                  >
-                    {highlight}
-                  </li>
-                ))}
-              </ul>
-            </section>
+            )}
+
+          {/* Impact & Outcome */}
+          {project.impact && (
+            <div className="col-span-12 md:col-span-8 lg:col-span-7 pt-2">
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 18 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={REVEAL_VIEWPORT_CONFIG}
+                transition={{
+                  duration: shouldReduceMotion ? 0.01 : 0.75,
+                  ease: MOTION_CURVE_PREMIUM,
+                }}
+                className="flex flex-col gap-3"
+              >
+                <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
+                  EMPIRICAL OUTCOME
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
+                  What Empirical Impact Was Delivered?
+                </h3>
+                <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7]">
+                  <strong className="text-neutral-900 dark:text-white font-normal">
+                    Verified Impact:{" "}
+                  </strong>
+                  {project.impact}
+                </p>
+              </motion.div>
+            </div>
           )}
 
-        {/* • TECHNOLOGY */}
-        {project.technology && project.technology.length > 0 && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
-                transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
-                  ease: MOTION_CURVE_PREMIUM,
-                }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
-              >
-                TECHNOLOGY
-              </motion.h2>
-            </div>
-            <div className="flex flex-wrap gap-x-6 gap-y-2.5 max-w-[62ch]">
-              {project.technology.map((tech, idx) => (
-                <motion.span
-                  key={idx}
-                  variants={{
-                    hidden: {
-                      opacity: 0,
-                      y: shouldReduceMotion ? 0 : 15,
-                    },
-                    visible: {
-                      opacity: 1,
-                      y: 0,
-                      transition: {
-                        duration: 0.55,
-                        ease: MOTION_CURVE_PREMIUM,
-                        delay: idx * 0.02,
-                      },
-                    },
-                  }}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={VIEWPORT_EDITORIAL_CONFIG}
-                  className="font-mono text-xs sm:text-sm font-normal flex items-center text-neutral-950 dark:text-neutral-50 tracking-[0.08em]"
-                >
-                  {tech}
-                  {idx < project.technology.length - 1 && (
-                    <span className="ml-6 text-neutral-400 dark:text-neutral-600 font-normal">
-                      /
-                    </span>
-                  )}
-                </motion.span>
-              ))}
-            </div>
-          </section>
-        )}
+          {/* Empirical Technical Specifications Table: Clean Swiss borderless alignment */}
+          {project.technicalSpecifications &&
+            project.technicalSpecifications.length > 0 && (
+              <div className="col-span-12 pt-8 sm:pt-14">
+                <div className="flex items-center justify-between font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal mb-6">
+                  <span>TECHNICAL BENCHMARKS & SPECIFICATIONS</span>
+                  <span className="hidden sm:inline">STANDARDS COMPLIANCE</span>
+                </div>
+                <div className="overflow-x-auto w-full">
+                  <table className="w-full text-left font-sans border-collapse">
+                    <thead>
+                      <tr>
+                        <th
+                          scope="col"
+                          className="py-3 pr-4 font-mono text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-normal"
+                        >
+                          Parameter
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3 px-4 font-mono text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-normal"
+                        >
+                          Engineering Specification
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3 px-4 font-mono text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-normal"
+                        >
+                          Verified Metric
+                        </th>
+                        <th
+                          scope="col"
+                          className="py-3 pl-4 font-mono text-xs uppercase tracking-[0.14em] text-neutral-500 dark:text-neutral-400 font-normal hidden md:table-cell"
+                        >
+                          Standard
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm sm:text-[15px]">
+                      {project.technicalSpecifications.map((spec, idx) => (
+                        <tr key={idx}>
+                          <td className="py-3.5 pr-4 font-normal text-neutral-900 dark:text-neutral-100">
+                            {spec.parameter}
+                          </td>
+                          <td className="py-3.5 px-4 text-neutral-600 dark:text-neutral-400">
+                            {spec.specification}
+                          </td>
+                          <td className="py-3.5 px-4 font-mono text-xs sm:text-[13px] text-neutral-900 dark:text-neutral-100 font-normal">
+                            {spec.metric}
+                          </td>
+                          <td className="py-3.5 pl-4 font-mono text-xs text-neutral-500 dark:text-neutral-400 hidden md:table-cell">
+                            {spec.standard}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
-        {/* • IMPACT */}
-        {project.impact && (
-          <section className="flex flex-col gap-3 text-left">
-            <div>
-              <motion.h2
-                initial={{
-                  opacity: shouldReduceMotion ? 1 : 0,
-                  y: shouldReduceMotion ? 0 : 20,
-                }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={VIEWPORT_EDITORIAL_CONFIG}
-                transition={{
-                  duration: shouldReduceMotion ? 0.01 : 0.6,
-                  ease: MOTION_CURVE_PREMIUM,
-                }}
-                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 font-medium tracking-[0.12em] leading-none uppercase block mb-1"
-              >
-                IMPACT
-              </motion.h2>
-            </div>
-            <ScrollLitCaseStudyParagraph className="font-sans text-base sm:text-lg font-normal text-neutral-700 dark:text-neutral-300 leading-[1.72] max-w-[62ch]">
-              {project.impact}
-            </ScrollLitCaseStudyParagraph>
-          </section>
-        )}
-
-        {/* Editorial Bottom Navigation */}
-        <div className="mt-16 sm:mt-24 select-none pt-8 border-t border-neutral-200/40 dark:border-neutral-800/40">
-          <div className="flex items-center justify-between gap-4 sm:gap-6 w-full">
-            {/* Previous Project Link */}
-            <button
-              onPointerDown={(e) => {
-                if (e.button === 0) {
-                  e.preventDefault();
-                  handlePrevClick();
-                }
-              }}
-              onClick={(e) => {
-                if (e.clientX === 0 && e.clientY === 0) {
-                  handlePrevClick();
-                }
-              }}
-              aria-label={`Go to previous project: ${prevProject.title}`}
-              className="font-mono font-medium text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center gap-2 bg-transparent border-none outline-none py-1 select-none whitespace-nowrap group"
-            >
-              <span
-                aria-hidden="true"
-                className="inline-block transition-transform duration-200 group-hover:-translate-x-1"
-              >
-                &larr;
+          {/* Technical FAQ Section for Google AI Overview (GEO/SGE) Scraper Extraction */}
+          {project.faq && project.faq.length > 0 && (
+            <div className="col-span-12 pt-6 sm:pt-10">
+              <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal block mb-6">
+                FREQUENTLY ASKED ARCHITECTURAL QUESTIONS
               </span>
-              <span>PREVIOUS</span>
-            </button>
-
-            {/* Next Project Link */}
-            <button
-              onPointerDown={(e) => {
-                if (e.button === 0) {
-                  e.preventDefault();
-                  handleNextClick();
-                }
-              }}
-              onClick={(e) => {
-                if (e.clientX === 0 && e.clientY === 0) {
-                  handleNextClick();
-                }
-              }}
-              aria-label={`Go to next project: ${nextProject.title}`}
-              className="font-mono font-medium text-xs tracking-[0.14em] uppercase text-neutral-500 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50 focus:text-neutral-950 dark:focus:text-neutral-50 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer flex items-center gap-2 bg-transparent border-none outline-none py-1 select-none whitespace-nowrap group"
-            >
-              <span>NEXT</span>
-              <span
-                aria-hidden="true"
-                className="inline-block transition-transform duration-200 group-hover:translate-x-1"
-              >
-                &rarr;
-              </span>
-            </button>
-          </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                {project.faq.map((item, idx) => (
+                  <div key={idx} className="flex flex-col gap-2 text-left">
+                    <h4 className="font-display text-base sm:text-lg font-light tracking-tight uppercase text-neutral-950 dark:text-neutral-50 leading-[1.3]">
+                      {item.question}
+                    </h4>
+                    <p className="font-sans text-sm sm:text-base text-neutral-600 dark:text-neutral-400 leading-[1.65]">
+                      {item.answer}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </motion.div>
+      </section>
+
+      {/* 4. Secondary Artifact Gallery: Clean Visual Progression */}
+      {secondaryImages.length > 0 && (
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pb-20 sm:pb-32 text-left select-none">
+          <div className="flex flex-col gap-16 sm:gap-24 md:gap-28">
+            {secondaryImages.map((item, idx) => (
+              <motion.div
+                key={item.image || idx}
+                initial={
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 18 }
+                }
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={REVEAL_VIEWPORT_CONFIG}
+                transition={{
+                  duration: shouldReduceMotion ? 0.01 : 0.75,
+                  ease: MOTION_CURVE_PREMIUM,
+                }}
+                className={
+                  secondaryImages.length > 1 && idx === 1
+                    ? "w-full lg:max-w-5xl lg:mx-auto"
+                    : "w-full"
+                }
+              >
+                <PremiumImage
+                  src={item.image}
+                  alt={`${project.title} — ${item.label}`}
+                  borderNone={true}
+                  className="w-full h-auto object-cover object-top"
+                />
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 5. Editorial Footer & Project Cycle Navigation */}
+      <footer className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pb-20 select-none">
+        <div className="w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-16 sm:pt-24 pb-6">
+          {/* Previous Project Trigger */}
+          <MagneticElement strength={0.2} activeScale={1.02}>
+            <button
+              onClick={handlePrevClick}
+              aria-label={`Navigate to previous project: ${prevProject.title}`}
+              className="group py-2 bg-transparent border-none outline-none cursor-pointer text-left min-h-[44px] flex items-center"
+            >
+              <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-normal group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors duration-200 block select-none">
+                PREV
+              </span>
+            </button>
+          </MagneticElement>
+
+          {/* Next Project Trigger */}
+          <MagneticElement strength={0.2} activeScale={1.02}>
+            <button
+              onClick={handleNextClick}
+              aria-label={`Navigate to next project: ${nextProject.title}`}
+              className="group py-2 bg-transparent border-none outline-none cursor-pointer text-left sm:text-right min-h-[44px] flex items-center"
+            >
+              <span className="font-mono text-xs uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-normal group-hover:text-neutral-900 dark:group-hover:text-neutral-100 transition-colors duration-200 block select-none">
+                NEXT
+              </span>
+            </button>
+          </MagneticElement>
+        </div>
+      </footer>
+    </article>
   );
 }

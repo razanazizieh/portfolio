@@ -76,12 +76,28 @@ export default function MobileMenu({
     },
   };
 
+  // Forceful cleanup helper for body scroll locks
+  const cleanupBodyScroll = () => {
+    document.body.style.overflow = "unset";
+    document.body.style.pointerEvents = "auto";
+    document.documentElement.style.overflow = "unset";
+    document.documentElement.style.pointerEvents = "auto";
+  };
+
+  // Ensure scroll lock is completely freed on component unmount
+  useEffect(() => {
+    return () => {
+      cleanupBodyScroll();
+    };
+  }, []);
+
   // Close on Escape key
   useEffect(() => {
     if (!isMobileMenuOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        cleanupBodyScroll();
         setIsMobileMenuOpen(false);
       }
     };
@@ -94,6 +110,7 @@ export default function MobileMenu({
     e: React.MouseEvent | React.TouchEvent,
     targetId: string,
   ) => {
+    cleanupBodyScroll();
     setIsMobileMenuOpen(false);
     handleNav(e, targetId);
   };
@@ -110,7 +127,7 @@ export default function MobileMenu({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="fixed inset-0 z-40 bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col justify-start pt-24 sm:pt-28 pb-8 md:hidden text-left select-none overflow-y-auto"
+          className="fixed inset-0 z-[90] bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col justify-start pt-24 sm:pt-28 pb-8 md:hidden text-left select-none overflow-y-auto"
           style={{
             paddingLeft: "max(16px, 4vw)",
             paddingRight: "max(16px, 4vw)",
@@ -146,7 +163,7 @@ export default function MobileMenu({
                     }`}
                   >
                     <span
-                      className={`font-display text-lg sm:text-xl font-medium tracking-tight uppercase leading-tight transition-transform duration-200 ease-out ${
+                      className={`font-display text-lg sm:text-xl font-light tracking-tighter uppercase leading-tight transition-transform duration-200 ease-out ${
                         isActive
                           ? "text-neutral-950 dark:text-neutral-50"
                           : "group-hover:translate-x-1"

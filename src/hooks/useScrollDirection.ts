@@ -1,11 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
+import { useState, useEffect, useRef } from "react";
 
-import { useState, useEffect, useRef } from 'react';
-
-export type ScrollDirection = 'down' | 'up';
+export type ScrollDirection = "down" | "up";
 
 /**
  * Tracks dynamic scroll direction with requestAnimationFrame throttling.
@@ -13,7 +8,7 @@ export type ScrollDirection = 'down' | 'up';
  * allowing UI and motion choreographies to adapt dynamically to scroll vectors.
  */
 export function useScrollDirection(threshold = 4): ScrollDirection {
-  const [direction, setDirection] = useState<ScrollDirection>('down');
+  const [direction, setDirection] = useState<ScrollDirection>("down");
   const prevY = useRef(0);
   const ticking = useRef(false);
 
@@ -27,7 +22,7 @@ export function useScrollDirection(threshold = 4): ScrollDirection {
           const diff = currentY - prevY.current;
 
           if (Math.abs(diff) >= threshold) {
-            const nextDirection: ScrollDirection = diff > 0 ? 'down' : 'up';
+            const nextDirection: ScrollDirection = diff > 0 ? "down" : "up";
             setDirection(nextDirection);
             prevY.current = Math.max(0, currentY);
           }
@@ -37,8 +32,8 @@ export function useScrollDirection(threshold = 4): ScrollDirection {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [threshold]);
 
   return direction;

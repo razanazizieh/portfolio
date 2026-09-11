@@ -28,7 +28,7 @@ export default function ThemeToggle({
       onMouseEnter={onMouseEnter}
       aria-label="Switch visual theme scale"
       style={style}
-      className={`relative pointer-events-auto cursor-pointer bg-transparent border-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF4500] rounded flex items-center justify-center transition-all duration-200 ease-in-out text-neutral-900 dark:text-neutral-100 ${className}`}
+      className={`relative pointer-events-auto cursor-pointer bg-transparent border-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 rounded flex items-center justify-center transition-all duration-200 ease-in-out text-neutral-900 dark:text-neutral-100 ${className}`}
     >
       <AnimatePresence mode="wait" initial={false}>
         <motion.div

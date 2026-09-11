@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 
 interface PageLoaderProps {
@@ -7,6 +7,28 @@ interface PageLoaderProps {
 
 export default function PageLoader({ loading }: PageLoaderProps) {
   const shouldReduceMotion = useReducedMotion();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!loading) {
+      setCount(100);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCount((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        // Smooth editorial progression to 100%
+        const increment = Math.floor(Math.random() * 12) + 8;
+        return Math.min(100, prev + increment);
+      });
+    }, 80);
+
+    return () => clearInterval(interval);
+  }, [loading]);
 
   return (
     <AnimatePresence>
@@ -14,11 +36,12 @@ export default function PageLoader({ loading }: PageLoaderProps) {
         <motion.div
           key="page-loader"
           aria-hidden="true"
+          data-no-cursor="true"
           className="page-loader bg-[var(--bg-color)]"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           style={{
             position: "fixed",
             inset: 0,
@@ -29,19 +52,22 @@ export default function PageLoader({ loading }: PageLoaderProps) {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            pointerEvents: "none",
+            pointerEvents: "auto",
           }}
         >
           <motion.div
             id="loader-logo-name"
-            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+            initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10 }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full flex justify-center items-center select-none px-4 sm:px-12 text-center"
+            exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="flex flex-col items-center justify-center gap-4 select-none px-6 text-center"
           >
-            <span className="text-[clamp(2.5rem,8.2vw,8.5rem)] font-display font-semibold uppercase text-neutral-950 dark:text-neutral-50 leading-[0.88] whitespace-nowrap tracking-[-0.035em] select-none">
+            <span className="font-display font-light text-2xl sm:text-3xl tracking-[-0.035em] uppercase text-neutral-950 dark:text-neutral-50 leading-none whitespace-nowrap">
               RAZAN AZIZIEH
+            </span>
+            <span className="font-mono text-[11px] sm:text-xs text-neutral-400 dark:text-neutral-500 tracking-[0.2em] font-light">
+              {String(count).padStart(2, "0")}%
             </span>
           </motion.div>
         </motion.div>

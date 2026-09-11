@@ -4,12 +4,13 @@ import {
   VIEWPORT_EDITORIAL_CONFIG,
   MOTION_CURVE_PREMIUM,
 } from "../utils/motion";
+import { getResponsiveImageProps } from "../assets/imageManifest";
 
 interface PremiumImageProps {
   src: string;
   alt: string;
   className?: string;
-  aspectRatio?: string; // e.g., 'aspect-[16/10]'
+  aspectRatio?: string;
   borderNone?: boolean;
   isPriority?: boolean;
 }
@@ -23,16 +24,17 @@ export default function PremiumImage({
 }: PremiumImageProps) {
   const shouldReduceMotion = useReducedMotion();
   const [isLoaded, setIsLoaded] = useState(false);
+  const responsive = getResponsiveImageProps(src, "cinematic-anchor", true);
 
   return (
     <motion.div
+      // إذا كانت الصورة أولوية (isPriority)، تظهر فوراً animate، وإلا تنتظر whileInView
       initial={{
-        opacity: shouldReduceMotion ? 1 : 0,
+        opacity: shouldReduceMotion || isPriority ? 1 : 0,
       }}
-      whileInView={{
-        opacity: 1,
-      }}
-      viewport={VIEWPORT_EDITORIAL_CONFIG}
+      {...(isPriority
+        ? { animate: { opacity: 1 } }
+        : { whileInView: { opacity: 1 }, viewport: VIEWPORT_EDITORIAL_CONFIG })}
       transition={{
         duration: shouldReduceMotion ? 0.01 : 0.9,
         ease: MOTION_CURVE_PREMIUM,
@@ -40,7 +42,9 @@ export default function PremiumImage({
       className={`relative w-full select-none cursor-default ${aspectRatio} bg-transparent border-none outline-none shadow-none p-0 m-0 overflow-hidden will-change-[transform,opacity]`}
     >
       <div
-        className={`relative w-full ${aspectRatio ? "h-full overflow-hidden" : "h-auto"} bg-transparent p-0 m-0 flex items-center justify-center overflow-hidden`}
+        className={`relative w-full ${
+          aspectRatio ? "h-full overflow-hidden" : "h-auto"
+        } bg-transparent p-0 m-0 flex items-center justify-center overflow-hidden`}
       >
         {/* Skeleton placeholder during initial load */}
         <AnimatePresence>
@@ -58,28 +62,50 @@ export default function PremiumImage({
           )}
         </AnimatePresence>
 
-        {/* Main Image with scale settle */}
-        <motion.img
-          src={src}
-          alt={alt}
-          onLoad={() => setIsLoaded(true)}
-          decoding="async"
-          loading={isPriority ? "eager" : "lazy"}
-          fetchPriority={isPriority ? "high" : "auto"}
-          initial={{ scale: shouldReduceMotion ? 1 : 1.08 }}
-          whileInView={{ scale: 1 }}
-          viewport={VIEWPORT_EDITORIAL_CONFIG}
+        {/* Main Responsive Image with scale settle */}
+        <motion.div
+          initial={{ scale: shouldReduceMotion || isPriority ? 1 : 1.08 }}
+          {...(isPriority
+            ? { animate: { scale: 1 } }
+            : {
+                whileInView: { scale: 1 },
+                viewport: VIEWPORT_EDITORIAL_CONFIG,
+              })}
           transition={{
             duration: shouldReduceMotion ? 0.01 : 1.2,
             ease: [0.16, 1, 0.3, 1],
           }}
-          className={`w-full h-auto max-h-full ${
-            className.includes("object-") ? "" : "object-contain object-top"
-          } transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isLoaded ? "opacity-100" : "opacity-0"
-          } ${className} will-change-transform`}
-          referrerPolicy="no-referrer"
-        />
+          className="w-full h-full flex items-center justify-center will-change-transform"
+        >
+          <picture className="w-full h-auto max-h-full block">
+            {responsive.webpSrcSet && (
+              <source
+                type="image/webp"
+                srcSet={responsive.webpSrcSet}
+                sizes={responsive.sizes}
+              />
+            )}
+            {responsive.srcSet && (
+              <source srcSet={responsive.srcSet} sizes={responsive.sizes} />
+            )}
+            <img
+              src={responsive.src}
+              alt={alt}
+              onLoad={() => setIsLoaded(true)}
+              decoding="async"
+              loading={isPriority ? "eager" : "lazy"}
+              fetchPriority={isPriority ? "high" : "auto"}
+              className={`w-full h-auto max-h-full ${
+                className.includes("object-")
+                  ? ""
+                  : "object-contain object-top"
+              } transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isLoaded ? "opacity-100" : "opacity-0"
+              } ${className}`}
+              referrerPolicy="no-referrer"
+            />
+          </picture>
+        </motion.div>
       </div>
     </motion.div>
   );
