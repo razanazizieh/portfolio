@@ -1,4 +1,3 @@
-
 import React, { useCallback, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ScrambleText } from "./InteractiveText";
@@ -131,7 +130,9 @@ export default function OpeningExperience({
             >
               <motion.p
                 initial={
-                  shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 14 }
                 }
                 animate={
                   isReady
@@ -145,11 +146,13 @@ export default function OpeningExperience({
                 }}
                 className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal select-text will-change-[transform,opacity]"
               >
-                MSc Math &amp; CS 
+                MSc Math &amp; CS
               </motion.p>
               <motion.p
                 initial={
-                  shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }
+                  shouldReduceMotion
+                    ? { opacity: 1, y: 0 }
+                    : { opacity: 0, y: 14 }
                 }
                 animate={
                   isReady
@@ -170,7 +173,9 @@ export default function OpeningExperience({
             {/* Step 3: Hero Bio paragraph - independent staggered entry */}
             <motion.div
               initial={
-                shouldReduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }
+                shouldReduceMotion
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 16 }
               }
               animate={
                 isReady
@@ -186,7 +191,13 @@ export default function OpeningExperience({
               className="col-span-12 md:col-span-7 select-text will-change-[transform,opacity]"
             >
               <p className="font-display font-light text-[1.35rem] sm:text-2xl md:text-3xl lg:text-[2.15vw] tracking-[-0.025em] uppercase leading-[1.22] text-neutral-900 dark:text-white select-text max-w-[38ch]">
-                FRONT-END DEVELOPER AND CREATIVE CODER WORKING AT THE INTERSECTION OF CODE, INTERACTION, AND DESIGN <span className="text-neutral-400 dark:text-neutral-500 font-normal">&mdash;</span> BUILDING DIGITAL EXPERIENCES WITH STRUCTURAL CLARITY AND TACTILE REFINEMENT.
+                FRONT-END DEVELOPER AND CREATIVE CODER WORKING AT THE
+                INTERSECTION OF CODE, INTERACTION, AND DESIGN{" "}
+                <span className="text-neutral-400 dark:text-neutral-500 font-normal">
+                  &mdash;
+                </span>{" "}
+                BUILDING DIGITAL EXPERIENCES WITH STRUCTURAL CLARITY AND TACTILE
+                REFINEMENT.
               </p>
             </motion.div>
           </div>
@@ -205,12 +216,12 @@ export default function OpeningExperience({
           transition={{
             duration: shouldReduceMotion ? 0.01 : 0.65,
             ease: [0.16, 1, 0.3, 1],
-            delay: shouldReduceMotion ? 0 : 0.50,
+            delay: shouldReduceMotion ? 0 : 0.5,
           }}
           className="w-full flex items-center justify-between pt-8 font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400 font-normal will-change-[transform,opacity]"
         >
           <span className="select-text" onClick={(e) => e.stopPropagation()}>
-            PORTFOLIO ’26
+            FOLIO ’26
           </span>
 
           {/* Mobile CTA: intentional touch-friendly equivalent using identical orange rectangular language */}
@@ -240,7 +251,10 @@ export default function OpeningExperience({
             CLICK ANYWHERE TO CONNECT
           </button>
 
-          <span className="tracking-[0.2em] select-text" onClick={(e) => e.stopPropagation()}>
+          <span
+            className="tracking-[0.2em] select-text"
+            onClick={(e) => e.stopPropagation()}
+          >
             SCROLL
           </span>
         </motion.div>
