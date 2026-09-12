@@ -166,7 +166,7 @@ export default function OpeningExperience({
                 }}
                 className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-1 select-text font-normal will-change-[transform,opacity] leading-relaxed"
               >
-                exploring front-end, systems, and what sits between them
+                A space for software, interfaces, and digital craft
               </motion.p>
             </div>
 
@@ -191,13 +191,12 @@ export default function OpeningExperience({
               className="col-span-12 md:col-span-7 select-text will-change-[transform,opacity]"
             >
               <p className="font-display font-light text-[1.35rem] sm:text-2xl md:text-3xl lg:text-[2.15vw] tracking-[-0.025em] uppercase leading-[1.22] text-neutral-900 dark:text-white select-text max-w-[38ch]">
-                FRONT-END DEVELOPER AND CREATIVE CODER WORKING AT THE
-                INTERSECTION OF CODE, INTERACTION, AND DESIGN{" "}
+                Applied mathematician turned front-end engineer
                 <span className="text-neutral-400 dark:text-neutral-500 font-normal">
                   &mdash;
-                </span>{" "}
-                BUILDING DIGITAL EXPERIENCES WITH STRUCTURAL CLARITY AND TACTILE
-                REFINEMENT.
+                </span>
+                I build clean, responsive web experiences with focus on code
+                structure, smooth interaction, and performance
               </p>
             </motion.div>
           </div>
