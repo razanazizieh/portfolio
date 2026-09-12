@@ -54,7 +54,7 @@ export const StatementSection = memo<StatementSectionProps>(function StatementSe
               ease: MOTION_CURVE_PREMIUM,
               delay: shouldReduceMotion ? 0 : 0.06,
             }}
-            className="font-display text-[clamp(2.15rem,5.6vw,5.5rem)] font-light uppercase leading-[0.94] tracking-tighter text-[var(--text-color)] select-text will-change-[transform,opacity]"
+            className="font-display text-[clamp(2rem,6.2vw,5.5rem)] font-light uppercase leading-[0.96] tracking-tighter text-[var(--text-color)] select-text will-change-[transform,opacity]"
           >
             LOGIC IS NOT JUST HOW CODE RUNS —
           </motion.h2>
@@ -73,7 +73,7 @@ export const StatementSection = memo<StatementSectionProps>(function StatementSe
               ease: MOTION_CURVE_PREMIUM,
               delay: shouldReduceMotion ? 0 : 0.20,
             }}
-            className="font-display text-[clamp(1.45rem,4vw,3.85rem)] font-light uppercase leading-[1.04] tracking-tighter text-[var(--text-dim)] select-text pl-3 sm:pl-8 md:pl-[6vw] lg:pl-[10vw] will-change-[transform,opacity]"
+            className="font-display text-[clamp(1.45rem,4.4vw,3.85rem)] font-light uppercase leading-[1.04] tracking-tighter text-neutral-500 dark:text-neutral-400 select-text pl-3 sm:pl-8 md:pl-[6vw] lg:pl-[10vw] will-change-[transform,opacity]"
           >
             IT IS HOW THE INTERFACE FEELS
           </motion.p>
@@ -101,11 +101,11 @@ export const StatementSection = memo<StatementSectionProps>(function StatementSe
             }}
             className="col-span-12 md:col-span-4 select-text will-change-[transform,opacity]"
           >
-            <h3 className="font-display text-base sm:text-lg md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
+            <h3 className="font-display text-[15px] sm:text-base md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
               FRONT-END ARCHITECTURE
             </h3>
-            <p className="font-sans text-sm text-neutral-600 dark:text-neutral-300 font-normal leading-relaxed mt-2.5 max-w-[28ch] select-text">
-              Scalable Web Core & Modular Patterns
+            <p className="font-sans text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed mt-2 max-w-[28ch] select-text">
+              Modular structure, clean patterns, and scalable foundations
             </p>
           </motion.div>
 
@@ -123,11 +123,11 @@ export const StatementSection = memo<StatementSectionProps>(function StatementSe
             }}
             className="col-span-12 md:col-span-4 md:col-start-5 md:pt-12 lg:pt-16 select-text will-change-[transform,opacity]"
           >
-            <h3 className="font-display text-base sm:text-lg md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
+            <h3 className="font-display text-[15px] sm:text-base md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
               INTERACTIVE INTERFACES
             </h3>
-            <p className="font-sans text-sm text-neutral-600 dark:text-neutral-300 font-normal leading-relaxed mt-2.5 max-w-[28ch] select-text">
-              Tactile Motion & Real-Time Dynamics
+            <p className="font-sans text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed mt-2 max-w-[28ch] select-text">
+              Purposeful motion, tactile feedback, and responsive nuance
             </p>
           </motion.div>
 
@@ -145,11 +145,11 @@ export const StatementSection = memo<StatementSectionProps>(function StatementSe
             }}
             className="col-span-12 md:col-span-4 md:col-start-9 md:pt-5 lg:pt-7 select-text will-change-[transform,opacity]"
           >
-            <h3 className="font-display text-base sm:text-lg md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
+            <h3 className="font-display text-[15px] sm:text-base md:text-xl font-light uppercase tracking-tight text-neutral-900 dark:text-neutral-100 select-text leading-snug">
               WEB APPLICATION LOGIC
             </h3>
-            <p className="font-sans text-sm text-neutral-600 dark:text-neutral-300 font-normal leading-relaxed mt-2.5 max-w-[28ch] select-text">
-              Computational State & System Integrity
+            <p className="font-sans text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-normal leading-relaxed mt-2 max-w-[28ch] select-text">
+              Predictable state, robust architecture, and system integrity
             </p>
           </motion.div>
         </div>

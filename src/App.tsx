@@ -27,10 +27,58 @@ import BackToTop from "./components/BackToTop";
 import ContextualCursorPill from "./components/ContextualCursorPill";
 import { useStickySection } from "./hooks/useStickySection";
 
+/**
+ * Strict route resolution:
+ * - "/" or "" -> Home (project: null, notFound: false)
+ * - "/work/:id" or "/project/:id" -> Case Study if :id matches an existing project in PROJECTS_DATA
+ * - Any other route (e.g. /random, /test, /hello, /anything) -> 404 (project: null, notFound: true)
+ */
+function resolveRoute(pathname: string, hash: string = ""): {
+  project: (typeof PROJECTS_DATA)[0] | null;
+  notFound: boolean;
+} {
+  // Support direct path and fallback hash deep link
+  let effectivePath = pathname;
+  if ((effectivePath === "/" || effectivePath === "") && hash && hash.startsWith("#/")) {
+    effectivePath = hash.slice(1);
+  }
+
+  // Normalize path by stripping trailing slash (unless root "/")
+  const normalized =
+    effectivePath.length > 1 && effectivePath.endsWith("/")
+      ? effectivePath.slice(0, -1)
+      : effectivePath;
+
+  // 1. Strict Home route: exactly "/" or empty
+  if (normalized === "/" || normalized === "") {
+    return { project: null, notFound: false };
+  }
+
+  // 2. Strict Project route: must match exact pattern /work/:id or /project/:id
+  const projectMatch = normalized.match(/^\/(?:work|project)\/([^/]+)$/);
+  if (projectMatch) {
+    const pId = projectMatch[1];
+    const project = PROJECTS_DATA.find((p) => p.id === pId);
+    if (project) {
+      return { project, notFound: false };
+    }
+    // Unknown project ID -> 404
+    return { project: null, notFound: true };
+  }
+
+  // 3. Any other route (e.g. /random, /test, /hello, /anything) -> 404
+  return { project: null, notFound: true };
+}
+
 export default function App() {
   const shouldReduceMotion = useReducedMotion();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const initialRoute = resolveRoute(
+    location.pathname,
+    typeof window !== "undefined" ? window.location.hash : "",
+  );
 
   const [theme, setTheme] = useState<"dark" | "light">(() => {
     try {
@@ -44,15 +92,17 @@ export default function App() {
   const [isFooterReached, setIsFooterReached] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(() => !initialRoute.notFound);
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [activeCaseStudy, setActiveCaseStudy] = useState<
     (typeof PROJECTS_DATA)[0] | null
-  >(null);
+  >(() => initialRoute.project);
   const [activeFilter, setActiveFilter] = useState<
     "ALL" | "FULL-STACK" | "CODE" | "UI"
   >("ALL");
-  const [isNotFound, setIsNotFound] = useState(false);
+  const [isNotFound, setIsNotFound] = useState<boolean>(
+    () => initialRoute.notFound,
+  );
 
   const isSectionTrackingDormant = activeCaseStudy !== null || isNotFound;
 
@@ -568,8 +618,7 @@ export default function App() {
 
             for (const { id: sId, el } of sectionEntries) {
               if (el && scrollY >= el.offsetTop - winHeight * 0.35) {
-                const navId = sId === "statement" ? "works" : sId;
-                setActiveSection((prev) => (prev === navId ? prev : navId));
+                setActiveSection((prev) => (prev === sId ? prev : sId));
                 break;
               }
             }
@@ -605,32 +654,12 @@ export default function App() {
   }, [loading]);
 
   useEffect(() => {
-    const isProjectRoute =
-      location.pathname.startsWith("/work/") ||
-      location.pathname.startsWith("/project/");
-    if (isProjectRoute) {
-      const match = location.pathname.match(/\/(?:work|project)\/([^/]+)/);
-      if (match) {
-        const pId = match[1];
-        const project = PROJECTS_DATA.find((p) => p.id === pId);
-        if (project) {
-          setActiveCaseStudy(project);
-          setIsNotFound(false);
-        } else {
-          setActiveCaseStudy(null);
-          setIsNotFound(true);
-        }
-      } else {
-        setActiveCaseStudy(null);
-        setIsNotFound(true);
-      }
-    } else if (location.pathname === "/") {
-      setActiveCaseStudy(null);
-      setIsNotFound(false);
-    } else {
-      setActiveCaseStudy(null);
-      setIsNotFound(true);
-    }
+    const route = resolveRoute(
+      location.pathname,
+      typeof window !== "undefined" ? window.location.hash : "",
+    );
+    setActiveCaseStudy(route.project);
+    setIsNotFound(route.notFound);
     setIsMobileMenuOpen(false);
     unlockScroll();
   }, [location.pathname]);
@@ -715,8 +744,7 @@ export default function App() {
         window.scrollTo({ top: 0, behavior: effectiveBehavior });
       }
     } else if (targetEl) {
-      const navId = targetId === "statement" ? "works" : targetId;
-      setActiveSection(navId);
+      setActiveSection(targetId);
       if (lenis && !shouldReduceMotion) {
         lenis.scrollTo(targetEl, { duration: effectiveDuration, offset: 0 });
       } else {
@@ -826,8 +854,11 @@ export default function App() {
               }}
               className="w-full min-h-[100dvh] flex flex-col justify-between bg-[var(--bg-color)] transition-colors duration-300"
             >
-              <h2 id="about-heading" className="sr-only">
-                About — Perspective and Inquiry
+              <h2
+                id="about-heading"
+                className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-16 sm:pt-20 pb-6 sm:pb-8 font-display text-[1.85rem] sm:text-3xl md:text-4xl font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[0.95] block md:sr-only md:p-0 md:m-0 select-text"
+              >
+                About
               </h2>
               <AboutSection key="about-section" />
             </section>
@@ -845,8 +876,11 @@ export default function App() {
               }}
               className="w-full min-h-[100dvh] bg-[var(--bg-color)] transition-colors duration-300"
             >
-              <h2 id="works-heading" className="sr-only">
-                Portfolio — Selected Work
+              <h2
+                id="works-heading"
+                className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-16 sm:pt-20 pb-6 sm:pb-8 font-display text-[1.85rem] sm:text-3xl md:text-4xl font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[0.95] block md:sr-only md:p-0 md:m-0 select-text"
+              >
+                Works
               </h2>
               <SelectedWork
                 activeProject={activeCaseStudy}
@@ -872,7 +906,10 @@ export default function App() {
               }}
               className="w-full min-h-[85vh] sm:min-h-[100dvh] flex flex-col justify-center bg-[var(--bg-color)] text-[var(--text-color)] transition-colors duration-300"
             >
-              <h2 id="statement-heading" className="sr-only">
+              <h2
+                id="statement-heading"
+                className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-16 sm:pt-20 pb-6 sm:pb-8 font-display text-[1.85rem] sm:text-3xl md:text-4xl font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[0.95] block md:sr-only md:p-0 md:m-0 select-text"
+              >
                 Statement
               </h2>
               <StatementSection />
@@ -889,9 +926,12 @@ export default function App() {
                 top: contactSticky.stickyTop,
                 zIndex: 50,
               }}
-              className="w-full min-h-[100dvh] flex flex-col justify-between bg-[var(--bg-color)] transition-colors duration-300"
+              className="w-full min-h-[100dvh] flex flex-col bg-[var(--bg-color)] transition-colors duration-300"
             >
-              <h2 id="contact-heading" className="sr-only">
+              <h2
+                id="contact-heading"
+                className="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-16 sm:pt-20 pb-6 sm:pb-8 font-display text-[1.85rem] sm:text-3xl md:text-4xl font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[0.95] block md:sr-only md:p-0 md:m-0 select-text"
+              >
                 Contact
               </h2>
               <Contact key="contact-section" />

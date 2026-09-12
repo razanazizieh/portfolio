@@ -5,12 +5,13 @@ import { ProjectCard, EditorialArchetype, getContainerGridClass } from './Projec
 import { ApertureReveal } from './ApertureReveal';
 import { MagneticElement } from './MagneticElement';
 import { MOTION_CURVE_PREMIUM, REVEAL_VIEWPORT_CONFIG } from '../utils/motion';
+import { isProjectMatchingFilter, ProjectFilterCategory } from '../utils/projectFilter';
 
 interface SelectedWorkProps {
   activeProject?: typeof PROJECTS_DATA[0] | null;
   onActiveProjectChange?: (project: typeof PROJECTS_DATA[0] | null) => void;
-  activeFilter?: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI';
-  setActiveFilter?: (filter: 'ALL' | 'FULL-STACK' | 'CODE' | 'UI') => void;
+  activeFilter?: ProjectFilterCategory;
+  setActiveFilter?: (filter: ProjectFilterCategory) => void;
   triggerWipe?: (onHalfway: () => void) => void;
 }
 
@@ -23,7 +24,7 @@ export default function SelectedWork({
   const sectionRef = useRef<HTMLElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const [localSelectedProject, setLocalSelectedProject] = useState<typeof PROJECTS_DATA[0] | null>(null);
-  const [localActiveFilter, setLocalActiveFilter] = useState<'ALL' | 'FULL-STACK' | 'CODE' | 'UI'>('ALL');
+  const [localActiveFilter, setLocalActiveFilter] = useState<ProjectFilterCategory>('ALL');
   const activeFilter = propsActiveFilter !== undefined ? propsActiveFilter : localActiveFilter;
   const setActiveFilter = propsSetActiveFilter !== undefined ? propsSetActiveFilter : setLocalActiveFilter;
 
@@ -35,15 +36,15 @@ export default function SelectedWork({
 
   const filteredProjects = useMemo(() => {
     if (activeFilter === 'ALL') return PROJECTS_DATA;
-    return PROJECTS_DATA.filter((p) => p.category === activeFilter);
+    return PROJECTS_DATA.filter((p) => isProjectMatchingFilter(p, activeFilter));
   }, [activeFilter]);
 
   const filterCounts = useMemo(() => {
     return {
       ALL: PROJECTS_DATA.length,
-      'FULL-STACK': PROJECTS_DATA.filter((p) => p.category === 'FULL-STACK').length,
-      CODE: PROJECTS_DATA.filter((p) => p.category === 'CODE').length,
-      UI: PROJECTS_DATA.filter((p) => p.category === 'UI').length,
+      'FULL-STACK': PROJECTS_DATA.filter((p) => isProjectMatchingFilter(p, 'FULL-STACK')).length,
+      CODE: PROJECTS_DATA.filter((p) => isProjectMatchingFilter(p, 'CODE')).length,
+      UI: PROJECTS_DATA.filter((p) => isProjectMatchingFilter(p, 'UI')).length,
     };
   }, []);
 
@@ -96,18 +97,18 @@ export default function SelectedWork({
       ref={sectionRef}
       id="works"
       aria-label="Portfolio"
-      className="relative w-full z-20 py-20 sm:py-32 select-text overflow-x-hidden"
+      className="relative w-full z-20 py-24 sm:py-32 select-text overflow-x-hidden"
     >
       <div className="w-full relative flex flex-col max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
         
         <LayoutGroup id="selected-works-group">
           {/* Editorial Section Header & Classification Index */}
-          <div className="w-full mb-14 sm:mb-18 md:mb-24 select-text">
+          <div className="w-full mb-16 sm:mb-20 md:mb-24 select-text">
             {/* Asymmetric 12-Column Editorial Index Composition */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-x-8 items-start w-full">
               
               {/* Primary Section Anchor: Dominant Title with line masking reveal */}
-              <div className="col-span-12 md:col-span-6 lg:col-span-6 flex flex-col items-start text-left select-text">
+              <div className="hidden md:flex col-span-12 md:col-span-6 lg:col-span-6 flex-col items-start text-left select-text">
                 <div className="overflow-hidden py-0.5 select-text pointer-events-auto">
                   <motion.h2
                     initial={
@@ -120,7 +121,7 @@ export default function SelectedWork({
                       ease: MOTION_CURVE_PREMIUM,
                       delay: shouldReduceMotion ? 0 : 0.04,
                     }}
-                    className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[1.05] select-text will-change-[transform,opacity]"
+                    className="font-display text-3xl sm:text-3xl md:text-4xl lg:text-[2.75rem] font-light tracking-tighter text-neutral-900 dark:text-white uppercase leading-[0.98] md:leading-[1.05] select-text will-change-[transform,opacity]"
                   >
                     PORTFOLIO
                   </motion.h2>
@@ -198,7 +199,7 @@ export default function SelectedWork({
           <div
             id="works-gallery-grid"
             key={activeFilter}
-            className="grid grid-cols-1 md:grid-cols-12 gap-x-6 md:gap-x-8 lg:gap-x-12 gap-y-16 sm:gap-y-24 md:gap-y-32 lg:gap-y-36 w-full items-start"
+            className="grid grid-cols-1 md:grid-cols-12 gap-x-6 md:gap-x-8 lg:gap-x-12 gap-y-28 sm:gap-y-32 md:gap-y-32 lg:gap-y-36 w-full items-start"
           >
             {filteredProjects.map((project, index) => {
               const archetype = getDynamicArchetype(project, index, filteredProjects.length);

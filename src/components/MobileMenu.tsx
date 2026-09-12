@@ -1,23 +1,29 @@
-import React, { useEffect } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { MOTION_CURVE_PREMIUM } from "../utils/motion";
-import { Project } from "../types";
+
+
+
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
+import { MOTION_CURVE_PREMIUM } from '../utils/motion';
+import { Project } from '../types';
 
 interface MobileMenuProps {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   activeSection: string;
   activeCaseStudy: Project | null;
-  handleNav: (
-    e: React.SyntheticEvent | { preventDefault: () => void },
-    targetId: string,
-  ) => void;
+  handleNav: (e: React.SyntheticEvent | { preventDefault: () => void }, targetId: string) => void;
 }
 
 const NAV_ITEMS = [
-  { id: "about", label: "ABOUT" },
-  { id: "works", label: "WORKS" },
-  { id: "contact", label: "CONTACT" },
+  { id: 'about', label: 'ABOUT' },
+  { id: 'works', label: 'WORKS' },
+  { id: 'statement', label: 'STATEMENT' },
+  { id: 'contact', label: 'CONTACT' },
 ] as const;
 
 export default function MobileMenu({
@@ -44,7 +50,7 @@ export default function MobileMenu({
     exit: {
       opacity: 0,
       transition: {
-        duration: shouldReduceMotion ? 0.01 : 0.18,
+        duration: shouldReduceMotion ? 0.01 : 0.26,
         ease: MOTION_CURVE_PREMIUM,
       },
     },
@@ -57,6 +63,12 @@ export default function MobileMenu({
       transition: {
         staggerChildren: shouldReduceMotion ? 0 : 0.04,
         delayChildren: shouldReduceMotion ? 0 : 0.03,
+      },
+    },
+    exit: {
+      transition: {
+        staggerChildren: shouldReduceMotion ? 0 : 0.03,
+        staggerDirection: -1,
       },
     },
   };
@@ -74,14 +86,22 @@ export default function MobileMenu({
         ease: MOTION_CURVE_PREMIUM,
       },
     },
+    exit: {
+      opacity: 0,
+      y: shouldReduceMotion ? 0 : 6,
+      transition: {
+        duration: shouldReduceMotion ? 0.01 : 0.2,
+        ease: MOTION_CURVE_PREMIUM,
+      },
+    },
   };
 
   // Forceful cleanup helper for body scroll locks
   const cleanupBodyScroll = () => {
-    document.body.style.overflow = "unset";
-    document.body.style.pointerEvents = "auto";
-    document.documentElement.style.overflow = "unset";
-    document.documentElement.style.pointerEvents = "auto";
+    document.body.style.overflow = 'unset';
+    document.body.style.pointerEvents = 'auto';
+    document.documentElement.style.overflow = 'unset';
+    document.documentElement.style.pointerEvents = 'auto';
   };
 
   // Ensure scroll lock is completely freed on component unmount
@@ -96,20 +116,17 @@ export default function MobileMenu({
     if (!isMobileMenuOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         cleanupBodyScroll();
         setIsMobileMenuOpen(false);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
-  const handleLinkClick = (
-    e: React.MouseEvent | React.TouchEvent,
-    targetId: string,
-  ) => {
+  const handleLinkClick = (e: React.MouseEvent | React.TouchEvent, targetId: string) => {
     cleanupBodyScroll();
     setIsMobileMenuOpen(false);
     handleNav(e, targetId);
@@ -129,9 +146,9 @@ export default function MobileMenu({
           exit="exit"
           className="fixed inset-0 z-[90] bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col justify-start pt-24 sm:pt-28 pb-8 md:hidden text-left select-none overflow-y-auto"
           style={{
-            paddingLeft: "max(16px, 4vw)",
-            paddingRight: "max(16px, 4vw)",
-            touchAction: "manipulation",
+            paddingLeft: 'max(16px, 4vw)',
+            paddingRight: 'max(16px, 4vw)',
+            touchAction: 'manipulation',
           }}
         >
           {/* Refined Compact Editorial Navigation */}
@@ -139,11 +156,12 @@ export default function MobileMenu({
             variants={containerVariants}
             initial="hidden"
             animate="visible"
+            exit="exit"
             className="flex flex-col items-start gap-2 sm:gap-3 w-full py-4 text-left"
           >
-            {NAV_ITEMS.map((item) => {
+            {NAV_ITEMS.map((item, index) => {
               const isActive =
-                (item.id === "works" && !!activeCaseStudy) ||
+                (item.id === 'works' && !!activeCaseStudy) ||
                 (activeSection === item.id && !activeCaseStudy);
 
               return (
@@ -156,17 +174,20 @@ export default function MobileMenu({
                     type="button"
                     onClick={(e) => handleLinkClick(e, item.id)}
                     aria-label={`Navigate to ${item.label} section`}
-                    className={`min-h-[44px] py-1.5 px-2 -ml-2 flex items-center transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none text-left group ${
+                    className={`min-h-[44px] py-1.5 px-2 -ml-2 flex items-center gap-3 transition-colors duration-150 ease-out focus:outline-none focus-visible:ring-1 focus-visible:ring-neutral-400 cursor-pointer select-none text-left group ${
                       isActive
-                        ? "text-neutral-950 dark:text-neutral-50"
-                        : "text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50"
+                        ? 'text-neutral-950 dark:text-neutral-50'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-950 dark:hover:text-neutral-50'
                     }`}
                   >
+                    <span className="font-mono text-[11px] opacity-40 tracking-wider">
+                      0{index + 1}
+                    </span>
                     <span
-                      className={`font-display text-lg sm:text-xl font-light tracking-tighter uppercase leading-tight transition-transform duration-200 ease-out ${
+                      className={`font-display text-xl sm:text-2xl font-light tracking-tighter uppercase leading-tight transition-transform duration-200 ease-out ${
                         isActive
-                          ? "text-neutral-950 dark:text-neutral-50"
-                          : "group-hover:translate-x-1"
+                          ? 'text-neutral-950 dark:text-neutral-50'
+                          : 'group-hover:translate-x-1'
                       }`}
                     >
                       {item.label}

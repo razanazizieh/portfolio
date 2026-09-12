@@ -292,7 +292,7 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
   const renderIdentity = () => (
     <motion.div
       variants={metaVariants}
-      className="flex items-center gap-2 mt-2 mb-2 sm:mb-2.5 overflow-hidden will-change-[transform,clip-path,opacity]"
+      className="flex items-center gap-2 mt-2 mb-3.5 sm:mb-2.5 overflow-hidden will-change-[transform,clip-path,opacity]"
     >
       <ProjectMeta index={projectNumber} category={project.category} year={project.year} />
     </motion.div>
@@ -301,7 +301,7 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
   const renderOverview = (customClasses = '') => (
     <motion.div variants={descriptionVariants} className="w-full overflow-hidden will-change-[transform,clip-path,opacity]">
       <p
-        className={`font-sans font-light text-neutral-700 dark:text-neutral-300 ${customClasses}`}
+        className={`font-sans font-normal text-neutral-600 dark:text-neutral-300 ${customClasses}`}
       >
         {project.overview}
       </p>
@@ -372,7 +372,8 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
   // RENDER COMPOSITION BY ARCHETYPE (AUTHORED EDITORIAL MODULAR GRID)
   // No two consecutive projects share the same visual geometry.
   // Alternates between: Image Module, Title Module, Meta Module, Description Module, Empty Module
-  // Sequence preserved: Image -> Title -> Meta -> Overview
+  // Preserves exact desktop layout while giving mobile clear visual chapters,
+  // prominent display typography, and deliberate asymmetric spacing.
   // =========================================================================
   const renderComposition = () => {
     switch (archetype) {
@@ -380,58 +381,83 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
       case 'cinematic-anchor':
         return (
           <div className="flex flex-col gap-6 sm:gap-8 md:gap-10 w-full">
+            {/* Visual Anchor: Full-Bleed 100vw Cover Image establishes the chapter first */}
             {renderImageBlock(
               'aspect-[16/9] sm:aspect-[21/9] md:aspect-[2.35/1] lg:aspect-[2.4/1]',
               true
             )}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-4 md:gap-x-8 items-start text-left w-full">
-              <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-start">
-                {renderTitle('text-xl sm:text-2xl md:text-3xl lg:text-[2.25rem] leading-[1.06]')}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-4 md:gap-x-8 items-start text-left w-full mt-2 sm:mt-0">
+              <div className="col-span-12 md:col-span-5 lg:col-span-5 flex flex-col justify-start">
+                {renderTitle('text-[1.5rem] sm:text-2xl md:text-3xl lg:text-[2.25rem] leading-[1.04]')}
                 {renderIdentity()}
               </div>
               <div className="hidden md:block md:col-span-1" aria-hidden="true" />
-              <div className="md:col-span-6 lg:col-span-6 flex flex-col justify-start">
-                {renderOverview('text-sm sm:text-base leading-[1.7] max-w-[50ch]')}
+              <div className="col-span-12 md:col-span-6 lg:col-span-6 flex flex-col justify-start mt-1 md:mt-0">
+                {renderOverview('text-[15px] sm:text-base leading-[1.72] max-w-[42ch] md:max-w-[50ch]')}
               </div>
             </div>
           </div>
         );
 
-      // 2. Compact Staggered Left (Project 02): Top Offset Text Bar (Cols 4-12) over Left-Anchored Image (Cols 1-8)
+      // 2. Compact Staggered Left (Project 02): Left-Anchored Image establishes project first
       case 'compact-staggered-left':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-y-8 md:gap-x-8 items-start w-full text-left">
-            <div className="hidden md:block md:col-span-3" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-5 flex flex-col justify-start">
-              {renderTitle('text-xl sm:text-2xl md:text-[1.85rem] leading-[1.1]')}
+          <div className="flex flex-col md:grid md:grid-cols-12 gap-y-6 md:gap-y-8 md:gap-x-8 items-start w-full text-left">
+            {/* Desktop Spacers */}
+            <div className="hidden md:block md:col-span-3 md:order-1" aria-hidden="true" />
+
+            {/* Visual Focus: Left-Anchored Image (Cols 1-8 on desktop, Order-1 92% width on mobile) */}
+            <div className="order-1 md:order-4 col-span-12 md:col-span-8 w-full overflow-visible">
+              <div className="w-[92%] sm:w-[88%] md:w-full mr-auto md:mr-0 overflow-visible">
+                {renderImageBlock('aspect-[16/10] sm:aspect-[16/9]')}
+              </div>
+            </div>
+
+            {/* Desktop spacer on right of image */}
+            <div className="hidden md:block md:col-span-4 md:order-5" aria-hidden="true" />
+
+            {/* Information Area: Title & Identity (Cols 4-8 on desktop, Order-2 on mobile) */}
+            <div className="order-2 md:order-2 col-span-12 md:col-span-5 flex flex-col justify-start mt-5 sm:mt-6 md:mt-0">
+              {renderTitle('text-[1.5rem] sm:text-2xl md:text-[1.85rem] leading-[1.06]')}
               {renderIdentity()}
             </div>
-            <div className="col-span-12 md:col-span-4 flex flex-col justify-start md:pt-1">
-              {renderOverview('text-sm sm:text-[15px] leading-[1.68] max-w-[42ch]')}
+
+            {/* Information Area: Overview (Cols 9-12 on desktop, Order-3 on mobile) */}
+            <div className="order-3 md:order-3 col-span-12 md:col-span-4 flex flex-col justify-start pl-0 md:pl-0 md:pt-1 mt-2 sm:mt-3 md:mt-0">
+              {renderOverview('text-[15px] sm:text-[15px] md:text-base leading-[1.72] max-w-[38ch] md:max-w-[42ch]')}
             </div>
-            <div className="col-span-12 md:col-span-8 overflow-visible">
-              {renderImageBlock('aspect-[16/10] sm:aspect-[16/9]')}
-            </div>
-            <div className="hidden md:block md:col-span-4" aria-hidden="true" />
           </div>
         );
 
-      // 3. Tall Staggered Right (Project 03): Two Image Modules Paired with Compact Information Block
+      // 3. Tall Staggered Right (Project 03): Primary Image establishes project, followed by info & secondary image coda
       case 'tall-staggered-right': {
         const secondaryImage = project.images && project.images.length > 1 ? project.images[1] : project.image;
         return (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-8 md:gap-x-8 lg:gap-x-10 items-start w-full text-left">
-            <div className="col-span-12 md:col-span-6 overflow-visible">
-              {renderImageBlock('aspect-[4/3] sm:aspect-[1/1] md:aspect-[4/3]')}
-            </div>
-            <div className="hidden md:block md:col-span-1" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-5 flex flex-col justify-between h-full gap-6 sm:gap-8">
-              <div className="flex flex-col">
-                {renderTitle('text-xl sm:text-2xl lg:text-[1.85rem] leading-[1.08]')}
-                {renderIdentity()}
-                {renderOverview('text-sm sm:text-[15px] leading-[1.68] max-w-[42ch] mt-2')}
+          <div className="flex flex-col md:grid md:grid-cols-12 gap-y-6 sm:gap-y-8 md:gap-x-8 lg:gap-x-10 items-start w-full text-left">
+            {/* Visual Focus: Primary Image (Left 6 cols on desktop; Order-1 on mobile, 94% right-anchored) */}
+            <div className="order-1 md:order-1 w-full md:col-span-6 overflow-visible">
+              <div className="w-[94%] sm:w-[90%] md:w-full ml-auto md:ml-0 overflow-visible">
+                {renderImageBlock('aspect-[4/3] sm:aspect-[1/1] md:aspect-[4/3]')}
               </div>
-              <div className="w-full mt-2 sm:mt-4 overflow-hidden">
+            </div>
+
+            <div className="hidden md:block md:col-span-1 md:order-2" aria-hidden="true" />
+
+            {/* Right Column: Title + Overview + Secondary Image on desktop; unpacked into ordered hierarchy on mobile */}
+            <div className="contents md:flex md:flex-col md:justify-between md:h-full md:gap-6 sm:md:gap-8 md:order-3 md:col-span-5">
+              {/* Information Area: Title and Identity (Order-2 on mobile) */}
+              <div className="order-2 md:order-none flex flex-col mt-5 sm:mt-6 md:mt-0">
+                {renderTitle('text-[1.5rem] sm:text-2xl lg:text-[1.85rem] leading-[1.08]')}
+                {renderIdentity()}
+              </div>
+
+              {/* Information Area: Overview (Order-3 on mobile) */}
+              <div className="order-3 md:order-none flex flex-col mt-2 sm:mt-3 md:mt-0">
+                {renderOverview('text-[15px] sm:text-[15px] md:text-base leading-[1.72] max-w-[38ch] md:max-w-[42ch]')}
+              </div>
+
+              {/* Ending: Secondary Detail Specimen (Order-4 on mobile with 82% asymmetric offset) */}
+              <div className="order-4 md:order-none w-[82%] sm:w-[78%] md:w-full ml-auto md:ml-0 overflow-hidden mt-6 sm:mt-7 md:mt-4">
                 {renderSecondaryImageBlock(secondaryImage, 'aspect-[16/10]')}
               </div>
             </div>
@@ -439,18 +465,24 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
         );
       }
 
-      // 4. Split Editorial (Project 04): Left Typography Block + Wide Right-Anchored Image (7 cols)
+      // 4. Split Editorial (Project 04): Wide Architectural Image establishes project first, followed by info block
       case 'split-editorial':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-x-8 lg:gap-x-12 items-start w-full text-left">
-            <div className="col-span-12 md:col-span-4 flex flex-col justify-start pt-1 md:pt-2">
-              {renderTitle('text-xl sm:text-2xl lg:text-[1.95rem] leading-[1.08]')}
-              {renderIdentity()}
-              {renderOverview('text-sm sm:text-[15px] md:text-base leading-[1.68] max-w-[36ch] mt-3 sm:mt-4')}
+          <div className="flex flex-col md:grid md:grid-cols-12 gap-y-6 md:gap-x-8 lg:gap-x-12 items-start w-full text-left">
+            {/* Visual Focus: Wide Architectural Image (Cols 6-12 on desktop, Order-1 on mobile) */}
+            <div className="order-1 md:order-3 col-span-12 md:col-span-7 w-full overflow-visible">
+              <div className="w-full overflow-visible">
+                {renderImageBlock('aspect-[16/10] md:aspect-[16/10]')}
+              </div>
             </div>
-            <div className="hidden md:block md:col-span-1" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-7 overflow-visible">
-              {renderImageBlock('aspect-[16/10] md:aspect-[16/10]')}
+
+            <div className="hidden md:block md:col-span-1 md:order-2" aria-hidden="true" />
+
+            {/* Information Area: Title, Identity, and Overview (Cols 1-4 on desktop, Order-2 on mobile) */}
+            <div className="order-2 md:order-1 col-span-12 md:col-span-4 flex flex-col justify-start pt-1 md:pt-2 mt-5 sm:mt-6 md:mt-0">
+              {renderTitle('text-[1.5rem] sm:text-2xl lg:text-[1.95rem] leading-[1.06]')}
+              {renderIdentity()}
+              {renderOverview('text-[15px] sm:text-[15px] md:text-base leading-[1.72] max-w-[36ch] mt-3 sm:mt-4')}
             </div>
           </div>
         );
@@ -459,65 +491,86 @@ export const ProjectReveal = memo<ProjectRevealProps>(({
       case 'full-bleed-moment':
         return (
           <div className="w-full flex flex-col gap-6 sm:gap-8">
-            {renderImageBlock('aspect-[24/10] sm:aspect-[21/9]', true)}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-4 md:gap-x-8 lg:gap-x-12 items-start text-left w-full">
-              <div className="md:col-span-5 lg:col-span-5 flex flex-col">
-                {renderTitle('text-xl sm:text-2xl md:text-3xl lg:text-[2.15rem] leading-[1.08]')}
+            {renderImageBlock('aspect-[16/9] sm:aspect-[21/9] md:aspect-[24/10]', true)}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-4 md:gap-x-8 lg:gap-x-12 items-start text-left w-full mt-2 sm:mt-0">
+              <div className="col-span-12 md:col-span-5 lg:col-span-5 flex flex-col">
+                {renderTitle('text-[1.5rem] sm:text-2xl md:text-3xl lg:text-[2.15rem] leading-[1.08]')}
                 {renderIdentity()}
               </div>
               <div className="hidden md:block md:col-span-1" aria-hidden="true" />
-              <div className="md:col-span-6 lg:col-span-6 flex flex-col justify-start">
-                {renderOverview('text-sm sm:text-[15px] md:text-base leading-[1.68] max-w-[50ch]')}
+              <div className="col-span-12 md:col-span-6 lg:col-span-6 flex flex-col justify-start mt-1 md:mt-0">
+                {renderOverview('text-[15px] sm:text-[15px] md:text-base leading-[1.72] max-w-[42ch] md:max-w-[50ch]')}
               </div>
             </div>
           </div>
         );
 
-      // 6. Narrative Offset Left (Project 05): Centered-Offset Image (8 cols) + 3-Part Horizontal Modular Band
+      // 6. Narrative Offset Left (Project 05): Asymmetric Left Image establishes project first, followed by info modules
       case 'narrative-offset-left':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-y-8 md:gap-x-6 lg:gap-x-8 items-start w-full text-left">
-            <div className="hidden md:block md:col-span-2" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-8 overflow-visible">
-              {renderImageBlock('aspect-[16/9] md:aspect-[16/9]')}
-            </div>
-            <div className="hidden md:block md:col-span-2" aria-hidden="true" />
+          <div className="flex flex-col md:grid md:grid-cols-12 gap-y-6 md:gap-y-8 md:gap-x-6 lg:gap-x-8 items-start w-full text-left">
+            <div className="hidden md:block md:col-span-2 md:order-1" aria-hidden="true" />
 
-            <div className="hidden md:block md:col-span-2" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-3 flex flex-col justify-start">
+            {/* Visual Focus: Left-Offset Image (Cols 3-10 on desktop, Order-1 on mobile with 90% width) */}
+            <div className="order-1 md:order-2 w-full md:col-span-8 overflow-visible">
+              <div className="w-[90%] sm:w-[86%] md:w-full mr-auto md:mr-0 overflow-visible">
+                {renderImageBlock('aspect-[16/9] md:aspect-[16/9]')}
+              </div>
+            </div>
+
+            <div className="hidden md:block md:col-span-2 md:order-3" aria-hidden="true" />
+
+            {/* Information Area: Title (Cols 3-5 on desktop, Order-2 on mobile) */}
+            <div className="order-2 md:order-5 md:col-span-3 flex flex-col justify-start mt-5 sm:mt-6 md:mt-0">
+              {renderTitle('text-[1.5rem] sm:text-xl md:text-[1.45rem] leading-[1.08]')}
+            </div>
+
+            {/* Information Area: Identity (Cols 6-8 on desktop, Order-3 on mobile) */}
+            <div className="order-3 md:order-4 md:col-span-3 flex flex-col justify-start -mt-1 md:mt-0">
               {renderIdentity()}
             </div>
-            <div className="col-span-12 md:col-span-3 flex flex-col justify-start">
-              {renderTitle('text-lg sm:text-xl md:text-[1.45rem] leading-[1.1]')}
-            </div>
-            <div className="col-span-12 md:col-span-4 flex flex-col justify-start">
-              {renderOverview('text-sm sm:text-[15px] leading-[1.68] max-w-[40ch]')}
+
+            {/* Information Area: Overview (Cols 9-12 on desktop, Order-4 on mobile) */}
+            <div className="order-4 md:order-6 md:col-span-4 flex flex-col justify-start pl-0 md:pl-0 mt-2 sm:mt-3 md:mt-0">
+              {renderOverview('text-[15px] sm:text-[15px] md:text-base leading-[1.72] max-w-[38ch] md:max-w-[40ch]')}
             </div>
           </div>
         );
 
-      // 7. Staggered Offset Right (Project 06): Interlocking Modular Chessboard Exchange
+      // 7. Staggered Offset Right (Project 06): Right-Anchored Main Image establishes project, followed by info & secondary coda
       case 'staggered-offset-right':
       default: {
         const secondaryImage = project.images && project.images.length > 1 ? project.images[1] : project.image;
         return (
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-y-6 md:gap-x-8 lg:gap-x-10 items-start w-full text-left">
-            <div className="col-span-12 md:col-span-5 flex flex-col justify-between gap-6 sm:gap-8">
-              <div>
-                {renderOverview('text-sm sm:text-base leading-[1.68] max-w-[40ch]')}
+          <div className="flex flex-col md:grid md:grid-cols-12 gap-y-6 sm:gap-y-8 md:gap-x-8 lg:gap-x-10 items-start w-full text-left">
+            {/* Primary Visual & Identity Column on Desktop (Cols 7-12) */}
+            <div className="contents md:flex md:flex-col md:gap-6 md:order-3 md:col-span-6 md:col-start-7 w-full">
+              {/* Visual Focus: Main Image (Order-1 on mobile with 92% right-anchored width) */}
+              <div className="order-1 md:order-2 w-full overflow-visible">
+                <div className="w-[92%] sm:w-[88%] md:w-full ml-auto md:ml-0 overflow-visible">
+                  {renderImageBlock('aspect-[4/3] md:aspect-[4/3]')}
+                </div>
               </div>
-              <div className="w-full overflow-hidden">
-                {renderSecondaryImageBlock(secondaryImage, 'aspect-[16/9]')}
-              </div>
-            </div>
-            <div className="hidden md:block md:col-span-1" aria-hidden="true" />
-            <div className="col-span-12 md:col-span-6 flex flex-col gap-5 sm:gap-6">
-              <div>
-                {renderTitle('text-xl sm:text-2xl lg:text-[1.85rem] leading-[1.08]')}
+
+              {/* Information Area: Title & Identity (Order-2 on mobile) */}
+              <div className="order-2 md:order-1 mt-5 sm:mt-6 md:mt-0">
+                {renderTitle('text-[1.5rem] sm:text-2xl lg:text-[1.85rem] leading-[1.08]')}
                 {renderIdentity()}
               </div>
-              <div className="w-full overflow-visible">
-                {renderImageBlock('aspect-[4/3] md:aspect-[4/3]')}
+            </div>
+
+            <div className="hidden md:block md:col-span-1 md:order-2" aria-hidden="true" />
+
+            {/* Narrative & Detail Column on Desktop (Cols 1-5) */}
+            <div className="contents md:flex md:flex-col md:justify-between md:gap-8 md:order-1 md:col-span-5 w-full">
+              {/* Information Area: Overview (Order-3 on mobile) */}
+              <div className="order-3 md:order-1 mt-3 sm:mt-4 md:mt-0">
+                {renderOverview('text-[15px] sm:text-base leading-[1.72] max-w-[38ch] md:max-w-[40ch]')}
+              </div>
+
+              {/* Ending: Secondary Detail Specimen (Order-4 on mobile with alternating 82% left offset) */}
+              <div className="order-4 md:order-2 w-[82%] sm:w-[78%] md:w-full mr-auto md:mr-0 overflow-hidden mt-6 sm:mt-7 md:mt-0">
+                {renderSecondaryImageBlock(secondaryImage, 'aspect-[16/9]')}
               </div>
             </div>
           </div>

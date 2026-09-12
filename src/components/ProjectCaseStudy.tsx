@@ -4,13 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { Project } from "../types";
 import { MOTION_CURVE_PREMIUM, REVEAL_VIEWPORT_CONFIG } from "../utils/motion";
 import { PROJECTS_DATA } from "../data";
+import { isProjectMatchingFilter, ProjectFilterCategory } from "../utils/projectFilter";
 import PremiumImage from "./PremiumImage";
 import MagneticElement from "./MagneticElement";
 import DeterministicShuffle from "./DeterministicShuffle";
 
 interface ProjectCaseStudyProps {
   project: Project;
-  activeFilter?: "ALL" | "FULL-STACK" | "CODE" | "UI";
+  activeFilter?: ProjectFilterCategory;
   onClose: () => void;
 }
 
@@ -45,7 +46,7 @@ export default function ProjectCaseStudy({
   // Filter projects based on active matrix category for internal cycling
   const filteredNavProjects = useMemo(() => {
     if (activeFilter === "ALL") return PROJECTS_DATA;
-    return PROJECTS_DATA.filter((p) => p.category === activeFilter);
+    return PROJECTS_DATA.filter((p) => isProjectMatchingFilter(p, activeFilter));
   }, [activeFilter]);
 
   // Determine current active navigation parameters
@@ -374,7 +375,7 @@ export default function ProjectCaseStudy({
                 className="flex flex-col gap-4"
               >
                 <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
-                  SYSTEM ARCHITECTURE OVERVIEW
+                  PROJECT OVERVIEW
                 </span>
                 <h2
                   className="font-display text-xl sm:text-2xl md:text-3xl font-light tracking-tighter uppercase leading-[1.2] text-neutral-900 dark:text-white"
@@ -382,22 +383,20 @@ export default function ProjectCaseStudy({
                 >
                   {project.overview}
                 </h2>
-                {/* Direct Answer First Paragraph (30-50 words, high citation extraction density) */}
+                {/* Direct Answer First Paragraph */}
                 <p className="font-sans text-base sm:text-lg text-neutral-700 dark:text-neutral-300 font-light leading-[1.7] max-w-[65ch]">
                   <strong className="font-normal text-neutral-900 dark:text-white">
                     {project.title}
                   </strong>{" "}
-                  is a custom-built{" "}
+                  is an interactive{" "}
                   <strong className="font-normal text-neutral-900 dark:text-white">
                     {project.projectType || project.category}
                   </strong>{" "}
-                  architecture engineered utilizing{" "}
+                  built using{" "}
                   <strong className="font-normal text-neutral-900 dark:text-white">
                     {project.technology?.join(", ")}
                   </strong>
-                  . Designed for optimal interactive speed, it ensures seamless
-                  state management and strict layout stability across all target
-                  devices.
+                  . Engineered with attention to tactile feel, responsive interaction, and structural stability across devices.
                 </p>
               </motion.div>
             </div>
@@ -422,14 +421,14 @@ export default function ProjectCaseStudy({
                 className="flex flex-col gap-3"
               >
                 <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
-                  ARCHITECTURAL CHALLENGE
+                  CHALLENGE
                 </span>
                 <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
-                  What Architectural Challenge Does This System Solve?
+                  THE CHALLENGE
                 </h3>
                 <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7] max-w-[48ch]">
                   <strong className="text-neutral-900 dark:text-white font-normal">
-                    Core Challenge:{" "}
+                    Challenge:{" "}
                   </strong>
                   {project.challenge}
                 </p>
@@ -455,14 +454,14 @@ export default function ProjectCaseStudy({
                 className="flex flex-col gap-3"
               >
                 <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
-                  ENGINEERED SOLUTION
+                  APPROACH
                 </span>
                 <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
-                  What Engineering Solution Was Implemented?
+                  THE APPROACH
                 </h3>
                 <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7] max-w-[44ch]">
                   <strong className="text-neutral-900 dark:text-white font-normal">
-                    Engineered Solution:{" "}
+                    Approach:{" "}
                   </strong>
                   {project.solution}
                 </p>
@@ -489,10 +488,10 @@ export default function ProjectCaseStudy({
                   className="flex flex-col gap-4"
                 >
                   <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
-                    TECHNICAL HIGHLIGHTS & PARAMETERS
+                    TECHNICAL HIGHLIGHTS
                   </span>
                   <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
-                    What Key Technical Parameters Were Achieved?
+                    KEY HIGHLIGHTS
                   </h3>
                   <ol className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-5 sm:gap-y-6 list-none p-0">
                     {project.technicalHighlights.map((highlight, idx) => (
@@ -531,14 +530,14 @@ export default function ProjectCaseStudy({
                 className="flex flex-col gap-3"
               >
                 <span className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal">
-                  EMPIRICAL OUTCOME
+                  OUTCOME
                 </span>
                 <h3 className="font-display text-lg sm:text-xl font-light tracking-tight uppercase text-neutral-900 dark:text-white leading-[1.2]">
-                  What Empirical Impact Was Delivered?
+                  OUTCOME
                 </h3>
                 <p className="font-sans text-base sm:text-lg font-light text-neutral-700 dark:text-neutral-300 leading-[1.7]">
                   <strong className="text-neutral-900 dark:text-white font-normal">
-                    Verified Impact:{" "}
+                    Outcome:{" "}
                   </strong>
                   {project.impact}
                 </p>
@@ -551,8 +550,8 @@ export default function ProjectCaseStudy({
             project.technicalSpecifications.length > 0 && (
               <div className="col-span-12 pt-8 sm:pt-14">
                 <div className="flex items-center justify-between font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal mb-6">
-                  <span>TECHNICAL BENCHMARKS & SPECIFICATIONS</span>
-                  <span className="hidden sm:inline">STANDARDS COMPLIANCE</span>
+                  <span>TECHNICAL SPECIFICATIONS</span>
+                  <span className="hidden sm:inline">STANDARDS</span>
                 </div>
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-left font-sans border-collapse">

@@ -143,7 +143,7 @@ export default function OpeningExperience({
                   ease: [0.16, 1, 0.3, 1],
                   delay: shouldReduceMotion ? 0 : 0.18,
                 }}
-                className="font-mono text-xs sm:text-[13px] tracking-[0.14em] uppercase text-neutral-800 dark:text-neutral-200 font-normal select-text will-change-[transform,opacity]"
+                className="font-mono text-xs sm:text-[13px] tracking-[0.16em] uppercase text-neutral-500 dark:text-neutral-400 font-normal select-text will-change-[transform,opacity]"
               >
                 MSc Math &amp; CS 
               </motion.p>
@@ -161,7 +161,7 @@ export default function OpeningExperience({
                   ease: [0.16, 1, 0.3, 1],
                   delay: shouldReduceMotion ? 0 : 0.28,
                 }}
-                className="font-mono text-xs sm:text-[13px] text-neutral-500 dark:text-neutral-400 mt-1 select-text font-normal will-change-[transform,opacity]"
+                className="font-mono text-[11px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-1 select-text font-normal will-change-[transform,opacity] leading-relaxed"
               >
                 exploring front-end, systems, and what sits between them
               </motion.p>
@@ -185,8 +185,8 @@ export default function OpeningExperience({
               onClick={(e) => e.stopPropagation()}
               className="col-span-12 md:col-span-7 select-text will-change-[transform,opacity]"
             >
-              <p className="font-display font-light text-xl sm:text-2xl md:text-3xl lg:text-[2.15vw] tracking-[-0.02em] uppercase leading-[1.24] text-neutral-900 dark:text-white select-text max-w-[40ch]">
-                ENGINEERING AND BUILDING IMMERSIVE VISUAL SPACES WITH VISION AND TACTILE DEPTH <span className="text-neutral-400 dark:text-neutral-500 font-normal">&mdash;</span> TRANSFORMING AMBITIOUS CONCEPTS INTO SEAMLESS, LIVING DIGITAL ENVIRONMENTS.
+              <p className="font-display font-light text-[1.35rem] sm:text-2xl md:text-3xl lg:text-[2.15vw] tracking-[-0.025em] uppercase leading-[1.22] text-neutral-900 dark:text-white select-text max-w-[38ch]">
+                FRONT-END DEVELOPER AND CREATIVE CODER WORKING AT THE INTERSECTION OF CODE, INTERACTION, AND DESIGN <span className="text-neutral-400 dark:text-neutral-500 font-normal">&mdash;</span> BUILDING DIGITAL EXPERIENCES WITH STRUCTURAL CLARITY AND TACTILE REFINEMENT.
               </p>
             </motion.div>
           </div>
@@ -207,14 +207,42 @@ export default function OpeningExperience({
             ease: [0.16, 1, 0.3, 1],
             delay: shouldReduceMotion ? 0 : 0.50,
           }}
-          onClick={(e) => e.stopPropagation()}
-          className="w-full flex items-center justify-between pt-8 font-mono text-xs sm:text-[13px] uppercase tracking-widest text-neutral-500 dark:text-neutral-400 font-normal select-text will-change-[transform,opacity]"
+          className="w-full flex items-center justify-between pt-8 font-mono text-[11px] sm:text-xs uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400 font-normal will-change-[transform,opacity]"
         >
-          <span>PORTFOLIO ’26</span>
-          <span className="hidden sm:inline-block tracking-[0.2em]">
-            CLICK ANYWHERE TO CONNECT
+          <span className="select-text" onClick={(e) => e.stopPropagation()}>
+            PORTFOLIO ’26
           </span>
-          <span className="tracking-[0.2em]">SCROLL</span>
+
+          {/* Mobile CTA: intentional touch-friendly equivalent using identical orange rectangular language */}
+          <div className="md:hidden flex items-center justify-center">
+            <button
+              type="button"
+              id="hero-mobile-cta"
+              onClick={handleHeroCta}
+              aria-label="Connect with Razan Azizieh"
+              className="min-h-[44px] -my-2.5 flex items-center justify-center focus:outline-none focus-visible:ring-1 focus-visible:ring-[#FF4500] cursor-pointer select-none"
+            >
+              <span className="inline-flex items-center justify-center px-3 py-1.5 bg-[#FF4500] text-white font-mono text-[11px] font-normal tracking-[0.14em] uppercase leading-none rounded-none active:opacity-80 transition-opacity">
+                LET'S TALK
+              </span>
+            </button>
+          </div>
+
+          {/* Desktop CTA text: discoverable, click-enabled editorial instruction */}
+          <button
+            type="button"
+            id="hero-desktop-cta"
+            onClick={handleHeroCta}
+            aria-label="Connect with Razan Azizieh"
+            data-hero-canvas="true"
+            className="hidden md:inline-flex items-center tracking-[0.2em] text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors duration-200 cursor-pointer focus:outline-none focus-visible:text-[#FF4500]"
+          >
+            CLICK ANYWHERE TO CONNECT
+          </button>
+
+          <span className="tracking-[0.2em] select-text" onClick={(e) => e.stopPropagation()}>
+            SCROLL
+          </span>
         </motion.div>
       </div>
     </div>
