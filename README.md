@@ -1,18 +1,81 @@
-# Razan Azizieh — Front-End Developer Portfolio
+Live site: https://razanazizieh.github.io/portfolio/
 
-Welcome to my personal portfolio. This project showcases my work, design philosophy, and technical expertise in building refined, production-ready digital experiences.
+# Razan Azizieh — Portfolio
 
-## 🚀 Tech Stack
-*   **Framework:** React with TypeScript
-*   **Build Tool:** Vite
-*   **Styling:** Tailwind CSS
-*   **Deployment:** GitHub Pages
+Personal portfolio and technical case studies of Razan Azizieh, Front-end Developer.
 
-## 📐 Design Philosophy
-Focusing on structured layouts, typography hierarchies, and seamless responsiveness to ensure clarity and purpose in every detail.
+## Overview
 
-## 🛑 License & Copyright
+A focused, editorial portfolio presenting production case studies, writing, and design engineering principles. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
 
-Copyright (c) 2026 Razan Azizieh. All rights reserved.
+## Stack
 
-No part of this repository, including the source code, custom design layouts, visual assets, or components, may be reproduced, distributed, copied, or transmitted in any form or by any means, or used in other projects without the prior written permission of the owner.
+- **Framework**: React 19, TypeScript
+- **Bundler & Tooling**: Vite 6, Tailwind CSS 4
+- **Animation & Kinetics**: Motion (Framer Motion), Lenis (smooth scroll), GSAP (ticker synchronization)
+- **Routing & Head**: React Router 7, React Helmet Async
+- **Typography**: Self-hosted Inter Tight Variable and Instrument Serif via Fontsource
+
+## Scripts
+
+```bash
+# Start local development server
+npm run dev
+
+# Typecheck and lint codebase
+npm run typecheck
+npm run lint
+
+# Format check
+npm run format
+
+# Placeholder and copy quality scan
+npm run check
+
+# Security and secret pattern scanner
+npm run check:secrets
+
+# Production build
+npm run build
+
+# Comprehensive verification pipeline (typecheck + lint + check + build + check:secrets)
+npm run verify
+```
+
+## Folder Structure
+
+```
+├── public/               # Static assets, favicons, project media, robots.txt, sitemap.xml
+├── scripts/              # Verification and security audit scripts
+├── src/
+│   ├── components/       # Reusable UI primitives (Nav, Footer, TS, HL, Words, Layout)
+│   ├── sections/         # Home landing panels (Hero, Work, Statement, About, Journal, Contact)
+│   ├── pages/            # Top-level view routes (ProjectPage, JournalListPage, JournalEntryPage, PrivacyPage, NotFound)
+│   ├── hooks/            # Custom React hooks (smooth scroll, reduced motion, reveal engine)
+│   ├── lib/              # Core libraries and utility singletons (Lenis instance, scroll logic)
+│   ├── data/             # Structured case studies and journal markdown blocks
+│   ├── content/          # Global site metadata, biography, navigation, and contact configuration
+│   └── styles/           # Design system tokens and global CSS
+```
+
+## Where to Edit Content
+
+- **Site copy & metadata**: `src/content/site.ts`
+- **Projects & case studies**: `src/data/projects.ts`
+- **Journal entries**: `src/data/journal.ts`
+- **Project images & video assets**: `public/projects/`
+
+## Deployment
+
+GitHub Pages via GitHub Actions for repository `razanazizieh/portfolio`: Settings, Pages, Source: GitHub Actions.
+Live site: https://razanazizieh.github.io/portfolio/
+Run `npm run build` to generate the production-ready distribution in `dist/`.
+
+## Font Credits
+
+- **Inter Tight**: Designed by Rasmus Andersson. Licensed under SIL Open Font License (OFL), distributed via `@fontsource-variable/inter-tight`.
+- **Instrument Serif**: Designed by Instrument. Licensed under SIL Open Font License (OFL), distributed via `@fontsource/instrument-serif`.
+
+## Process
+
+Designed and art-directed by Razan Azizieh. Built with AI-assisted development.

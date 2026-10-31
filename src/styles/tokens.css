@@ -1,0 +1,92 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/* =========================================================================
+   DESIGN TOKENS
+   Two inks only: --ink #141414 for all primary text, --ink-2 #44443F for secondary text.
+   Self-hosted fonts via @fontsource-variable/inter-tight & @fontsource/instrument-serif
+   ========================================================================= */
+:root {
+  /* Colors */
+  --ink: #141414;
+  --ink-2: #44443F;
+  --color-bg: #F5F4F0;
+  --color-surface: #ECEAE4;
+  --color-fg: var(--ink);
+  --color-muted: var(--ink-2);
+
+  /* Typography Fonts */
+  --font-sans: "Inter Tight Variable", "Inter Tight", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Type Scale Tokens */
+  --wordmark-wght: 600;
+  --t-display: clamp(3.5rem, min(17.5vw, 31svh), 21rem);
+  --t-display-l: clamp(3rem, 8vw, 8rem);
+  --t-title: clamp(2.5rem, min(5.2vw, 8.5svh), 5.5rem);
+  --t-statement: clamp(2rem, 9vw, 3.5rem);
+  --t-item: clamp(1.75rem, min(3.1vw, 6.5svh), 3.75rem);
+  --t-lead: clamp(1.25rem, 1.8vw, 1.625rem);
+  --t-body: 17px;
+  --t-ui: 15px;
+  --t-cta: clamp(1.125rem, 1.4vw, 1.375rem);
+  --t-meta: 13px;
+  --t-num: 12px;
+  --t-wordmark: 100%;
+
+  /* Backwards compatibility */
+  --title-section: var(--t-title);
+
+  --bg: var(--color-bg);
+
+  /* Spacing */
+  --container-max: 1600px;
+  --pad-x: clamp(24px, 4vw, 48px);
+  --pad-y: clamp(96px, 12vw, 176px);
+  --nav-height: 64px;
+
+  /* Motion Tokens */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ts: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-reveal: cubic-bezier(0.22, 1, 0.36, 1);
+  --d-fast: 480ms;
+  --d-base: 720ms;
+  --d-slow: 960ms;
+  --stagger-block: 120ms;
+
+  /* Durations */
+  --dur-name: 550ms;
+  --dur-headline: 825ms;
+  --dur-weight: 1050ms;
+  --dur-statement: 825ms;
+  --dur-wordmark: 900ms;
+  --dur-child-opacity: 720ms;
+  --dur-child-transform: 750ms;
+  --dur-words: 720ms;
+  --dur-block: 720ms;
+  --dur-clip: 960ms;
+  --dur-email: 720ms;
+}
+
+/* Mobile: Reduce animation durations (< 768px) */
+@media (max-width: 767px) {
+  :root {
+    --d-fast: 400ms;
+    --d-base: 600ms;
+    --d-slow: 800ms;
+    --dur-name: 470ms;
+    --dur-headline: 700ms;
+    --dur-weight: 900ms;
+    --dur-statement: 700ms;
+    --dur-wordmark: 770ms;
+    --dur-child-opacity: 600ms;
+    --dur-child-transform: 640ms;
+    --dur-words: 600ms;
+    --dur-block: 600ms;
+    --dur-clip: 800ms;
+    --dur-email: 600ms;
+  }
+}

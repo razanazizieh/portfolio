@@ -1,11 +1,12 @@
-node_modules/
-build/
-dist/
-coverage/
+node_modules
+dist
+.env*
+*.local
 .DS_Store
 *.log
-.env*
-!.env.example
-# Local environment variables
-.env.local
-.env.production
+.vscode
+!.vscode/extensions.json
+coverage
+.vercel
+.idea
+*.tsbuildinfo

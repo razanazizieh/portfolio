@@ -6,84 +6,76 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Lenis from 'lenis';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { setLenis, getLenis } from '../lib/lenis';
 
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
+export { getLenis };
+
+interface WindowScrollGlobals {
+  __lenis?: Lenis;
+  __instantScrollTo?: (target: number | HTMLElement | string) => void;
+  __smoothScrollTo?: (target: number | HTMLElement | string) => void;
 }
 
-let lenisInstance: Lenis | null = null;
-
-export function getLenis(): Lenis | null {
-  return lenisInstance;
-}
-
+/**
+ * useSmoothScroll
+ * Lenis: lerp 0.16, wheelMultiplier 1, smoothWheel true, syncTouch false.
+ * Exactly ONE requestAnimationFrame loop drives lenis.raf.
+ */
 export function useSmoothScroll(enabled: boolean = true) {
   const location = useLocation();
 
   useEffect(() => {
     if (!enabled || typeof window === 'undefined') return;
 
-    // Check if user prefers reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Initialize Lenis smooth scroll
     const lenis = new Lenis({
-      duration: prefersReducedMotion ? 0.01 : 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: prefersReducedMotion ? 1 : 0.16,
+      wheelMultiplier: 1,
+      smoothWheel: !prefersReducedMotion,
+      syncTouch: false,
       orientation: 'vertical',
       gestureOrientation: 'vertical',
-      smoothWheel: !prefersReducedMotion,
-      wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
       infinite: false,
     });
 
-    lenisInstance = lenis;
+    setLenis(lenis);
 
-    // Expose global scroll utilities mapped to Lenis
-    (window as any).__lenis = lenis;
-    (window as any).__instantScrollTo = (targetPos: number | HTMLElement | string) => {
+    const win = window as unknown as WindowScrollGlobals;
+    win.__lenis = lenis;
+    win.__instantScrollTo = (targetPos: number | HTMLElement | string) => {
       lenis.scrollTo(targetPos, { immediate: true });
     };
-    (window as any).__smoothScrollTo = (targetPos: number | HTMLElement | string) => {
-      lenis.scrollTo(targetPos, { duration: 1.2 });
+    win.__smoothScrollTo = (targetPos: number | HTMLElement | string) => {
+      lenis.scrollTo(targetPos);
     };
 
-    // Synchronize Lenis with GSAP ScrollTrigger
-    const handleLenisScroll = () => {
-      ScrollTrigger.update();
+    // Exactly ONE requestAnimationFrame loop drives lenis.raf
+    let rafId: number;
+    const raf = (time: number) => {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
     };
-
-    lenis.on('scroll', handleLenisScroll);
-
-    // Integrate with GSAP ticker for frame-perfect animation pacing
-    const tickerCallback = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(tickerCallback);
-    gsap.ticker.lagSmoothing(0);
+    rafId = requestAnimationFrame(raf);
 
     return () => {
-      gsap.ticker.remove(tickerCallback);
-      lenis.off('scroll', handleLenisScroll);
+      cancelAnimationFrame(rafId);
       lenis.destroy();
-      lenisInstance = null;
-      delete (window as any).__lenis;
-      delete (window as any).__instantScrollTo;
-      delete (window as any).__smoothScrollTo;
+      setLenis(null);
+      delete win.__lenis;
+      delete win.__instantScrollTo;
+      delete win.__smoothScrollTo;
     };
   }, [enabled]);
 
   // Instantly halt active smooth scrolling on route changes
   useEffect(() => {
-    if (!enabled || !lenisInstance) return;
+    const curLenis = getLenis();
+    if (!enabled || !curLenis) return;
     try {
-      lenisInstance.scrollTo(window.scrollY, { immediate: true });
-    } catch (e) {
-      console.warn('Failed to abort active scroll transition on route change', e);
+      curLenis.scrollTo(window.scrollY, { immediate: true });
+    } catch {
+      // Safe catch
     }
   }, [location.pathname, enabled]);
 }

@@ -1,7 +1,13 @@
 {
-  "name": "Razan Azizieh — Frontend Developer",
+  "name": "Razan Azizieh — Front-End Developer",
   "short_name": "Razan Azizieh",
+  "description": "Razan Azizieh is a Front-End Developer with a background in Mathematics & Computer Science, crafting responsive web applications, clean component design, and tactile interfaces.",
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",
@@ -13,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#0d0d0d",
-  "background_color": "#0d0d0d",
+  "theme_color": "#F9F9F9",
+  "background_color": "#F9F9F9",
   "display": "standalone"
 }
