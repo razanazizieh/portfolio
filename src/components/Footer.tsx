@@ -23,7 +23,7 @@ export default function Footer({
   rowDelay,
 }: FooterProps) {
   const location = useLocation();
-  const isJournalRoute = location.pathname.startsWith("/journal");
+  const isPrivacyRoute = location.pathname === "/privacy";
   const { year } = siteContent.footer;
   const { linkedin, github } = siteContent.socials;
 
@@ -51,7 +51,7 @@ export default function Footer({
           </div>
         </div>
 
-        {/* Footer row: © 2026, Journal, LinkedIn, GitHub, Privacy */}
+        {/* Footer row: © 2026, LinkedIn, GitHub, Privacy */}
         <div
           data-reveal-child
           style={{ '--d': `${resolvedRowDelay}ms` } as React.CSSProperties}
@@ -59,11 +59,6 @@ export default function Footer({
         >
           <span className="text-[var(--ink-2)]">&copy; {year}</span>
           <div className="flex items-center gap-6">
-            {!isJournalRoute && (
-              <HL to="/journal" ariaLabel="Journal" className="text-[var(--ink-2)] min-h-[44px] inline-flex items-center">
-                Journal
-              </HL>
-            )}
             <HL
               href={linkedin.url}
               target="_blank"
@@ -82,13 +77,15 @@ export default function Footer({
             >
               {github.label}
             </HL>
-            <HL
-              to="/privacy"
-              ariaLabel="Privacy"
-              className="text-[var(--ink-2)] min-h-[44px] inline-flex items-center"
-            >
-              Privacy
-            </HL>
+            {!isPrivacyRoute && (
+              <HL
+                to="/privacy"
+                ariaLabel="Privacy"
+                className="text-[var(--ink-2)] min-h-[44px] inline-flex items-center"
+              >
+                Privacy
+              </HL>
+            )}
           </div>
         </div>
       </div>

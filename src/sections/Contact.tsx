@@ -208,7 +208,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Row 4: Bottom row: © 2026, Journal, Privacy (d 1500ms) on home route */}
+        {/* Row 4: Bottom row: © 2026, Privacy (d 1500ms) on home route */}
         <div
           data-reveal-child
           style={{ '--d': '1500ms' } as React.CSSProperties}
@@ -216,9 +216,6 @@ export default function Contact() {
         >
           <span className="text-[var(--ink-2)]">&copy; {year}</span>
           <div className="flex items-center gap-6">
-            <HL to="/journal" ariaLabel="Journal" className="text-[var(--ink-2)] min-h-[44px] inline-flex items-center">
-              Journal
-            </HL>
             <HL
               to="/privacy"
               ariaLabel="Privacy"
