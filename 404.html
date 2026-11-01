@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F5F4F0" />
+
+    <!-- Primary Metadata -->
+    <script>
+      // Suppress Vite HMR / WebSocket errors in iframe environment
+      window.addEventListener("error", function (e) {
+        if (
+          e.message &&
+          (e.message.includes("send was called before connect") ||
+            e.message.includes("WebSocket") ||
+            e.message.includes("[vite]"))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+      window.addEventListener("unhandledrejection", function (e) {
+        if (
+          e.reason &&
+          typeof e.reason.message === "string" &&
+          (e.reason.message.includes("send was called before connect") ||
+            e.reason.message.includes("WebSocket") ||
+            e.reason.message.includes("[vite]"))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+    </script>
+    <title>Razan Azizieh, Front-end Developer</title>
+    <meta
+      name="description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <link rel="canonical" href="https://razanazizieh.github.io/portfolio/" />
+
+    <!-- Favicons & App Icons  -->
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+
+    <!-- Open Graph (Static for crawlers) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Razan Azizieh, Front-end Developer" />
+    <meta
+      property="og:description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <meta property="og:url" content="https://razanazizieh.github.io/portfolio/" />
+    <meta property="og:image" content="https://razanazizieh.github.io/portfolio/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Razan Azizieh — Front-end Developer" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Razan Azizieh, Front-end Developer" />
+    <meta
+      name="twitter:description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <meta name="twitter:image" content="https://razanazizieh.github.io/portfolio/og.png" />
+
+    <!-- JSON-LD Structured Data: Person -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Razan Azizieh",
+        "jobTitle": "Front-end Developer",
+        "url": "https://razanazizieh.github.io/portfolio/",
+        "sameAs": ["https://linkedin.com/in/razanazizieh", "https://github.com/razanazizieh"],
+        "knowsAbout": ["React", "TypeScript", "Distributed systems"]
+      }
+    </script>
+    <script type="module" crossorigin src="/portfolio/assets/index-8GAdaZ8I.js"></script>
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/vendor-RFp-xAlw.js">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/motion-vendor-CgWiX4Vb.js">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/motion-vendor-BNWJ7Zcm.css">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-CxX-5MN8.css">
+  </head>
+  <body class="bg-[#F5F4F0] text-[#0A0A0A] antialiased">
+    <div id="root"></div>
+  </body>
+</html>
