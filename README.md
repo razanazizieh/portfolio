@@ -7,7 +7,7 @@ Personal portfolio and technical case studies of Razan Azizieh, Front-end Develo
 
 ## Overview
 
-A focused, editorial portfolio presenting production case studies, writing, and design engineering principles. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
+A focused, editorial portfolio highlighting modern web applications, interactive projects, and front-end development. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
 
 ## Stack
 
