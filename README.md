@@ -79,4 +79,9 @@ Run `npm run build` to generate the production-ready distribution in `dist/`.
 
 ## Process
 
-Designed and art-directed by Razan Azizieh. Built with AI-assisted development.
+Developed by Razan Azizieh.
+
+## License
+
+© 2026 Razan Azizieh. All rights reserved.  
+For repository code rights, please see the [LICENSE](./LICENSE) file.
