@@ -66,23 +66,24 @@ export const siteContent = {
   about: {
     title: "About",
     paragraph:
-      "My background is in mathematics and computer science, with a master's focused on distributed systems. My thesis explored fault tolerance—how systems preserve continuity when parts fail. I bring that structured mindset to web engineering, crafting fluid, dependable interfaces while continuously expanding my technical reach across the system.",
+      // "My background is in mathematics and computer science, with a master's focused on distributed systems. My thesis was about fault tolerance: how a system keeps working when parts of it fail. I bring that mindset to the interfaces I build. Today I work with React and JavaScript, and I am learning the back end.",
+      "I'm a front-end developer with a background in mathematics and computer science, and a master's focused on distributed systems. I like interfaces that feel clear and calm: careful typography, honest motion, and details that hold up when something goes wrong. I work with React and JavaScript, and I'm learning the back end so I can build both sides of what I build.",
     capabilities: [
       {
         title: "Interface",
-        items: ["React", "JavaScript", "HTML and CSS"],
+        items: ["React", "JavaScript", "HTML & CSS", "Responsive design", "Accessibility & SEO"],
       },
       {
         title: "Working with",
-        items: ["REST APIs", "Postman", "Git and GitHub", "Figma"],
+        items: ["REST APIs", "Git & GitHub", "Figma", "AI tools", "VS Code"],
       },
       {
         title: "Foundations",
-        items: ["Mathematics", "Distributed systems", "Fault tolerance"],
+        items: ["Mathematics", "Computer Science", "Distributed systems"],
       },
       {
         title: "Learning",
-        items: ["Back end", "NestJS", "TypeScript"],
+        items: ["NestJS", "TypeScript"],
       },
     ] as CapabilityColumn[],
   },

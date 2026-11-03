@@ -57,6 +57,8 @@ export interface Project {
   outcome?: string;
   learnings?: string;
   gallery?: ProjectGalleryItem[];
+  featured: boolean;
+  tags?: string[];
 }
 
 export const PROJECTS: Project[] = [
@@ -64,34 +66,30 @@ export const PROJECTS: Project[] = [
     slug: "bilingual-portfolio-website",
     aliases: ["sarah-portfolio", "fluid-code"],
     title: "Bilingual portfolio website",
-    description:
-      "A multi-page portfolio for a data scientist, featuring instant English and German language switching and dedicated project pages.",
-    summary:
-      "A multi-page portfolio website for a data scientist, with instant English and German switching and a detailed page for each project.",
-    longDescription:
-      "Building upon an initial layout base, I architected and developed the entire application logic. I designed the visual identity, built the dynamic client-side language switching engine for instant English and German localization, and structured the dedicated project and privacy pages.",
-    role: "Frontend Engineering & System Architecture",
+    description: "A multi-page portfolio for a data scientist, with instant English and German switching and detailed project pages.",
+    summary: "A multi-page portfolio website for a data scientist, with instant English and German switching and a detailed page for each project.",
+    longDescription: "I built this site for Sarah Sabouni, a data scientist. I set the style, the page structure and the user flow, and built it with AI tools from my own prompts. Visitors switch between English and German without reloading the page, and each project has its own detailed page.",
+    role: "Design direction and development, AI-assisted",
     year: "2026",
-    stack: ["HTML", "CSS", "Tailwind CSS", "JavaScript", "Stitch"],
+    stack: ["HTML", "CSS", "Tailwind CSS", "JavaScript"],
     liveUrl: "https://razanazizieh.github.io/sarah-portfolio/",
     githubUrl: "https://github.com/razanazizieh/sarah-portfolio",
     image: asset("/projects/bilingual-portfolio-website.webp"),
     contentVerified: true,
     patternSeed: "bilingual-grid",
-    overview:
-      "A comprehensive multi-page portfolio presenting a data scientist's profile in two languages, featuring a custom-built language switching mechanism and structured case studies.",
+    overview: "The site presents a data scientist's background, skills and projects in two languages. It is built with plain HTML, CSS and JavaScript, without a framework.",
     features: [
       {
-        title: "Dynamic language switching engine",
-        text: "Engineered a seamless client-side localization system to swap content instantly between English and German without page reloads.",
+        title: "Instant language switching",
+        text: "A small JavaScript dictionary swaps every text between English and German without reloading the page.",
       },
       {
-        title: "Structured case studies",
-        text: "Designed and implemented dedicated views for data dashboards, analytical models, and project breakdowns.",
+        title: "Project pages",
+        text: "Each project has its own page with a structured layout for dashboards and prediction models.",
       },
       {
-        title: "Complete site structure",
-        text: "Developed essential application routes including privacy policy, legal notices, and custom error handlers.",
+        title: "Standard pages",
+        text: "The site also includes a legal notice, a privacy policy and a custom 404 page.",
       },
     ],
     gallery: [
@@ -106,18 +104,17 @@ export const PROJECTS: Project[] = [
         caption: "A project page.",
       },
     ],
+    featured: true,
+    tags: ["Portfolio", "Frontend"],
   },
   {
     slug: "interactive-3d-hero-section",
     aliases: ["vortex", "3d-fluid"],
     title: "Interactive 3D hero section",
-    description:
-      "A dynamic hero component integrating an interactive 3D Spline scene with custom React cursor-tracking.",
-    summary:
-      "An exploratory hero section combining React-driven interactive cursor tracking with a real-time 3D Spline scene.",
-    longDescription:
-      "Driven by curiosity about how interactive 3D elements are implemented programmatically rather than relying on automated no-code tools, I built VORTEX. I integrated an interactive 3D scene from Spline and developed a custom React hook to sync pointer movement with dynamic spotlight rendering.",
-    role: "Frontend Development & 3D Integration",
+    description: "A hero section built around a 3D scene that follows the pointer, with a frosted-glass layout on top.",
+    summary: "A single hero section that explores a 3D element reacting to the mouse.",
+    longDescription: "VORTEX is a single hero section. I wanted to apply a 3D element that moves with the mouse, so I researched it and built it with help from Gemini. The scene is made in Spline, and a custom React hook tracks the cursor to move a spotlight across a frosted-glass grid.",
+    role: "Personal project, built with AI assistance",
     year: "2026",
     stack: ["React", "Spline", "Vite", "CSS"],
     liveUrl: "https://razanazizieh.github.io/vortex/",
@@ -125,16 +122,19 @@ export const PROJECTS: Project[] = [
     image: asset("/projects/interactive-3d-hero-section.webp"),
     contentVerified: true,
     patternSeed: "vortex-grid",
-    overview:
-      "A focused technical exploration into programmatically embedding dynamic 3D scenes within modern React component architectures.",
+    overview: "A single hero section that explores a 3D element reacting to the mouse.",
     features: [
       {
-        title: "Interactive 3D scene",
-        text: "Integrated a real-time Spline scene configured to respond seamlessly to user input.",
+        title: "3D scene",
+        text: "An interactive Spline scene responds to the visitor's pointer.",
       },
       {
-        title: "Custom cursor-tracking hook",
-        text: "Engineered a custom React hook that calculates relative pointer coordinates to move a dynamic spotlight across the viewport.",
+        title: "Spotlight",
+        text: "A custom React hook follows the cursor and moves a light across the grid.",
+      },
+      {
+        title: "Glass effect",
+        text: "Layered CSS keyframes and blur create the fluted-glass look.",
       },
     ],
     gallery: [
@@ -149,18 +149,17 @@ export const PROJECTS: Project[] = [
         caption: "On a phone.",
       },
     ],
+    featured: true,
+    tags: ["3D", "Creative"],
   },
   {
     slug: "article-management-app",
     aliases: ["articula", "cms"],
     title: "Article management app",
-    description:
-      "A React application for browsing, searching, filtering, and managing articles via a REST API, featuring a dedicated analytics dashboard and user profile management.",
-    summary:
-      "A feature-rich React app connected to a REST API, built from design references with a separate analytics dashboard and custom user account management.",
-    longDescription:
-      "ARTICULA was developed as a comprehensive front-end implementation project. Working from a provided design system and API documentation, I engineered the React application logic, handled asynchronous requests, and independently designed and built a separate analytics dashboard alongside dedicated profile and article management views.",
-    role: "Frontend Development & Architecture",
+    description: "An app for browsing, searching and filtering articles, and for creating, editing and deleting them, connected to a provided REST API.",
+    summary: "A React app where users browse articles from all users, search and filter them through the API, and manage articles, built from provided Figma designs.",
+    longDescription: "ARTICULA is the final project of a front-end course. I built the interface and connected it to a provided REST API, following Figma designs for the main pages.",
+    role: "Course final project, front-end development",
     year: "2026",
     stack: ["React", "JavaScript", "CSS Modules", "REST API"],
     githubUrl: "https://github.com/razanazizieh/articula-app",
@@ -171,32 +170,39 @@ export const PROJECTS: Project[] = [
     },
     contentVerified: true,
     patternSeed: "article-grid",
-    overview:
-      "A complete platform featuring a dedicated analytics dashboard, robust asynchronous state handling, user profile management, and full article CRUD operations.",
+    overview: "The app covers browsing articles from all users, searching and filtering them, and creating, editing and deleting articles.",
     features: [
       {
-        title: "REST API integration",
-        text: "Tested endpoints via Postman and implemented seamless data fetching using JavaScript Promises and the Fetch API.",
+        title: "Browse articles",
+        text: "The app fetches the articles of all users, with their images, from the API and shows them in a browsable list, loading a limited number at a time.",
       },
       {
-        title: "Analytics dashboard",
-        text: "Built a separate, custom dashboard view dedicated to displaying statistics and platform metrics.",
+        title: "Search and filter",
+        text: "Searches and filters are sent to the API with each request, so the server returns only the matching articles.",
       },
       {
-        title: "User profile management",
-        text: "Designed dedicated profile views allowing users to update their personal details, manage their accounts, or delete them.",
+        title: "Create, edit, delete",
+        text: "Users can create, edit and delete articles from one dashboard.",
       },
       {
-        title: "Server-side search & filtering",
-        text: "Synchronized user inputs with API parameters to fetch precisely filtered article lists with pagination support.",
+        title: "Controlled forms",
+        text: "The forms are controlled components managed with React state, without a form library.",
       },
       {
-        title: "Article management",
-        text: "Built interactive features enabling users to create, edit, and delete their articles efficiently.",
+        title: "Asynchronous requests",
+        text: "Every call to the API goes through the Fetch API, and promises handle the responses.",
       },
       {
-        title: "Scoped styling architecture",
-        text: "Utilized CSS Modules to maintain a modular and collision-free component style structure.",
+        title: "API testing",
+        text: "I checked each endpoint in the provided Postman collection before connecting it to the app.",
+      },
+      {
+        title: "Scoped styles",
+        text: "CSS Modules keep each component's styles separate, so nothing leaks between components.",
+      },
+      {
+        title: "Accounts and fallback routes",
+        text: "The app handles user accounts and shows a custom page for unknown routes.",
       },
     ],
     gallery: [
@@ -211,10 +217,14 @@ export const PROJECTS: Project[] = [
         caption: "Creating an article.",
       },
     ],
+    featured: true,
+    tags: ["Web App", "Frontend"],
   },
 ];
 
 export const projects = PROJECTS;
+export const featuredProjects = PROJECTS.filter((p) => p.featured);
+export const allWorkHref = "/work";
 
 export function getProjectBySlug(slug: string | undefined): Project | undefined {
   if (!slug) return undefined;

@@ -28,6 +28,7 @@ import { getProjectBySlug } from "./data/projects";
 import { getEntryBySlug } from "./data/journal";
 
 // Lazy-loaded pages
+const WorkPage = React.lazy(() => import("./pages/WorkPage"));
 const ProjectPage = React.lazy(() => import("./pages/ProjectPage"));
 const JournalListPage = React.lazy(() => import("./pages/JournalListPage"));
 const JournalEntryPage = React.lazy(() => import("./pages/JournalEntryPage"));
@@ -164,7 +165,7 @@ function ScrollRestorationHandler() {
  */
 function HomePage() {
   return (
-    <PageTransition>
+    <>
       <Helmet>
         <title>{siteContent.meta.title}</title>
         <meta name="description" content={siteContent.meta.description} />
@@ -217,7 +218,7 @@ function HomePage() {
           <Contact />
         </StackPanel>
       </StackPanelsContainer>
-    </PageTransition>
+    </>
   );
 }
 
@@ -303,7 +304,13 @@ export default function App() {
           />
           <Route
             path="/work"
-            element={<Navigate to="/#work" replace />}
+            element={
+              <Layout chrome={true} showFooter={true}>
+                <PageTransition>
+                  <WorkPage />
+                </PageTransition>
+              </Layout>
+            }
           />
           <Route
             path="/work/:slug"

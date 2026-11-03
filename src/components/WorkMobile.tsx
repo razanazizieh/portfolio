@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { Project } from "../data/projects";
 import GeometricPattern from "./GeometricPattern";
 import TS from "./TS";
+import Words from "./Words";
 
 export interface WorkMobileProps {
   projects: Project[];
@@ -17,6 +18,9 @@ const pad = (v: number) => String(v).padStart(2, "0");
 
 /**
  * Mobile & Reduced-Motion Work Section
+ * Heading reveals as words.
+ * Each project item reveals as one block (opacity & translateY 24px, 900ms, trigger at 85% viewport, once)
+ * with 100ms stagger between consecutive items that enter together.
  */
 export default function WorkMobile({ projects }: WorkMobileProps) {
   const [imageError, setImageError] = useState<Record<string, boolean>>({});
@@ -32,9 +36,11 @@ export default function WorkMobile({ projects }: WorkMobileProps) {
       className="w-full pt-[96px] pb-[96px] min-w-0"
     >
       <div className="mb-12 min-w-0">
-        <h2 className="title-section text-[var(--ink)]">
-          Selected work ({pad(projects.length)})
-        </h2>
+        <Words
+          as="h2"
+          text={`Selected work (${pad(projects.length)})`}
+          className="title-section text-[var(--ink)]"
+        />
       </div>
 
       <div className="flex flex-col gap-16 w-full min-w-0">
@@ -44,7 +50,10 @@ export default function WorkMobile({ projects }: WorkMobileProps) {
           return (
             <article
               key={proj.slug}
-              className="w-full min-w-0"
+              data-reveal="work-mobile"
+              data-reveal-at="0.85"
+              style={{ "--i": idx } as React.CSSProperties}
+              className="work-mobile-item w-full min-w-0"
             >
               <Link
                 to={`/work/${proj.slug}`}
@@ -53,9 +62,14 @@ export default function WorkMobile({ projects }: WorkMobileProps) {
                 aria-label={`Project ${formattedNum}: ${proj.title}. ${proj.description}`}
                 className="flex flex-col gap-4 no-underline cursor-pointer focus-visible:outline-none min-w-0 w-full min-h-[44px]"
               >
-                {/* Image aspect-[4/3] with geometric fallback */}
+                {/* Image aspect-[16/9] with geometric fallback */}
                 <div
-                  className="w-full aspect-[4/3] overflow-hidden bg-[var(--color-surface)] min-w-0 relative isolate"
+                  className="w-full aspect-[16/9] overflow-hidden bg-[var(--color-surface)] min-w-0 relative isolate"
+                  style={{
+                    width: "100%",
+                    aspectRatio: "16 / 9",
+                    overflow: "hidden",
+                  }}
                 >
                   <div className="absolute inset-0 z-0 bg-[var(--color-surface)]">
                     <GeometricPattern seed={proj.patternSeed || proj.slug} />
@@ -79,6 +93,14 @@ export default function WorkMobile({ projects }: WorkMobileProps) {
                       className={`relative z-10 w-full h-full object-cover object-center max-w-full transition-opacity duration-300 ${
                         loadedImages[proj.slug] ? "opacity-100" : "opacity-0"
                       }`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                        transform: "none",
+                        filter: "none",
+                      }}
                     />
                   ) : null}
                 </div>
@@ -117,6 +139,21 @@ export default function WorkMobile({ projects }: WorkMobileProps) {
             </article>
           );
         })}
+
+        {/* Single "All work" link under the last project item, left-aligned, 48px below it */}
+        <div
+          data-reveal="work-mobile"
+          data-reveal-at="0.85"
+          style={{ "--i": projects.length, paddingTop: "48px" } as React.CSSProperties}
+          className="work-mobile-item w-full min-w-0 text-left"
+        >
+          <Link
+            to="/work"
+            className="t-ui text-[var(--ink-2)] inline-flex items-center min-h-[44px] no-underline cursor-pointer"
+          >
+            <TS>All work</TS>
+          </Link>
+        </div>
       </div>
     </section>
   );

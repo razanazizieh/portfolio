@@ -18,7 +18,7 @@
   --color-muted: var(--ink-2);
 
   /* Typography Fonts */
-  --font-sans: "Inter Tight Variable", "Inter Tight", system-ui, sans-serif;
+  --font-sans: "Inter Tight Variable", "Inter Tight", "Inter Tight Fallback", system-ui, sans-serif;
   --font-serif: "Instrument Serif", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
@@ -71,9 +71,10 @@
   --dur-email: 720ms;
 }
 
-/* Mobile: Reduce animation durations (< 768px) */
+/* Mobile: Reduce animation durations (< 768px) and set mobile padding */
 @media (max-width: 767px) {
   :root {
+    --pad-y: clamp(72px, 18vw, 96px);
     --d-fast: 400ms;
     --d-base: 600ms;
     --d-slow: 800ms;

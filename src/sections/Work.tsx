@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { projects } from "../data/projects";
+import { featuredProjects } from "../data/projects";
 import { WorkDesktop } from "../components/WorkDesktop";
 import { WorkMobile } from "../components/WorkMobile";
 import { useMediaQuery } from "../hooks/useMediaQuery";
@@ -33,7 +33,7 @@ export function Work() {
       style={{ paddingBlock: "var(--pad-y, clamp(64px, 10svh, 120px))" }}
     >
       <div className="w-full max-w-[1600px] mx-auto px-6 md:px-12 min-w-0">
-        <WorkMobile projects={projects} />
+        <WorkMobile projects={featuredProjects} />
       </div>
     </section>
   );

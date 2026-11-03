@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useState, useCallback, useLayoutEffect } from "react";
 import { useReducedMotion } from "../hooks/useReducedMotion";
 import HL from "../components/HL";
 import siteContent from "../content/site";
@@ -40,18 +40,39 @@ function getParsedWords(text: string): InlineSegment[][] {
 /**
  * Hero Section
  * - Intro delays x0.75
- * - Pointer weight effect starts 700ms after app:ready
- * - Spring physics rAF loop runs only while pointer inside and hero on screen
- * - Font-variation-settings applied only when weight target changes by >= 5
- * - Hero sentence: weight 340, color var(--ink)
+ * - Desktop pointer weight effect starts 700ms after app:ready
+ * - Touch devices (hover: none and pointer: coarse): traveling weight wave (450 + 200 * sin(2π*(t/5.5s) - i*0.42))
+ *   starts 700ms after app:ready, capped at 30 fps, updates font-variation-settings when delta > 4.
+ *   Touch interaction on top: letters within 120px receive up to +180 weight (smoothed), then ease back.
+ * - Headline fit: computed so widest line fits container at wght 650; re-measured on resize and fonts.ready.
  */
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const letterRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const measureLine1Ref = useRef<HTMLSpanElement>(null);
+  const measureLine2Ref = useRef<HTMLSpanElement>(null);
+
   const shouldReduceMotion = useReducedMotion();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
   const [canHover, setCanHover] = useState(false);
+  const [touchWaveStarted, setTouchWaveStarted] = useState(false);
+  const [headlineFontSize, setHeadlineFontSize] = useState<number | null>(null);
+
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile, { passive: true });
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const [isIntroIn, setIsIntroIn] = useState(() => {
     if (typeof window === "undefined") return true;
@@ -65,7 +86,7 @@ export default function Hero() {
   const totalLetters = allLetters.length;
   const parsedSentenceWords = getParsedWords(siteContent.hero.sentence.trim());
 
-  // Springs state
+  // Desktop springs state
   const currentWeights = useRef<Float32Array>(new Float32Array(totalLetters).fill(100));
   const targetWeights = useRef<Float32Array>(new Float32Array(totalLetters).fill(250));
   const velocities = useRef<Float32Array>(new Float32Array(totalLetters).fill(0));
@@ -73,34 +94,130 @@ export default function Hero() {
   const lastTimeRef = useRef<number>(performance.now());
   const rafIdRef = useRef<number | null>(null);
 
+  // Touch device wave & interaction state
+  const touchBoostsRef = useRef<Float32Array>(new Float32Array(totalLetters).fill(0));
+  const touchPointRef = useRef<{ x: number; y: number; active: boolean }>({
+    x: 0,
+    y: 0,
+    active: false,
+  });
+
   const isPointerInsideRef = useRef(false);
   const isHeroOnScreenRef = useRef(true);
 
+  // Detect touch devices via media query (hover: none) and (pointer: coarse)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const isCoarse = window.matchMedia("(pointer: coarse)").matches;
-    setIsTouchDevice(isCoarse);
+    const mq = window.matchMedia("(hover: none) and (pointer: coarse)");
+    setIsTouchDevice(mq.matches);
+
+    const onMqChange = (e: MediaQueryListEvent) => {
+      setIsTouchDevice(e.matches);
+    };
+    mq.addEventListener("change", onMqChange);
 
     // Track on-screen status with IntersectionObserver
     const observer = new IntersectionObserver(
       ([entry]) => {
         isHeroOnScreenRef.current = entry.isIntersecting;
-        if (!entry.isIntersecting && rafIdRef.current !== null) {
-          cancelAnimationFrame(rafIdRef.current);
-          rafIdRef.current = null;
+        if (!entry.isIntersecting) {
+          if (rafIdRef.current !== null) {
+            cancelAnimationFrame(rafIdRef.current);
+            rafIdRef.current = null;
+          }
         }
+        window.dispatchEvent(new CustomEvent("hero:screen-visibility"));
       },
-      { threshold: 0.1 }
+      { threshold: 0.05 }
     );
 
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
 
-    return () => observer.disconnect();
+    return () => {
+      mq.removeEventListener("change", onMqChange);
+      observer.disconnect();
+    };
   }, []);
 
-  // Set up spring physics loop: only runs when pointer is inside and hero on screen
+  // Compute headline font-size so widest line fits container at wght 650
+  const calculateHeadlineFit = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const container = containerRef.current;
+    const m1 = measureLine1Ref.current;
+    const m2 = measureLine2Ref.current;
+    if (!container || !m1 || !m2) return;
+
+    const cs = window.getComputedStyle(container);
+    const padLeft = parseFloat(cs.paddingLeft) || 0;
+    const padRight = parseFloat(cs.paddingRight) || 0;
+    const available = container.clientWidth - padLeft - padRight;
+    if (available <= 0) return;
+
+    const w1 = m1.getBoundingClientRect().width;
+    const w2 = m2.getBoundingClientRect().width;
+    const maxTestWidth = Math.max(w1, w2);
+    if (maxTestWidth <= 0) return;
+
+    // m1 and m2 are measured at font-size 100px and wght 650
+    // Ideal font-size for widest line to fit available width at wght 650:
+    let fitSize = Math.floor(((100 * available) / maxTestWidth) * 0.98 * 10) / 10;
+
+    // On desktop, cap at default display clamp values so resting desktop layout is identical
+    const isDesktopView = window.innerWidth >= 768;
+    if (isDesktopView) {
+      const maxVw = (17.5 / 100) * window.innerWidth;
+      const maxSvh = (31 / 100) * (window.innerHeight || 800);
+      const maxRem = 21 * 16;
+      const desktopCap = Math.min(maxVw, maxSvh, maxRem);
+      fitSize = Math.min(fitSize, desktopCap);
+    }
+
+    setHeadlineFontSize(fitSize);
+  }, []);
+
+  useLayoutEffect(() => {
+    calculateHeadlineFit();
+  }, [calculateHeadlineFit]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    calculateHeadlineFit();
+
+    const r1 = requestAnimationFrame(() => {
+      const r2 = requestAnimationFrame(() => {
+        calculateHeadlineFit();
+      });
+      return () => cancelAnimationFrame(r2);
+    });
+
+    let ro: ResizeObserver | null = null;
+    if (containerRef.current && typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(calculateHeadlineFit);
+      ro.observe(containerRef.current);
+    }
+
+    if (document.fonts) {
+      if (document.fonts.ready) {
+        document.fonts.ready.then(calculateHeadlineFit).catch(() => {});
+      }
+      document.fonts.addEventListener("loadingdone", calculateHeadlineFit);
+    }
+
+    window.addEventListener("resize", calculateHeadlineFit, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(r1);
+      ro?.disconnect();
+      if (document.fonts) {
+        document.fonts.removeEventListener("loadingdone", calculateHeadlineFit);
+      }
+      window.removeEventListener("resize", calculateHeadlineFit);
+    };
+  }, [calculateHeadlineFit]);
+
+  // Reduced motion handling
   useEffect(() => {
     if (shouldReduceMotion) {
       letterRefs.current.forEach((span) => {
@@ -108,103 +225,10 @@ export default function Hero() {
         span.style.fontWeight = "300";
         span.style.fontVariationSettings = "'wght' 300";
       });
-      return;
     }
+  }, [shouldReduceMotion]);
 
-    const stiffness = 140;
-    const damping = 20;
-
-    const animateSprings = (time: number) => {
-      if (
-        document.documentElement.hasAttribute("data-scrolling") ||
-        !isHeroOnScreenRef.current ||
-        (!isPointerInsideRef.current && !isTouchDevice)
-      ) {
-        rafIdRef.current = null;
-        return;
-      }
-
-      const dt = Math.min((time - lastTimeRef.current) / 1000, 0.032);
-      lastTimeRef.current = time;
-
-      let isMoving = false;
-
-      // If touch device, compute targets based on scroll
-      if (isTouchDevice) {
-        const scrollY = window.scrollY;
-        const heroHeight = sectionRef.current?.offsetHeight || window.innerHeight;
-        const scrollProgress = Math.min(1, Math.max(0, scrollY / Math.max(1, heroHeight * 0.8)));
-        const scrollWeight = 250 + (600 - 250) * scrollProgress;
-        const elapsedSec = time / 1000;
-
-        for (let i = 0; i < totalLetters; i++) {
-          const phase = (i / totalLetters) * Math.PI;
-          const wave = 120 * Math.sin((elapsedSec * 2 * Math.PI / 6) + phase);
-          targetWeights.current[i] = Math.min(800, Math.max(250, scrollWeight + wave));
-        }
-        isMoving = true;
-      }
-
-      for (let i = 0; i < totalLetters; i++) {
-        const cur = currentWeights.current[i];
-        const tgt = targetWeights.current[i];
-        const vel = velocities.current[i];
-
-        const force = -stiffness * (cur - tgt) - damping * vel;
-        const nextVel = vel + force * dt;
-        const nextWeight = cur + nextVel * dt;
-
-        velocities.current[i] = nextVel;
-        currentWeights.current[i] = nextWeight;
-
-        // Apply only when target changed by >= 5
-        if (Math.abs(nextWeight - prevAppliedWeights.current[i]) >= 5) {
-          const span = letterRefs.current[i];
-          if (span) {
-            span.style.fontVariationSettings = `'wght' ${Math.round(nextWeight)}`;
-            span.style.fontWeight = Math.round(nextWeight).toString();
-          }
-          prevAppliedWeights.current[i] = nextWeight;
-        }
-
-        if (Math.abs(nextWeight - tgt) > 0.5 || Math.abs(nextVel) > 0.5) {
-          isMoving = true;
-        }
-      }
-
-      if (isMoving && (isPointerInsideRef.current || isTouchDevice) && isHeroOnScreenRef.current) {
-        rafIdRef.current = requestAnimationFrame(animateSprings);
-      } else {
-        rafIdRef.current = null;
-      }
-    };
-
-    const startSpringLoop = () => {
-      if (document.documentElement.hasAttribute("data-scrolling")) return;
-      if (rafIdRef.current === null && isHeroOnScreenRef.current && (isPointerInsideRef.current || isTouchDevice)) {
-        lastTimeRef.current = performance.now();
-        rafIdRef.current = requestAnimationFrame(animateSprings);
-      }
-    };
-
-    const onScroll = () => {
-      if (isTouchDevice && isHeroOnScreenRef.current) {
-        startSpringLoop();
-      }
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafIdRef.current !== null) {
-        cancelAnimationFrame(rafIdRef.current);
-        rafIdRef.current = null;
-      }
-    };
-  }, [shouldReduceMotion, isTouchDevice, totalLetters]);
-
-  // Listen for app:ready and trigger intro
+  // App ready listener: starts effects 700ms after app:ready
   useEffect(() => {
     if (shouldReduceMotion) {
       setIsIntroIn(true);
@@ -212,38 +236,166 @@ export default function Hero() {
       return;
     }
 
-    let hoverTimer: ReturnType<typeof setTimeout> | null = null;
+    let readyTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const startIntro = () => {
+    const startReadySequences = () => {
       setIsIntroIn(true);
       targetWeights.current.fill(250);
 
-      // The pointer weight effect starts 700ms after app:ready
-      hoverTimer = setTimeout(() => {
+      readyTimer = setTimeout(() => {
         setCanHover(true);
+        setTouchWaveStarted(true);
       }, 700);
     };
 
     const winReady = window as unknown as { __appReady?: boolean };
     if (winReady.__appReady) {
-      startIntro();
+      startReadySequences();
     } else {
       const onAppReady = () => {
-        startIntro();
+        startReadySequences();
       };
       window.addEventListener("app:ready", onAppReady, { once: true });
       return () => {
         window.removeEventListener("app:ready", onAppReady);
-        if (hoverTimer) clearTimeout(hoverTimer);
+        if (readyTimer) clearTimeout(readyTimer);
       };
     }
 
     return () => {
-      if (hoverTimer) clearTimeout(hoverTimer);
+      if (readyTimer) clearTimeout(readyTimer);
     };
   }, [shouldReduceMotion]);
 
-  // Pointer move handler on the hero section
+  // 1. TOUCH DEVICES: Continuous traveling weight wave + touch interaction on top
+  useEffect(() => {
+    if (!isTouchDevice || shouldReduceMotion || !touchWaveStarted) return;
+
+    let touchRafId: number | null = null;
+    let lastFrameTime = 0;
+
+    const animateWave = (time: number) => {
+      if (!isHeroOnScreenRef.current || document.visibilityState !== "visible") {
+        touchRafId = null;
+        return;
+      }
+
+      // Capped at 30 fps (~32ms)
+      const elapsed = time - lastFrameTime;
+      if (elapsed < 32) {
+        touchRafId = requestAnimationFrame(animateWave);
+        return;
+      }
+      lastFrameTime = time;
+
+      const tSec = time / 1000;
+      const touch = touchPointRef.current;
+
+      for (let i = 0; i < totalLetters; i++) {
+        // Continuous traveling weight wave: wght = 450 + 200 * sin(2π * (t / 5.5s) - i * 0.42)
+        const waveWght = 450 + 200 * Math.sin((2 * Math.PI * tSec) / 5.5 - i * 0.42);
+
+        // Touch interaction on top of wave: letters within 120px receive up to +180 weight
+        let targetBoost = 0;
+        if (touch.active) {
+          const span = letterRefs.current[i];
+          if (span) {
+            const rect = span.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+            const dist = Math.hypot(touch.x - cx, touch.y - cy);
+            if (dist < 120) {
+              targetBoost = 180 * (1 - dist / 120);
+            }
+          }
+        }
+
+        // Smoothed touch boost, easing back when finger lifts
+        touchBoostsRef.current[i] += (targetBoost - touchBoostsRef.current[i]) * 0.22;
+        if (Math.abs(touchBoostsRef.current[i] - targetBoost) < 0.2) {
+          touchBoostsRef.current[i] = targetBoost;
+        }
+
+        const totalWght = Math.round(waveWght + touchBoostsRef.current[i]);
+
+        // Update font-variation-settings only for letters whose value changed by more than 4
+        if (Math.abs(totalWght - prevAppliedWeights.current[i]) > 4) {
+          const span = letterRefs.current[i];
+          if (span) {
+            span.style.fontVariationSettings = `'wght' ${totalWght}`;
+            span.style.fontWeight = totalWght.toString();
+          }
+          prevAppliedWeights.current[i] = totalWght;
+        }
+      }
+
+      touchRafId = requestAnimationFrame(animateWave);
+    };
+
+    const startWaveLoop = () => {
+      if (touchRafId === null && isHeroOnScreenRef.current && document.visibilityState === "visible") {
+        lastFrameTime = performance.now();
+        touchRafId = requestAnimationFrame(animateWave);
+      }
+    };
+
+    const stopWaveLoop = () => {
+      if (touchRafId !== null) {
+        cancelAnimationFrame(touchRafId);
+        touchRafId = null;
+      }
+    };
+
+    startWaveLoop();
+
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        startWaveLoop();
+      } else {
+        stopWaveLoop();
+      }
+    };
+
+    const handleScreenVisibility = () => {
+      if (isHeroOnScreenRef.current) {
+        startWaveLoop();
+      } else {
+        stopWaveLoop();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("hero:screen-visibility", handleScreenVisibility);
+
+    return () => {
+      stopWaveLoop();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("hero:screen-visibility", handleScreenVisibility);
+    };
+  }, [isTouchDevice, shouldReduceMotion, touchWaveStarted, totalLetters]);
+
+  // Touch event listeners for touch interaction on top of wave
+  const handleTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    if (!isTouchDevice || shouldReduceMotion) return;
+    const touch = e.touches[0];
+    if (touch) {
+      touchPointRef.current = { x: touch.clientX, y: touch.clientY, active: true };
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLElement>) => {
+    if (!isTouchDevice || shouldReduceMotion) return;
+    const touch = e.touches[0];
+    if (touch) {
+      touchPointRef.current = { x: touch.clientX, y: touch.clientY, active: true };
+    }
+  };
+
+  const handleTouchEnd = () => {
+    touchPointRef.current.active = false;
+  };
+
+  // 2. DESKTOP AND MOUSE DEVICES: Existing spring physics pointer weight effect (UNCHANGED)
   const handlePointerMove = useCallback(
     (e: React.PointerEvent<HTMLElement>) => {
       if (!canHover || isTouchDevice || shouldReduceMotion || !isHeroOnScreenRef.current) return;
@@ -383,16 +535,52 @@ export default function Hero() {
       ref={sectionRef}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       style={{
-        height: "100svh",
-        minHeight: "100svh",
-        maxHeight: "100svh",
-        paddingTop: "clamp(48px, 6svh, 80px)",
-        paddingBottom: "clamp(24px, 3.5svh, 40px)",
         backgroundColor: "#F5F4F0",
+        touchAction: "pan-y",
+        ...(isMobile
+          ? {
+              height: "auto",
+              minHeight: "auto",
+              maxHeight: "none",
+              paddingTop: "96px",
+              paddingBottom: "56px",
+            }
+          : {
+              height: "100svh",
+              minHeight: "100svh",
+              maxHeight: "100svh",
+              paddingTop: "clamp(48px, 6svh, 80px)",
+              paddingBottom: "clamp(24px, 3.5svh, 40px)",
+            }),
       }}
-      className="w-full bg-[#F5F4F0] h-[100svh] min-h-[100svh] max-h-[100svh] px-6 md:px-12 flex flex-col justify-between overflow-hidden"
+      className="w-full bg-[#F5F4F0] px-6 md:px-12 flex flex-col justify-between overflow-hidden"
     >
+      {/* Hidden offscreen reference measuring element for headline fit at wght 650 */}
+      <div
+        aria-hidden="true"
+        className="fixed -left-[9999px] -top-[9999px] pointer-events-none invisible whitespace-nowrap"
+        style={{
+          fontFamily: "var(--font-sans)",
+          fontSize: "100px",
+          fontWeight: 650,
+          fontVariationSettings: "'wght' 650",
+          letterSpacing: "-0.05em",
+          lineHeight: 0.86,
+        }}
+      >
+        <span ref={measureLine1Ref} className="inline-block whitespace-nowrap">
+          {line1Text}
+        </span>
+        <span ref={measureLine2Ref} className="inline-block whitespace-nowrap">
+          {line2Text}
+        </span>
+      </div>
+
       <div
         ref={containerRef}
         className="relative w-full h-full flex-1 max-w-[1600px] mx-auto flex flex-col justify-between"
@@ -436,13 +624,18 @@ export default function Hero() {
             </span>
           </div>
 
-          <div style={{ height: "clamp(20px, 3svh, 40px)" }} aria-hidden="true" className="flex-shrink-0" />
+          <div style={{ height: isMobile ? "24px" : "clamp(20px, 3svh, 40px)" }} aria-hidden="true" className="flex-shrink-0" />
 
           {/* Row 2: Headline on two lines */}
           <div className="w-full block my-auto">
             <div
               aria-hidden="true"
               className="t-display text-[var(--ink)] block w-full"
+              style={{
+                fontSize: headlineFontSize ? `${headlineFontSize}px` : undefined,
+                lineHeight: 0.86,
+                letterSpacing: "-0.05em",
+              }}
             >
               {/* Line 1: Front-end (delay 112ms) */}
               <div className="block overflow-hidden pb-[0.12em] -mb-[0.12em]">
@@ -463,7 +656,7 @@ export default function Hero() {
                       ref={(el) => {
                         letterRefs.current[index] = el;
                       }}
-                      className="inline-block"
+                      className="inline-block select-none"
                       style={{
                         fontWeight: shouldReduceMotion ? 300 : 250,
                         fontVariationSettings: shouldReduceMotion
@@ -498,7 +691,7 @@ export default function Hero() {
                         ref={(el) => {
                           letterRefs.current[globalIndex] = el;
                         }}
-                        className="inline-block"
+                        className="inline-block select-none"
                         style={{
                           fontWeight: shouldReduceMotion ? 300 : 250,
                           fontVariationSettings: shouldReduceMotion
@@ -516,20 +709,24 @@ export default function Hero() {
           </div>
         </h1>
 
-        <div style={{ height: "max(48px, 5svh)" }} aria-hidden="true" className="flex-shrink-0" />
+        <div style={{ height: isMobile ? "32px" : "max(48px, 5svh)" }} aria-hidden="true" className="flex-shrink-0" />
 
         {/* Row 3: bottom row */}
-        <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-baseline flex-shrink-0">
+        <div
+          className="w-full grid grid-cols-1 md:grid-cols-12 items-baseline flex-shrink-0"
+          style={{ gap: isMobile ? "24px" : "32px" }}
+        >
           {/* Left (cols 1-6): sentence words, clamp(1.0625rem, 1.3vw, 1.25rem), weight 340, color var(--ink) */}
           <div className="md:col-span-6">
             <p
-              className="text-[var(--ink)]"
+              className="text-[var(--ink)] [text-wrap:balance]"
               style={{
                 fontSize: "clamp(1.0625rem, 1.3vw, 1.25rem)",
                 fontWeight: 340,
                 fontVariationSettings: "'wght' 340",
                 lineHeight: 1.4,
                 maxWidth: "30ch",
+                textWrap: "balance",
               }}
             >
               {parsedSentenceWords.map((wordSegments, idx) => {

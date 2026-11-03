@@ -10,10 +10,10 @@ import { recoverScrollState } from '../lib/scrollLock';
 
 interface GroupAuditInfo {
   name: string;
-  'element tag/class': string;
+  tag: string;
   'height in px': number;
-  'trigger rule': string;
-  'pending or in': 'pending' | 'in';
+  'trigger line': string;
+  state: 'pending' | 'in';
   'ms since app:ready': number | string;
 }
 
@@ -40,6 +40,7 @@ export function getPendingRevealCount(): number {
 /**
  * Dev Audit:
  * Runs when ?debug=reveal is in the URL query string.
+ * console.table of every group on the current route and console.warn for any group taller than 0.8 * innerHeight.
  */
 function runDevAudit(triggerTimes: Map<HTMLElement, number>) {
   if (typeof window === 'undefined') return;
@@ -54,28 +55,36 @@ function runDevAudit(triggerTimes: Map<HTMLElement, number>) {
   groups.forEach((el) => {
     const rect = el.getBoundingClientRect();
     const name =
-      el.id || el.getAttribute('data-reveal-id') || el.getAttribute('aria-label') || el.tagName.toLowerCase();
+      el.getAttribute('data-reveal-id') || el.id || el.getAttribute('aria-label') || el.tagName.toLowerCase();
     const classes = el.className ? '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.') : '';
     const tagClass = `${el.tagName.toLowerCase()}${classes}`;
     const height = Math.round(rect.height);
-    const triggerRule = el.getAttribute('data-reveal-at') || '0.82';
+    const triggerRule = el.getAttribute('data-reveal-at') || '0.8';
     const isIn = el.classList.contains('is-in');
     const firedAt = triggerTimes.get(el);
     const msSinceReady = firedAt && readyTime ? Math.round(firedAt - readyTime) : (isIn ? 'ready' : '-');
 
     auditRows.push({
       name,
-      'element tag/class': tagClass,
+      tag: tagClass,
       'height in px': height,
-      'trigger rule': triggerRule,
-      'pending or in': isIn ? 'in' : 'pending',
+      'trigger line': triggerRule,
+      state: isIn ? 'in' : 'pending',
       'ms since app:ready': msSinceReady,
     });
 
     if (height > 0.8 * innerHeight) {
-      // Group height exceeds 0.8 * innerHeight
+      console.warn(
+        `[reveal] Group "${name}" (${height}px) is taller than 0.8 * innerHeight (${Math.round(
+          0.8 * innerHeight
+        )}px). Groups must hug their content.`
+      );
     }
   });
+
+  if (auditRows.length > 0) {
+    console.table(auditRows);
+  }
 }
 
 /**
@@ -91,9 +100,21 @@ export function useRevealEngine() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isHome = location.pathname === '/';
+
+    const isHeroDone = () => document.documentElement.classList.contains('hero-done');
+
+    const markHeroDone = () => {
+      if (document.documentElement.classList.contains('hero-done')) return;
+      document.documentElement.classList.add('hero-done');
+      if (globalCheckDelegate) {
+        globalCheckDelegate();
+      }
+    };
 
     if (prefersReducedMotion) {
       document.documentElement.classList.add('js-reveal');
+      document.documentElement.classList.add('hero-done');
       document.querySelectorAll<HTMLElement>('[data-reveal], [data-reveal-group], [data-reveal-child]').forEach((el) => {
         el.classList.add('is-in');
         el.setAttribute('data-revealed', 'true');
@@ -116,15 +137,29 @@ export function useRevealEngine() {
       }
 
       // Mark wrapper data-revealed once animation completes to remove overflow, padding & margin
+      // and clear every inline opacity, transform and will-change
       setTimeout(() => {
         if (el.isConnected) {
           el.setAttribute('data-revealed', 'true');
-          const masks = el.querySelectorAll<HTMLElement>('.w');
+          const masks = el.querySelectorAll<HTMLElement>('.w, .statement-line-mask');
           masks.forEach((m) => {
             m.setAttribute('data-revealed', 'true');
             m.style.overflow = 'visible';
             m.style.paddingBlock = '0';
             m.style.marginBlock = '0';
+          });
+
+          // Clear every inline opacity, transform and will-change
+          el.style.opacity = '';
+          el.style.transform = '';
+          el.style.willChange = '';
+          const children = el.querySelectorAll<HTMLElement>(
+            '[data-reveal-child], .statement-line, .statement-feels, .work-desktop-reveal-block, .work-desktop-reveal-fade, .work-mobile-item'
+          );
+          children.forEach((c) => {
+            c.style.opacity = '';
+            c.style.transform = '';
+            c.style.willChange = '';
           });
         }
       }, 1250);
@@ -167,7 +202,6 @@ export function useRevealEngine() {
     };
 
     // Check routine evaluating each pending element's own getBoundingClientRect
-    // NEVER skips when programmatic scroll is running
     const check = () => {
       const innerHeight = window.innerHeight;
       const scrollY = window.scrollY;
@@ -182,16 +216,28 @@ export function useRevealEngine() {
           return;
         }
 
+        const isWorkTarget =
+          el.getAttribute('data-reveal-id') === 'work-desktop' ||
+          el.getAttribute('data-reveal') === 'work-mobile' ||
+          Boolean(el.closest('#work'));
+
+        // The Work section's own reveal groups fire only after "hero-done"
+        if (isWorkTarget && isHome && !isHeroDone()) {
+          return;
+        }
+
         const rect = el.getBoundingClientRect();
         const revealAtAttr = el.getAttribute('data-reveal-at');
-        const thresholdRatio = revealAtAttr ? parseFloat(revealAtAttr) : 0.85;
+        const thresholdRatio = revealAtAttr ? parseFloat(revealAtAttr) : 0.8;
 
-        // Failsafe: if top is above innerHeight * 0.5 and hasn't fired in 1500ms
-        if (rect.top < innerHeight * 0.5) {
+        // Failsafe: if top went above innerHeight * 0.6 and hasn't fired in 1500ms
+        if (rect.top < innerHeight * 0.6) {
           if (!halfCrossedTimers.current.has(el)) {
             const timer = setTimeout(() => {
               if (el.isConnected && !el.classList.contains('is-in')) {
-                revealElement(el, 'failsafe (+1500ms after crossing 0.5 innerHeight)');
+                // If it's a Work target, make sure hero-done is also satisfied
+                if (isWorkTarget && isHome && !isHeroDone()) return;
+                revealElement(el, 'failsafe (+1500ms after crossing 0.6 innerHeight)');
                 pendingTargets.current.delete(el);
                 syncInterval();
               }
@@ -216,7 +262,9 @@ export function useRevealEngine() {
     globalCheckDelegate = check;
     globalPendingCountDelegate = () => pendingTargets.current.size;
 
-    // Setup targets and apply initial hidden states
+    // Setup targets and apply initial hidden states:
+    // Hidden initial state is applied ONLY to groups whose top is >= innerHeight * 0.95;
+    // everything else is visible immediately.
     const inViewTargets: HTMLElement[] = [];
     const targets = scanTargets();
     const innerHeight = window.innerHeight;
@@ -224,7 +272,7 @@ export function useRevealEngine() {
     targets.forEach((el) => {
       if (el.classList.contains('is-in')) return;
       const rect = el.getBoundingClientRect();
-      if (rect.top < innerHeight * 0.98) {
+      if (rect.top < innerHeight * 0.95) {
         inViewTargets.push(el);
       } else {
         pendingTargets.current.add(el);
@@ -243,6 +291,14 @@ export function useRevealEngine() {
       }
       inViewTargets.forEach((el) => {
         if (el.isConnected && !el.classList.contains('is-in')) {
+          const isWorkTarget =
+            el.getAttribute('data-reveal-id') === 'work-desktop' ||
+            el.getAttribute('data-reveal') === 'work-mobile' ||
+            Boolean(el.closest('#work'));
+          if (isWorkTarget && isHome && !isHeroDone()) {
+            pendingTargets.current.add(el);
+            return;
+          }
           revealElement(el, 'in-view-initial');
         }
       });
@@ -269,6 +325,52 @@ export function useRevealEngine() {
         window.removeEventListener('app:ready', onAppReady);
         clearTimeout(fallbackTimer);
       };
+    }
+
+    // Hero Done orchestration
+    let heroTimer: ReturnType<typeof setTimeout> | null = null;
+    let heroFailsafeTimer: ReturnType<typeof setTimeout> | null = null;
+    let heroScrollHandler: (() => void) | null = null;
+
+    if (!isHome) {
+      markHeroDone();
+    } else {
+      // Check if loaded below hero: scrollY > 40, anchor in URL, or history state
+      const isBelowHero = window.scrollY > 40 || Boolean(location.hash) || Boolean(window.history.state?.scrollTo);
+      if (isBelowHero) {
+        markHeroDone();
+      } else {
+        // 1300ms after "app:ready"
+        const scheduleAppReadyHeroDone = () => {
+          if (!heroTimer) {
+            heroTimer = setTimeout(markHeroDone, 1300);
+          }
+        };
+
+        if ((window as unknown as { __appReady?: boolean }).__appReady) {
+          scheduleAppReadyHeroDone();
+        } else {
+          const onHeroAppReady = () => {
+            window.removeEventListener('app:ready', onHeroAppReady);
+            scheduleAppReadyHeroDone();
+          };
+          window.addEventListener('app:ready', onHeroAppReady);
+        }
+
+        // Immediately when scrollY > 40
+        heroScrollHandler = () => {
+          if (window.scrollY > 40) {
+            markHeroDone();
+            if (heroScrollHandler) {
+              window.removeEventListener('scroll', heroScrollHandler);
+            }
+          }
+        };
+        window.addEventListener('scroll', heroScrollHandler, { passive: true });
+
+        // Failsafe: add it at 3500ms regardless
+        heroFailsafeTimer = setTimeout(markHeroDone, 3500);
+      }
     }
 
     // Scroll listener (rAF-throttled, passive)
@@ -353,8 +455,17 @@ export function useRevealEngine() {
           freshTargets.forEach((el) => {
             if (!el.classList.contains('is-in') && !pendingTargets.current.has(el)) {
               const r = el.getBoundingClientRect();
-              if (r.top < currentH * 0.98 && (window as unknown as { __appReady?: boolean }).__appReady) {
-                revealElement(el, 'mutation-in-view');
+              const isWork =
+                el.getAttribute('data-reveal-id') === 'work-desktop' ||
+                el.getAttribute('data-reveal') === 'work-mobile' ||
+                Boolean(el.closest('#work'));
+
+              if (r.top < currentH * 0.95 && (window as unknown as { __appReady?: boolean }).__appReady) {
+                if (isWork && isHome && !isHeroDone()) {
+                  pendingTargets.current.add(el);
+                } else {
+                  revealElement(el, 'mutation-in-view');
+                }
               } else {
                 pendingTargets.current.add(el);
               }
@@ -386,6 +497,9 @@ export function useRevealEngine() {
 
     return () => {
       if (appReadyCleanup) appReadyCleanup();
+      if (heroTimer) clearTimeout(heroTimer);
+      if (heroFailsafeTimer) clearTimeout(heroFailsafeTimer);
+      if (heroScrollHandler) window.removeEventListener('scroll', heroScrollHandler);
       if (intervalId !== null) clearInterval(intervalId);
       if (stabilityTimer !== null) clearTimeout(stabilityTimer);
       clearTimeout(sixSecTimer);
@@ -416,17 +530,37 @@ export function useRevealEngine() {
     let r2: number | null = null;
     const timers: ReturnType<typeof setTimeout>[] = [];
 
+    if (location.pathname !== '/') {
+      document.documentElement.classList.add('hero-done');
+    } else {
+      if (window.scrollY > 40 || location.hash || window.history.state?.scrollTo) {
+        document.documentElement.classList.add('hero-done');
+      }
+    }
+
     const evaluateRouteTargets = () => {
       if (typeof document === 'undefined') return;
       const all = document.querySelectorAll<HTMLElement>('[data-reveal-group], [data-reveal]');
       const innerHeight = window.innerHeight;
+      const isHome = location.pathname === '/';
+      const isHeroDone = document.documentElement.classList.contains('hero-done');
 
       all.forEach((el) => {
         const isNested = Boolean(el.parentElement?.closest('[data-reveal-group]'));
         if (!isNested && !el.classList.contains('is-in')) {
+          const isWorkTarget =
+            el.getAttribute('data-reveal-id') === 'work-desktop' ||
+            el.getAttribute('data-reveal') === 'work-mobile' ||
+            Boolean(el.closest('#work'));
+
+          if (isWorkTarget && isHome && !isHeroDone) {
+            pendingTargets.current.add(el);
+            return;
+          }
+
           const rect = el.getBoundingClientRect();
           const revealAtAttr = el.getAttribute('data-reveal-at');
-          const thresholdRatio = revealAtAttr ? parseFloat(revealAtAttr) : 0.85;
+          const thresholdRatio = revealAtAttr ? parseFloat(revealAtAttr) : 0.8;
 
           if (rect.top < innerHeight * thresholdRatio) {
             el.classList.add('is-in');

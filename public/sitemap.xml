@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://razanazizieh.github.io/portfolio/work</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://razanazizieh.github.io/portfolio/journal</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

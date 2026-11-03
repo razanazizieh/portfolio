@@ -15,7 +15,7 @@ const pad = (v: number) => String(v).padStart(2, "0");
 /**
  * Journal Section (Home panel)
  * Normal flow, background #F5F4F0, min-height 50svh, padding-block var(--pad-y).
- * id="journal" directly on the section element.
+ * Heading words at 0ms; entry row as children: date & reading time +300ms, title +400ms, summary +500ms, "Read entry" +600ms.
  */
 export function JournalSection() {
   const currentEntries = getEntries();
@@ -35,7 +35,7 @@ export function JournalSection() {
           <div
             data-reveal-group
             data-reveal-id="journal"
-            data-reveal-at="0.82"
+            data-reveal-at="0.8"
             className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-baseline py-4 w-full"
           >
             <div
@@ -54,13 +54,13 @@ export function JournalSection() {
 
             <div
               data-reveal-child
-              style={{ "--d": "250ms" } as React.CSSProperties}
+              style={{ "--d": "300ms" } as React.CSSProperties}
               className="lg:col-start-5 lg:col-span-8"
             >
               <Words
                 as="p"
                 text="First entry coming soon. I'll write about what I learn while building."
-                delay={250}
+                delay={0}
                 isChild={true}
                 className="t-lead max-w-[42ch]"
                 style={{
@@ -75,8 +75,8 @@ export function JournalSection() {
           <div
             data-reveal-group
             data-reveal-id="journal"
-            data-reveal-at="0.82"
-            className="w-full py-4 flex flex-col justify-between"
+            data-reveal-at="0.8"
+            className="w-full py-4 flex flex-col"
           >
             <div
               data-reveal-child
@@ -96,7 +96,7 @@ export function JournalSection() {
               <div className="lg:col-start-5 lg:col-span-8 flex flex-col min-w-0">
                 <div className="flex flex-col gap-16 min-w-0">
                   {latestEntries.map((entry, idx) => {
-                    const entryBase = 250 + idx * 120;
+                    const entryBase = idx * 150;
 
                     return (
                       <article key={entry.slug} className="min-w-0">
@@ -106,7 +106,7 @@ export function JournalSection() {
                         >
                           <div
                             data-reveal-child
-                            style={{ "--d": `${entryBase + 0}ms` } as React.CSSProperties}
+                            style={{ "--d": `${entryBase + 300}ms` } as React.CSSProperties}
                             className="flex items-center gap-3 t-meta text-[var(--ink-2)]"
                           >
                             <time dateTime={entry.date}>{entry.date}</time>
@@ -116,7 +116,7 @@ export function JournalSection() {
 
                           <h3
                             data-reveal-child
-                            style={{ "--d": `${entryBase + 90}ms` } as React.CSSProperties}
+                            style={{ "--d": `${entryBase + 400}ms` } as React.CSSProperties}
                             className="t-item text-[var(--ink)] [text-wrap:balance] max-w-[28ch] min-w-0"
                           >
                             <TS>{entry.title}</TS>
@@ -124,7 +124,7 @@ export function JournalSection() {
 
                           <p
                             data-reveal-child
-                            style={{ "--d": `${entryBase + 180}ms` } as React.CSSProperties}
+                            style={{ "--d": `${entryBase + 500}ms` } as React.CSSProperties}
                             className="t-body text-[var(--ink-2)] max-w-2xl min-w-0"
                           >
                             {entry.summary}
@@ -132,7 +132,7 @@ export function JournalSection() {
 
                           <div
                             data-reveal-child
-                            style={{ "--d": `${entryBase + 240}ms` } as React.CSSProperties}
+                            style={{ "--d": `${entryBase + 600}ms` } as React.CSSProperties}
                             className="mt-6"
                           >
                             <span className="t-ui text-[var(--ink)] inline-block">
@@ -148,7 +148,7 @@ export function JournalSection() {
                 {totalCount > 3 && (
                   <div
                     data-reveal-child
-                    style={{ "--d": `${250 + latestEntries.length * 120}ms` } as React.CSSProperties}
+                    style={{ "--d": `${latestEntries.length * 150 + 600}ms` } as React.CSSProperties}
                     className="pt-12"
                   >
                     <HL

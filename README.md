@@ -1,5 +1,4 @@
- Live site: https://razanazizieh.github.io/portfolio/
-
+Live site: https://razanazizieh.github.io/portfolio/
 
 # Razan Azizieh — Portfolio
 
@@ -23,6 +22,12 @@ A focused, editorial portfolio highlighting modern web applications, interactive
 # Start local development server
 npm run dev
 
+# Regenerate icon files from public/favicon.svg
+npm run icons
+
+# Regenerate favicon SVG from font sources and all icon variants
+npm run favicon
+
 # Typecheck and lint codebase
 npm run typecheck
 npm run lint
@@ -42,6 +47,8 @@ npm run build
 # Comprehensive verification pipeline (typecheck + lint + check + build + check:secrets)
 npm run verify
 ```
+
+`npm run favicon regenerates all icon files`.
 
 ## Folder Structure
 
@@ -79,9 +86,4 @@ Run `npm run build` to generate the production-ready distribution in `dist/`.
 
 ## Process
 
-Developed by Razan Azizieh.
-
-## License
-
-© 2026 Razan Azizieh. All rights reserved.  
-For repository code rights, please see the [LICENSE](./LICENSE) file.
+Developed and designed by Razan Azizieh. Built with AI-assisted development.

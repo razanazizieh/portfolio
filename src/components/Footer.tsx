@@ -33,7 +33,7 @@ export default function Footer({
     <footer
       data-reveal-group
       data-reveal-id="footer"
-      data-reveal-at="0.9"
+      data-reveal-at="0.92"
       className="w-full"
     >
       <div className="flex flex-col gap-8 w-full">

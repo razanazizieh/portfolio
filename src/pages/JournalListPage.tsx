@@ -15,9 +15,8 @@ const pad = (v: number) => String(v).padStart(2, "0");
 
 /**
  * Journal List Page (/journal)
- * - Wrapped in one data-reveal-group per block
- * - Title as h1
- * - Rows staggered using data-reveal-child
+ * - Heading words at 0ms
+ * - Entry row as children: date & reading time +300ms, title +400ms, summary +500ms
  */
 export function JournalListPage() {
   const currentEntries = getEntries();
@@ -25,7 +24,7 @@ export function JournalListPage() {
 
   return (
     <div className="w-full min-h-screen pt-32 pb-32 max-w-[1600px] mx-auto px-6 md:px-12">
-      <div data-reveal-group data-reveal-id="journal-list" className="w-full">
+      <div data-reveal-group data-reveal-id="journal-list" data-reveal-at="0.8" className="w-full">
         <Helmet>
           <title>Journal — Razan Azizieh</title>
           <meta
@@ -54,12 +53,15 @@ export function JournalListPage() {
         </div>
 
         <header className="mb-20">
-          <Words
-            as="h1"
-            text={currentEntries.length > 0 ? `Journal (${pad(currentEntries.length)})` : "Journal"}
-            delay={0}
-            className="t-title text-[var(--ink)]"
-          />
+          <div data-reveal-child style={{ "--d": "0ms" } as React.CSSProperties}>
+            <Words
+              as="h1"
+              text={currentEntries.length > 0 ? `Journal (${pad(currentEntries.length)})` : "Journal"}
+              delay={0}
+              isChild={true}
+              className="t-title text-[var(--ink)]"
+            />
+          </div>
         </header>
 
         <section aria-label="Entries" className="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -67,23 +69,23 @@ export function JournalListPage() {
             {currentEntries.length === 0 ? (
               <p
                 data-reveal-child
-                style={{ "--d": "350ms" } as React.CSSProperties}
+                style={{ "--d": "300ms" } as React.CSSProperties}
                 className="t-lead text-[var(--ink)] max-w-[42ch]"
               >
                 First entry coming soon. I&apos;ll write about what I learn while building.
               </p>
             ) : (
               currentEntries.map((entry, idx) => {
-                const entryBase = 350 + idx * 150;
+                const entryBase = idx * 150;
                 return (
                   <article
                     key={entry.slug}
                     className="flex flex-col gap-3 group pb-8"
                   >
-                    {/* date | reading time (+0ms) */}
+                    {/* date | reading time (+300ms) */}
                     <div
                       data-reveal-child
-                      style={{ "--d": `${entryBase + 0}ms` } as React.CSSProperties}
+                      style={{ "--d": `${entryBase + 300}ms` } as React.CSSProperties}
                       className="flex items-center gap-4 t-meta text-[var(--ink-2)]"
                     >
                       <time dateTime={entry.date}>{entry.date}</time>
@@ -91,10 +93,10 @@ export function JournalListPage() {
                       <span>{entry.readingMinutes} min read</span>
                     </div>
 
-                    {/* title (+90ms) */}
+                    {/* title (+400ms) */}
                     <h2
                       data-reveal-child
-                      style={{ "--d": `${entryBase + 90}ms` } as React.CSSProperties}
+                      style={{ "--d": `${entryBase + 400}ms` } as React.CSSProperties}
                       className="t-item text-[var(--ink)]"
                     >
                       <HL to={`/journal/${entry.slug}`}>
@@ -102,10 +104,10 @@ export function JournalListPage() {
                       </HL>
                     </h2>
 
-                    {/* summary (+180ms) */}
+                    {/* summary (+500ms) */}
                     <p
                       data-reveal-child
-                      style={{ "--d": `${entryBase + 180}ms` } as React.CSSProperties}
+                      style={{ "--d": `${entryBase + 500}ms` } as React.CSSProperties}
                       className="t-body text-[var(--ink-2)] max-w-2xl mt-1"
                     >
                       {entry.summary}

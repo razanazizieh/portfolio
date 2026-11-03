@@ -30,9 +30,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
   const shouldReduceMotion = useReducedMotion();
   const isHome = location.pathname === "/";
 
+  if (!isHome) return null;
+
   const [isVisible, setIsVisible] = useState(() => {
     if (typeof window === "undefined") return false;
-    if (!isHome || shouldReduceMotion) return false;
+    if (shouldReduceMotion) return false;
 
     // Check back/forward navigation
     try {
@@ -57,6 +59,15 @@ export function Preloader({ onComplete }: PreloaderProps) {
   });
 
   const [isLifting, setIsLifting] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+
+  // Remove initial HTML preloader overlay placeholder if still present
+  useEffect(() => {
+    const initialOverlay = document.getElementById("preloader-overlay");
+    if (initialOverlay) {
+      initialOverlay.remove();
+    }
+  }, []);
 
   useEffect(() => {
     // Detect bfcache restore
@@ -72,13 +83,27 @@ export function Preloader({ onComplete }: PreloaderProps) {
 
   useEffect(() => {
     if (!isVisible) {
-      if (typeof window !== "undefined") {
-        (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReady = true;
-        (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReadyTime = performance.now();
-        window.dispatchEvent(new CustomEvent("app:ready"));
+      const dispatchReady = () => {
+        if (typeof window !== "undefined") {
+          (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReady = true;
+          (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReadyTime = performance.now();
+          window.dispatchEvent(new CustomEvent("app:ready"));
+        }
+        unlockScroll("preloader");
+        if (onComplete) onComplete();
+      };
+
+      if (typeof document !== "undefined" && document.documentElement.classList.contains("fonts-ready")) {
+        dispatchReady();
+      } else {
+        const onFonts = () => dispatchReady();
+        window.addEventListener("fonts:ready", onFonts, { once: true });
+        const timer = setTimeout(dispatchReady, 1200);
+        return () => {
+          window.removeEventListener("fonts:ready", onFonts);
+          clearTimeout(timer);
+        };
       }
-      unlockScroll("preloader");
-      if (onComplete) onComplete();
       return;
     }
 
@@ -91,15 +116,17 @@ export function Preloader({ onComplete }: PreloaderProps) {
     // Lock scroll via centralized module
     lockScroll("preloader");
 
-    // Preloader sets Date.now() deadline (3000ms)
-    const deadline = Date.now() + 3000;
+    // Preloader sets Date.now() deadline (3500ms)
+    const deadline = Date.now() + 3500;
 
     let liftTimer: ReturnType<typeof setTimeout> | null = null;
     let completeTimer: ReturnType<typeof setTimeout> | null = null;
+    let fontsTimer: ReturnType<typeof setTimeout> | null = null;
 
     const finishPreloader = () => {
       if (liftTimer) clearTimeout(liftTimer);
       if (completeTimer) clearTimeout(completeTimer);
+      if (fontsTimer) clearTimeout(fontsTimer);
       if (typeof window !== "undefined") {
         (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReady = true;
         (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReadyTime = performance.now();
@@ -119,41 +146,49 @@ export function Preloader({ onComplete }: PreloaderProps) {
     document.addEventListener("visibilitychange", checkDeadline);
     window.addEventListener("pageshow", checkDeadline);
 
-    // Wait only for document.fonts.ready with a 600ms cap
-    const fontsPromise = document.fonts ? document.fonts.ready : Promise.resolve();
-    const fontsTimeout = new Promise((resolve) => setTimeout(resolve, 600));
-
-    Promise.race([fontsPromise, fontsTimeout])
-      .then(() => {
-        if (Date.now() >= deadline) {
-          finishPreloader();
-          return;
-        }
-
-        // Name mask: 550ms, hold 100ms -> at 650ms start lift and dispatch app:ready
-        liftTimer = setTimeout(() => {
-          if (typeof window !== "undefined") {
-            (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReady = true;
-            (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReadyTime = performance.now();
-            window.dispatchEvent(new CustomEvent("app:ready"));
-          }
-          setIsLifting(true);
-        }, 650);
-
-        // Total <= 1.1s: lift completes at 1100ms
-        completeTimer = setTimeout(() => {
-          setIsVisible(false);
-          unlockScroll("preloader");
-          if (onComplete) onComplete();
-        }, 1100);
-      })
-      .catch(() => {
+    // Start preloader timing strictly AFTER fonts-ready
+    const startTiming = () => {
+      if (Date.now() >= deadline) {
         finishPreloader();
-      });
+        return;
+      }
+
+      setAnimationStarted(true);
+
+      // Name mask: 550ms, hold 100ms -> at 650ms start lift and dispatch app:ready
+      liftTimer = setTimeout(() => {
+        if (typeof window !== "undefined") {
+          (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReady = true;
+          (window as unknown as { __appReady?: boolean; __appReadyTime?: number }).__appReadyTime = performance.now();
+          window.dispatchEvent(new CustomEvent("app:ready"));
+        }
+        setIsLifting(true);
+      }, 650);
+
+      // Total <= 1.1s: lift completes at 1100ms
+      completeTimer = setTimeout(() => {
+        setIsVisible(false);
+        unlockScroll("preloader");
+        if (onComplete) onComplete();
+      }, 1100);
+    };
+
+    if (typeof document !== "undefined" && document.documentElement.classList.contains("fonts-ready")) {
+      startTiming();
+    } else {
+      const onFonts = () => {
+        if (fontsTimer) clearTimeout(fontsTimer);
+        startTiming();
+      };
+      window.addEventListener("fonts:ready", onFonts, { once: true });
+      // 1200ms failsafe for fonts
+      fontsTimer = setTimeout(startTiming, 1200);
+    }
 
     return () => {
       if (liftTimer) clearTimeout(liftTimer);
       if (completeTimer) clearTimeout(completeTimer);
+      if (fontsTimer) clearTimeout(fontsTimer);
       document.removeEventListener("visibilitychange", checkDeadline);
       window.removeEventListener("pageshow", checkDeadline);
       unlockScroll("preloader");
@@ -170,7 +205,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
       role="status"
       aria-label="Loading portfolio"
       aria-hidden={isLifting || !isVisible}
-      className={`fixed inset-0 z-[100] bg-[#F5F4F0] text-[var(--ink)] select-none preloader-overlay pointer-events-none transition-transform duration-[550ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
+      className={`fixed inset-0 z-[2000] bg-[#F5F4F0] text-[var(--ink)] select-none preloader-overlay pointer-events-none transition-transform duration-[550ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
         isLifting ? "-translate-y-full" : "translate-y-0"
       }`}
     >
@@ -181,8 +216,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
             <span
               className="inline-block font-[350]"
               style={{
-                animation:
-                  "preloaderMaskReveal 550ms cubic-bezier(0.22, 1, 0.36, 1) 0ms both",
+                fontFamily: "var(--font-sans)",
+                animation: animationStarted
+                  ? "preloaderMaskReveal 550ms cubic-bezier(0.22, 1, 0.36, 1) 0ms both"
+                  : "none",
+                opacity: animationStarted ? undefined : 0,
               }}
             >
               {first}
@@ -195,8 +233,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
               <span
                 className="font-editorial-italic font-normal text-[1.0em] inline-block"
                 style={{
-                  animation:
-                    "preloaderMaskReveal 550ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both",
+                  fontFamily: "var(--font-serif)",
+                  animation: animationStarted
+                    ? "preloaderMaskReveal 550ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both"
+                    : "none",
+                  opacity: animationStarted ? undefined : 0,
                 }}
               >
                 {last}

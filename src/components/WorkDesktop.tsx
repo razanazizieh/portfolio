@@ -5,7 +5,7 @@
 
 import React, { memo, useRef, useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { projects } from "../data/projects";
+import { PROJECTS, featuredProjects } from "../data/projects";
 import TS from "./TS";
 import { findStickyBlockers, getIsProgrammaticScroll } from "../lib/scroll";
 import { getLenis } from "../lib/lenis";
@@ -26,7 +26,7 @@ export const WorkDesktop = memo(function WorkDesktop() {
 
   // Preload all project images on mount for zero-flash, instantaneous transitions
   useEffect(() => {
-    projects.forEach((p) => {
+    featuredProjects.forEach((p) => {
       const img = new Image();
       img.src = asset(p.image);
     });
@@ -94,7 +94,7 @@ export const WorkDesktop = memo(function WorkDesktop() {
       setHasChanged(true);
     }
 
-    const n = projects.length;
+    const n = featuredProjects.length;
     let nextIndex = 0;
     if (scrolled <= 0) {
       nextIndex = 0;
@@ -186,7 +186,7 @@ export const WorkDesktop = memo(function WorkDesktop() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      if (activeIndex < projects.length - 1) {
+      if (activeIndex < featuredProjects.length - 1) {
         scrollToProject(activeIndex + 1);
       }
     } else if (e.key === "ArrowUp") {
@@ -196,13 +196,13 @@ export const WorkDesktop = memo(function WorkDesktop() {
       }
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      navigate(`/work/${projects[activeIndex].slug}`);
+      navigate(`/work/${featuredProjects[activeIndex].slug}`);
     }
   };
 
-  const activeProject = projects[activeIndex];
+  const activeProject = featuredProjects[activeIndex];
   const isFirst = activeIndex === 0;
-  const isLast = activeIndex === projects.length - 1;
+  const isLast = activeIndex === featuredProjects.length - 1;
 
   let cueText = "";
   let cueOpacity = 0;
@@ -220,7 +220,7 @@ export const WorkDesktop = memo(function WorkDesktop() {
       ref={trackRef}
       className="relative w-full bg-[#F5F4F0]"
       style={{
-        height: `calc(100svh + ${projects.length * 80}svh)`,
+        height: `calc(100svh + ${featuredProjects.length * 80}svh)`,
       }}
     >
       <div
@@ -229,148 +229,161 @@ export const WorkDesktop = memo(function WorkDesktop() {
         onKeyDown={handleKeyDown}
         className="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#F5F4F0] pt-[96px] z-[1] flex flex-col justify-between px-6 md:px-12 pb-8 outline-none"
       >
-        {/* Top-left heading: "Selected work (03)" (--t-title, count from data) */}
-        <div className="w-full flex-shrink-0">
-          <h2
-            className="t-title text-[var(--ink)]"
-            style={{ marginBottom: "clamp(24px, 4svh, 48px)" }}
-          >
-            Selected work ({pad(projects.length)})
-          </h2>
-        </div>
-
-        {/* 12-column grid: Image in cols 1-6, List in cols 8-12 */}
-        <div className="grid grid-cols-12 gap-x-[24px] items-center my-auto w-full min-h-0">
-          {/* Cols 1-6: Image panel (aspect-ratio 4/3, overflow hidden, width 100%, max-height calc(100svh - 300px)) */}
-          <div
-            className="col-span-6 w-full aspect-[4/3] max-h-[calc(100svh-300px)] overflow-hidden relative bg-[#ECEAE4]"
-            style={{
-              aspectRatio: "4/3",
-              overflow: "hidden",
-              width: "100%",
-              maxHeight: "calc(100svh - 300px)",
-            }}
-          >
-            <Link
-              to={`/work/${activeProject.slug}`}
-              aria-label={`View project: ${activeProject.title}`}
-              className="block w-full h-full relative cursor-pointer"
+        <div
+          data-reveal-group
+          data-reveal-id="work-desktop"
+          data-reveal-at="0.60"
+          className="w-full h-full flex flex-col justify-between"
+        >
+          {/* Top-left heading: "Selected work (03)" (--t-title, count from data) */}
+          <div className="w-full flex-shrink-0 work-desktop-reveal-block">
+            <h2
+              className="t-title text-[var(--ink)]"
+              style={{ marginBottom: "clamp(24px, 4svh, 48px)" }}
             >
-              {projects.map((p, idx) => {
-                const isActive = idx === activeIndex;
-                const isPrev = idx === prevIndex;
-
-                return (
-                  <img
-                    key={p.slug}
-                    src={p.image}
-                    alt={p.title}
-                    loading="eager"
-                    fetchPriority={idx === 0 ? "high" : "auto"}
-                    decoding="async"
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      objectPosition: "center top",
-                      filter: "none",
-                      transform: "none",
-                      opacity: isActive ? 1 : isPrev ? 1 : 0,
-                      transition: isActive
-                        ? "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)"
-                        : isPrev
-                        ? "none"
-                        : "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)",
-                      zIndex: isActive ? 2 : isPrev ? 1 : 0,
-                      pointerEvents: isActive ? "auto" : "none",
-                      willChange: "opacity",
-                    }}
-                    className="absolute inset-0 w-full h-full object-cover [object-position:center_top] [filter:none]"
-                  />
-                );
-              })}
-            </Link>
+              Selected work ({pad(featuredProjects.length)})
+            </h2>
           </div>
 
-          {/* Cols 8-12: List of projects (min-width 0) */}
-          <div className="col-start-8 col-span-5 min-w-0 flex flex-col justify-center">
-            <ul className="flex flex-col gap-6 list-none p-0 m-0 min-w-0">
-              {projects.map((p, idx) => {
-                const isActive = idx === activeIndex;
+          {/* 12-column grid: Image in cols 1-6, List in cols 8-12 */}
+          <div className="grid grid-cols-12 gap-x-[24px] items-center my-auto w-full min-h-0">
+            {/* Cols 1-6: Image panel (aspect-ratio 4/3, overflow hidden, width 100%, max-height calc(100svh - 300px)) */}
+            <div
+              className="col-span-6 w-full aspect-[4/3] max-h-[calc(100svh-300px)] overflow-hidden relative bg-[#ECEAE4] work-desktop-reveal-fade"
+              style={{
+                aspectRatio: "4/3",
+                overflow: "hidden",
+                width: "100%",
+                maxHeight: "calc(100svh - 300px)",
+              }}
+            >
+              <Link
+                to={`/work/${activeProject.slug}`}
+                aria-label={`View project: ${activeProject.title}`}
+                className="block w-full h-full relative cursor-pointer"
+              >
+                {featuredProjects.map((p, idx) => {
+                  const isActive = idx === activeIndex;
+                  const isPrev = idx === prevIndex;
 
-                return (
-                  <li key={p.slug} className="flex flex-col min-w-0">
-                    <div className="flex items-baseline gap-4 min-w-0">
-                      <span className="t-num text-[var(--ink-2)] select-none flex-shrink-0">
-                        {pad(idx + 1)}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <button
-                          type="button"
-                          onClick={() => handleTitleClick(idx, p.slug)}
-                          className={`text-left w-full cursor-pointer focus-visible:outline select-none transition-[transform,opacity] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                            isActive
-                              ? "opacity-100 translate-x-4"
-                              : "opacity-45 hover:opacity-75 translate-x-0"
-                          }`}
-                        >
-                          <span
-                            className={`t-item block text-[var(--ink)] ${
+                  return (
+                    <img
+                      key={p.slug}
+                      src={p.image}
+                      alt={p.title}
+                      loading="eager"
+                      fetchPriority={idx === 0 ? "high" : "auto"}
+                      decoding="async"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        objectPosition: "center top",
+                        filter: "none",
+                        transform: "none",
+                        opacity: isActive ? 1 : isPrev ? 1 : 0,
+                        transition: isActive
+                          ? "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)"
+                          : isPrev
+                          ? "none"
+                          : "opacity 500ms cubic-bezier(0.22, 1, 0.36, 1)",
+                        zIndex: isActive ? 2 : isPrev ? 1 : 0,
+                        pointerEvents: isActive ? "auto" : "none",
+                        willChange: "opacity",
+                      }}
+                      className="absolute inset-0 w-full h-full object-cover [object-position:center_top] [filter:none]"
+                    />
+                  );
+                })}
+              </Link>
+            </div>
+
+            {/* Cols 8-12: List of projects (min-width 0) */}
+            <div className="col-start-8 col-span-5 min-w-0 flex flex-col justify-center">
+              <ol className="flex flex-col gap-6 list-none p-0 m-0 min-w-0 work-desktop-reveal-block">
+                {featuredProjects.map((p, idx) => {
+                  const isActive = idx === activeIndex;
+
+                  return (
+                    <li key={p.slug} className="flex flex-col min-w-0">
+                      <div className="flex items-baseline gap-4 min-w-0">
+                        <span className="t-num text-[var(--ink-2)] select-none flex-shrink-0">
+                          {pad(idx + 1)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <button
+                            type="button"
+                            onClick={() => handleTitleClick(idx, p.slug)}
+                            className={`text-left w-full cursor-pointer focus-visible:outline select-none transition-[transform,opacity] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                               isActive
-                                ? "font-editorial-italic italic font-normal text-[1.06em]"
-                                : ""
+                                ? "opacity-100 translate-x-4"
+                                : "opacity-45 hover:opacity-75 translate-x-0"
                             }`}
                           >
-                            {p.title}
-                          </span>
-                        </button>
+                            <span
+                              className={`t-item block text-[var(--ink)] ${
+                                isActive
+                                  ? "font-editorial-italic italic font-normal text-[1.06em]"
+                                  : ""
+                              }`}
+                            >
+                              {p.title}
+                            </span>
+                          </button>
 
-                        {/* Details expand directly under active title (grid-template-rows: 0fr -> 1fr, 280ms) */}
-                        <div
-                          className="grid transition-[grid-template-rows] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"
-                          style={{
-                            gridTemplateRows: isActive ? "1fr" : "0fr",
-                          }}
-                        >
+                          {/* Details expand directly under active title (grid-template-rows: 0fr -> 1fr, 280ms) */}
                           <div
-                            className="min-h-0 flex flex-col pt-4 transition-opacity duration-240"
+                            className="grid transition-[grid-template-rows] duration-[280ms] ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"
                             style={{
-                              opacity: isActive ? 1 : 0,
-                              transition: "opacity 240ms cubic-bezier(0.16, 1, 0.3, 1) 40ms",
+                              gridTemplateRows: isActive ? "1fr" : "0fr",
                             }}
                           >
-                            <p className="t-body text-[var(--ink)] max-w-[40ch]">
-                              {p.description}
-                            </p>
-                            <div className="mt-4">
-                              <Link
-                                to={`/work/${p.slug}`}
-                                className="t-cta text-[var(--ink)] inline-flex items-center min-h-[44px] no-underline cursor-pointer"
-                              >
-                                <TS>View project</TS>
-                              </Link>
+                            <div
+                              className="min-h-0 flex flex-col pt-4 transition-opacity duration-240"
+                              style={{
+                                opacity: isActive ? 1 : 0,
+                                transition: "opacity 240ms cubic-bezier(0.16, 1, 0.3, 1) 40ms",
+                              }}
+                            >
+                              <p className="t-body text-[var(--ink)] max-w-[40ch]">
+                                {p.description}
+                              </p>
+                              <div className="mt-4 flex flex-col gap-6">
+                                <Link
+                                  to={`/work/${p.slug}`}
+                                  className="t-cta text-[var(--ink)] inline-flex items-center min-h-[44px] no-underline cursor-pointer"
+                                >
+                                  <TS>View project</TS>
+                                </Link>
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+                    </li>
+                  );
+                })}
+              </ol>
+            </div>
           </div>
-        </div>
 
-        {/* Bottom-left cue (--t-meta) */}
-        <div className="w-full flex justify-between items-end flex-shrink-0">
-          <span
-            className="t-meta text-[var(--ink-2)] transition-opacity duration-300"
-            style={{ opacity: cueOpacity }}
-          >
-            {cueText}
-          </span>
+          {/* Bottom row: cue text on bottom-left, "All work" on bottom-right */}
+          <div className="w-full flex justify-between items-end flex-shrink-0">
+            <span
+              className="t-meta text-[var(--ink-2)] transition-opacity duration-300"
+              style={{ opacity: cueOpacity }}
+            >
+              {cueText}
+            </span>
+            <Link
+              to="/work"
+              className="t-ui text-[var(--ink-2)] inline-flex items-center min-h-[44px] no-underline cursor-pointer"
+            >
+              <TS>All work</TS>
+            </Link>
+          </div>
         </div>
 
         {/* Debug panel: visible only when ?debug=work is in URL, z-index <= 10 */}
@@ -380,7 +393,7 @@ export const WorkDesktop = memo(function WorkDesktop() {
             <p>scrollY: {Math.round(window.scrollY)}px</p>
             <p>cachedTrackTop: {Math.round(cachedTrackTop.current)}px</p>
             <p>activeIndex: {activeIndex}</p>
-            <p>projects count: {projects.length}</p>
+            <p>projects count: {featuredProjects.length}</p>
           </div>
         )}
       </div>

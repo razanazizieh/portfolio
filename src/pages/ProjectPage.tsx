@@ -23,14 +23,11 @@ function cleanText(str?: string): string {
 
 /**
  * Case Study Detail Page (/work/:slug)
- * - Top row: "All work" (links to /#work), counter on same baseline
- * - Left meta column: Year, Role, Stack, then 32px gap, stacked links:
- *   "Visit live site" and "View source on GitHub" at --t-cta (22px, weight 500, min-h 48px, type swap)
- * - Repeated links row in cols 5-12 right after "What I built": 64px above, 48px between them
- * - Overview: render longDescription (fallback to overview). If identical to summary, hide Overview block.
- * - Label "What I built" (numbered 01, 02... from features) after Overview
- * - Hide Challenge, Approach, Technical details, Outcome and What I learned when empty
- * - No underlines, no arrows, no icons.
+ * - Header group: "All work" 0; title words +100; meta items +300 (60 apart); summary words +450; links +700
+ * - Hero media: clip reveal on mount (1100ms)
+ * - Overview group: label +0, text +120
+ * - What I built group: label +0, each item 120ms apart
+ * - More work group: label +0, each title 120ms apart
  */
 export default function ProjectPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -68,8 +65,11 @@ export default function ProjectPage() {
 
   const currentIndex = PROJECTS.findIndex((p) => p.slug === project.slug);
   const totalProjects = PROJECTS.length;
-  const nextIndex = (currentIndex + 1) % totalProjects;
-  const nextProject = PROJECTS[nextIndex];
+  const otherProjects: Project[] = [];
+  for (let i = 1; i < totalProjects; i++) {
+    const idx = (currentIndex + i) % totalProjects;
+    otherProjects.push(PROJECTS[idx]);
+  }
 
   const hasVideo = Boolean(project.video?.src && isFilled(project.video.src));
   const summaryText = cleanText(
@@ -104,7 +104,11 @@ export default function ProjectPage() {
     if (!hasLiveUrl && !hasGithubUrl) return null;
 
     return (
-      <div className="mt-8 flex flex-col gap-2">
+      <div
+        data-reveal-child
+        style={{ '--d': '700ms' } as React.CSSProperties}
+        className="mt-8 flex flex-col gap-2"
+      >
         {hasLiveUrl && (
           <a
             href={project.liveUrl}
@@ -135,10 +139,9 @@ export default function ProjectPage() {
 
   return (
     <article
-      className="w-full min-h-screen max-w-[1600px] mx-auto px-6 md:px-12"
+      className="w-full min-h-screen max-w-[1600px] mx-auto px-6 md:px-12 flex flex-col gap-[clamp(48px,7vw,96px)]"
       style={{ paddingBlock: "clamp(96px, 12vw, 160px)" }}
     >
-      <div data-reveal-group data-reveal-id="project-page" className="w-full flex flex-col gap-[clamp(48px,7vw,96px)]">
       <Helmet>
         <title>{`${project.title} — Case Study — Razan Azizieh`}</title>
         <meta name="description" content={cleanText(project.description)} />
@@ -146,116 +149,118 @@ export default function ProjectPage() {
         <meta property="og:description" content={cleanText(project.description)} />
       </Helmet>
 
-      {/* 1. Top row: "All work" on the left */}
+      {/* 1. Header Group: "All work" 0; title words +100; meta items +300 (60 apart); summary words +450; links +700 */}
       <div
-        data-reveal-child
-        style={{ '--d': '0ms' } as React.CSSProperties}
-        className="w-full flex items-baseline justify-start"
+        data-reveal-group
+        data-reveal-id="project-header"
+        data-reveal-at="0.8"
+        className="w-full flex flex-col gap-8 lg:gap-12"
       >
-        <Link
-          to="/#work"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate('/', { state: { scrollTo: 'work' } });
-          }}
-          aria-label="Return to Selected work"
-          className="text-[17px] text-inherit inline-flex items-center min-h-[44px] no-underline cursor-pointer"
-        >
-          <TS>All work</TS>
-        </Link>
-      </div>
-
-      {/* 2. Title: Exactly one h1 per route using --t-title */}
-      <div className="w-full">
-        <Words
-          as="h1"
-          text={project.title}
-          delay={50}
-          className="t-title text-[var(--ink)] [text-wrap:balance] [overflow-wrap:anywhere]"
-        />
-      </div>
-
-      {/* 3. Mobile Meta + Summary (<1024px) */}
-      <div className="flex flex-col gap-8 lg:hidden">
-        {/* Meta in a 2-column mini grid */}
+        {/* Top row: "All work" on the left */}
         <div
           data-reveal-child
-          style={{ '--d': '120ms' } as React.CSSProperties}
-          className="grid grid-cols-2 gap-6 t-ui"
+          style={{ '--d': '0ms' } as React.CSSProperties}
+          className="w-full flex items-baseline justify-start"
         >
-          <div className="flex flex-col gap-1">
-            <span className="t-meta">Year</span>
-            <span className="t-body font-normal text-[var(--ink)]">{project.year}</span>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <span className="t-meta">Role</span>
-            <span className="t-body font-normal text-[var(--ink)]">{cleanText(project.role)}</span>
-          </div>
-
-          <div className="col-span-2 flex flex-col gap-1">
-            <span className="t-meta">Stack</span>
-            <span className="t-body font-normal text-[var(--ink)]">{project.stack.join(", ")}</span>
-          </div>
+          <Link
+            to="/work"
+            aria-label="Return to all work"
+            className="text-[17px] text-inherit inline-flex items-center min-h-[44px] no-underline cursor-pointer"
+          >
+            <TS>All work</TS>
+          </Link>
         </div>
 
-        {/* Summary: uses --t-lead */}
-        <div
-          data-reveal-child
-          style={{ '--d': '180ms' } as React.CSSProperties}
-        >
-          <p className="t-lead text-[var(--ink)]">
-            {summaryText}
-          </p>
+        {/* Title: Exactly one h1 per route using --t-title (+100ms) */}
+        <div className="w-full">
+          <Words
+            as="h1"
+            text={project.title}
+            delay={100}
+            className="t-title text-[var(--ink)] [text-wrap:balance] [overflow-wrap:anywhere]"
+          />
         </div>
 
-        {/* Mobile Links */}
-        {renderStackedLinks()}
-      </div>
+        {/* Mobile Meta + Summary (<1024px) */}
+        <div className="flex flex-col gap-8 lg:hidden">
+          {/* Meta in a 2-column mini grid (items 60ms apart starting at 300ms) */}
+          <div className="grid grid-cols-2 gap-6 t-ui">
+            <div data-reveal-child style={{ '--d': '300ms' } as React.CSSProperties} className="flex flex-col gap-1">
+              <span className="t-meta">Year</span>
+              <span className="t-body font-normal text-[var(--ink)]">{project.year}</span>
+            </div>
 
-      {/* 3. Desktop Meta + Summary (>=1024px): 12-col grid */}
-      <div className="hidden lg:grid lg:grid-cols-12 gap-16 items-start">
-        {/* Cols 1-4: Year, Role, Stack, then 32px gap, stacked links */}
-        <div
-          data-reveal-child
-          style={{ '--d': '120ms' } as React.CSSProperties}
-          className="lg:col-span-4 flex flex-col gap-6 t-ui"
-        >
-          <div className="flex flex-col gap-1">
-            <span className="t-meta">Year</span>
-            <span className="t-body font-normal text-[var(--ink)]">{project.year}</span>
+            <div data-reveal-child style={{ '--d': '360ms' } as React.CSSProperties} className="flex flex-col gap-1">
+              <span className="t-meta">Role</span>
+              <span className="t-body font-normal text-[var(--ink)]">{cleanText(project.role)}</span>
+            </div>
+
+            <div data-reveal-child style={{ '--d': '420ms' } as React.CSSProperties} className="col-span-2 flex flex-col gap-1">
+              <span className="t-meta">Stack</span>
+              <span className="t-body font-normal text-[var(--ink)]">{project.stack.join(", ")}</span>
+            </div>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <span className="t-meta">Role</span>
-            <span className="t-body font-normal text-[var(--ink)]">{cleanText(project.role)}</span>
+          {/* Summary words (+450ms) */}
+          <div>
+            <Words
+              as="p"
+              text={summaryText}
+              delay={450}
+              isChild={true}
+              className="t-lead text-[var(--ink)]"
+            />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <span className="t-meta">Stack</span>
-            <span className="t-body font-normal text-[var(--ink)]">{project.stack.join(", ")}</span>
-          </div>
-
-          {/* Stacked links after Year, Role, Stack (32px gap) */}
+          {/* Mobile Links (+700ms) */}
           {renderStackedLinks()}
         </div>
 
-        {/* Cols 5-12: summary using --t-lead */}
-        <div
-          data-reveal-child
-          style={{ '--d': '180ms' } as React.CSSProperties}
-          className="lg:col-start-5 lg:col-span-8"
-        >
-          <p className="t-lead text-[var(--ink)] max-w-[40ch]">
-            {summaryText}
-          </p>
+        {/* Desktop Meta + Summary (>=1024px): 12-col grid */}
+        <div className="hidden lg:grid lg:grid-cols-12 gap-16 items-start">
+          {/* Cols 1-4: Year, Role, Stack, then 32px gap, stacked links */}
+          <div className="lg:col-span-4 flex flex-col gap-6 t-ui">
+            <div data-reveal-child style={{ '--d': '300ms' } as React.CSSProperties} className="flex flex-col gap-1">
+              <span className="t-meta">Year</span>
+              <span className="t-body font-normal text-[var(--ink)]">{project.year}</span>
+            </div>
+
+            <div data-reveal-child style={{ '--d': '360ms' } as React.CSSProperties} className="flex flex-col gap-1">
+              <span className="t-meta">Role</span>
+              <span className="t-body font-normal text-[var(--ink)]">{cleanText(project.role)}</span>
+            </div>
+
+            <div data-reveal-child style={{ '--d': '420ms' } as React.CSSProperties} className="flex flex-col gap-1">
+              <span className="t-meta">Stack</span>
+              <span className="t-body font-normal text-[var(--ink)]">{project.stack.join(", ")}</span>
+            </div>
+
+            {/* Stacked links after Year, Role, Stack (32px gap, +700ms) */}
+            {renderStackedLinks()}
+          </div>
+
+          {/* Cols 5-12: summary words (+450ms) */}
+          <div className="lg:col-start-5 lg:col-span-8">
+            <Words
+              as="p"
+              text={summaryText}
+              delay={450}
+              isChild={true}
+              className="t-lead text-[var(--ink)] max-w-[40ch]"
+            />
+          </div>
         </div>
       </div>
 
-      {/* 4. Hero Media: ALWAYS aspect-[16/9], max-height 78svh, never blank, mount-time clip reveal */}
+      {/* 2. Hero Media: ALWAYS aspect-[16/9], clip reveal on mount (1100ms) */}
       <section
         aria-label="Project Hero Media"
-        className="w-full aspect-[16/9] max-h-[78svh] overflow-hidden bg-[#ECEAE4] relative isolate mount-clip-reveal"
+        className="w-full aspect-[16/9] max-md:max-h-none md:max-h-[78svh] overflow-hidden bg-[#ECEAE4] relative isolate mount-clip-reveal"
+        style={{
+          width: "100%",
+          aspectRatio: "16 / 9",
+          overflow: "hidden",
+        }}
       >
         {hasVideo && !videoError ? (
           <video
@@ -267,6 +272,14 @@ export default function ProjectPage() {
             playsInline
             onError={() => setVideoError(true)}
             className="w-full h-full object-cover relative z-10"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              transform: "none",
+              filter: "none",
+            }}
           />
         ) : !imageError && project.image ? (
           <img
@@ -279,6 +292,14 @@ export default function ProjectPage() {
             decoding="async"
             onError={() => setImageError(true)}
             className="w-full h-full object-cover object-center relative z-10"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+              transform: "none",
+              filter: "none",
+            }}
           />
         ) : (
           <div className="w-full h-full flex flex-col justify-end p-10 relative isolate bg-[#ECEAE4]">
@@ -294,22 +315,31 @@ export default function ProjectPage() {
         )}
       </section>
 
-      {/* 5. Project Story: rendered ONLY when contentVerified is true */}
+      {/* 3. Project Story: rendered ONLY when contentVerified is true */}
       {project.contentVerified && (
         <section aria-label="Project Story" className="flex flex-col gap-[clamp(48px,6vw,80px)]">
-          {/* Overview: rendered if longDescription/overview is present and not identical to summary */}
+          {/* Overview: label and text +0 / +120 */}
           {shouldShowOverview && (
             <div
-              data-reveal-child
-              style={{ '--d': '100ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-overview"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">
                   Overview
                 </span>
               </div>
-              <div className="lg:col-start-5 lg:col-span-8">
+              <div
+                data-reveal-child
+                style={{ '--d': '120ms' } as React.CSSProperties}
+                className="lg:col-start-5 lg:col-span-8"
+              >
                 <p className="t-body max-w-[62ch] text-[var(--ink)]">
                   {overviewText}
                 </p>
@@ -317,21 +347,31 @@ export default function ProjectPage() {
             </div>
           )}
 
-          {/* What I built: from features */}
+          {/* What I built: label and each item 120ms apart */}
           {project.features && project.features.length > 0 && (
             <div
-              data-reveal-child
-              style={{ '--d': '160ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-features"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">
                   What I built
                 </span>
               </div>
               <div className="lg:col-start-5 lg:col-span-8 flex flex-col gap-8">
                 {project.features.map((feature, idx) => (
-                  <div key={`feature-${idx}`} className="flex flex-col gap-2">
+                  <div
+                    key={`feature-${idx}`}
+                    data-reveal-child
+                    style={{ '--d': `${(idx + 1) * 120}ms` } as React.CSSProperties}
+                    className="flex flex-col gap-2"
+                  >
                     <div className="flex items-baseline gap-3">
                       <span className="t-num font-normal">
                         {pad(idx + 1)}
@@ -349,18 +389,26 @@ export default function ProjectPage() {
             </div>
           )}
 
-
           {/* Challenge (hidden if empty) */}
           {isFilled(project.challenge) && (
             <div
-              data-reveal-child
-              style={{ '--d': '200ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-challenge"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">Challenge</span>
               </div>
-              <div className="lg:col-start-5 lg:col-span-8">
+              <div
+                data-reveal-child
+                style={{ '--d': '120ms' } as React.CSSProperties}
+                className="lg:col-start-5 lg:col-span-8"
+              >
                 <p className="t-body max-w-[62ch] text-[var(--ink)]">
                   {cleanText(project.challenge)}
                 </p>
@@ -371,16 +419,26 @@ export default function ProjectPage() {
           {/* Approach (hidden if empty) */}
           {project.approach && project.approach.length > 0 && (
             <div
-              data-reveal-child
-              style={{ '--d': '240ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-approach"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">Approach</span>
               </div>
               <div className="lg:col-start-5 lg:col-span-8 flex flex-col gap-8">
                 {project.approach.map((item, idx) => (
-                  <div key={`approach-${idx}`} className="flex flex-col gap-2">
+                  <div
+                    key={`approach-${idx}`}
+                    data-reveal-child
+                    style={{ '--d': `${(idx + 1) * 120}ms` } as React.CSSProperties}
+                    className="flex flex-col gap-2"
+                  >
                     <div className="flex items-baseline gap-3">
                       <span className="t-num font-normal">
                         {pad(idx + 1)}
@@ -401,19 +459,30 @@ export default function ProjectPage() {
           {/* Technical details (hidden if empty) */}
           {project.technical && isFilled(project.technical.text) && (
             <div
-              data-reveal-child
-              style={{ '--d': '280ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-technical"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">Technical details</span>
               </div>
               <div className="lg:col-start-5 lg:col-span-8 flex flex-col gap-4">
-                <p className="t-body max-w-[62ch] text-[var(--ink)]">
+                <p
+                  data-reveal-child
+                  style={{ '--d': '120ms' } as React.CSSProperties}
+                  className="t-body max-w-[62ch] text-[var(--ink)]"
+                >
                   {cleanText(project.technical.text)}
                 </p>
                 {isFilled(project.technical.code) && (
                   <div
+                    data-reveal-child
+                    style={{ '--d': '240ms' } as React.CSSProperties}
                     tabIndex={0}
                     role="region"
                     aria-label="Code example"
@@ -431,14 +500,23 @@ export default function ProjectPage() {
           {/* Outcome (hidden if empty) */}
           {isFilled(project.outcome) && (
             <div
-              data-reveal-child
-              style={{ '--d': '320ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-outcome"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">Outcome</span>
               </div>
-              <div className="lg:col-start-5 lg:col-span-8">
+              <div
+                data-reveal-child
+                style={{ '--d': '120ms' } as React.CSSProperties}
+                className="lg:col-start-5 lg:col-span-8"
+              >
                 <p className="t-body max-w-[62ch] text-[var(--ink)]">
                   {cleanText(project.outcome)}
                 </p>
@@ -449,14 +527,23 @@ export default function ProjectPage() {
           {/* What I learned (hidden if empty) */}
           {isFilled(project.learnings) && (
             <div
-              data-reveal-child
-              style={{ '--d': '360ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-learnings"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-16 items-start"
             >
-              <div className="lg:col-span-4">
+              <div
+                data-reveal-child
+                style={{ '--d': '0ms' } as React.CSSProperties}
+                className="lg:col-span-4"
+              >
                 <span className="t-meta block font-normal">What I learned</span>
               </div>
-              <div className="lg:col-start-5 lg:col-span-8">
+              <div
+                data-reveal-child
+                style={{ '--d': '120ms' } as React.CSSProperties}
+                className="lg:col-start-5 lg:col-span-8"
+              >
                 <p className="t-body max-w-[62ch] text-[var(--ink)]">
                   {cleanText(project.learnings)}
                 </p>
@@ -467,14 +554,20 @@ export default function ProjectPage() {
           {/* Gallery: render only items with a verified real image */}
           {project.gallery && project.gallery.length > 0 && (
             <div
-              data-reveal-child
-              style={{ '--d': '380ms' } as React.CSSProperties}
+              data-reveal-group
+              data-reveal-id="project-gallery"
+              data-reveal-at="0.8"
               className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8"
             >
               {project.gallery
                 .filter((item) => item.verified && isFilled(item.src) && !item.src.includes("placeholder"))
                 .map((item, idx) => (
-                  <figure key={`gallery-${idx}`} className="flex flex-col gap-2">
+                  <figure
+                    key={`gallery-${idx}`}
+                    data-reveal-child
+                    style={{ '--d': `${idx * 120}ms` } as React.CSSProperties}
+                    className="flex flex-col gap-2"
+                  >
                     <img
                       src={item.src}
                       alt={item.alt || project.title}
@@ -496,30 +589,52 @@ export default function ProjectPage() {
         </section>
       )}
 
-      {/* 6. Case Study Bottom Navigation */}
-      <footer
-        data-reveal-child
-        style={{ '--d': '250ms' } as React.CSSProperties}
-        className="pt-16 border-none w-full"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      {/* 4. "More work" block: label and each title 120ms apart */}
+      <footer className="pt-16 border-none w-full">
+        <div
+          data-reveal-group
+          data-reveal-id="project-more-work"
+          data-reveal-at="0.8"
+          className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16"
+        >
           <div className="lg:col-start-5 lg:col-span-8 flex flex-col">
-            <Link
-              to={`/work/${nextProject.slug}`}
-              aria-label={`Next project: ${nextProject.title}`}
-              className="group flex flex-col justify-center min-h-[64px] no-underline w-full"
+            <span
+              data-reveal-child
+              style={{ '--d': '0ms' } as React.CSSProperties}
+              className="t-meta block mb-2"
             >
-              <span className="t-meta block mb-2">
-                Next project
-              </span>
-              <span className="t-item text-[var(--ink)] line-clamp-2 [overflow-wrap:anywhere] [text-wrap:balance]">
-                <TS>{nextProject.title}</TS>
-              </span>
-            </Link>
+              More work
+            </span>
+            <div className="flex flex-col gap-[16px]">
+              {otherProjects.map((other, idx) => (
+                <Link
+                  key={other.slug}
+                  to={`/work/${other.slug}`}
+                  data-reveal-child
+                  style={{ '--d': `${(idx + 1) * 120}ms` } as React.CSSProperties}
+                  aria-label={`View project: ${other.title}`}
+                  className="group flex flex-col justify-center min-h-[64px] no-underline w-full cursor-pointer"
+                >
+                  <span className="t-item text-[var(--ink)] line-clamp-2 [overflow-wrap:anywhere] [text-wrap:balance]">
+                    <TS>{other.title}</TS>
+                  </span>
+                </Link>
+              ))}
+              <Link
+                to="/work"
+                data-reveal-child
+                style={{ '--d': `${(otherProjects.length + 1) * 120}ms` } as React.CSSProperties}
+                aria-label="View all projects"
+                className="group flex flex-col justify-center min-h-[64px] no-underline w-full cursor-pointer"
+              >
+                <span className="t-item text-[var(--ink)] line-clamp-2 [overflow-wrap:anywhere] [text-wrap:balance]">
+                  <TS>All projects</TS>
+                </span>
+              </Link>
+            </div>
           </div>
         </div>
       </footer>
-      </div>
     </article>
   );
 }

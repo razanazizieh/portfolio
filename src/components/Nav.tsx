@@ -30,37 +30,78 @@ export function Nav() {
   const shouldReduceMotion = useReducedMotion();
 
   const [nameVisible, setNameVisible] = useState(() => !isHome);
-  const [navLinksVisible, setNavLinksVisible] = useState(() => {
+  const [isWordmarkIntersecting, setIsWordmarkIntersecting] = useState(false);
+  const [isNavVisible, setIsNavVisible] = useState(() => {
     if (typeof window === "undefined") return true;
     if (!isHome || shouldReduceMotion) return true;
     return Boolean((window as unknown as { __appReady?: boolean }).__appReady);
   });
   const activeSection = useScrollSpy(isHome);
 
+  // Observe footer wordmark with IntersectionObserver (rootMargin "0px 0px -15% 0px", threshold 0)
+  // Re-created on route change, ignores 404
   useEffect(() => {
-    if (!isHome || shouldReduceMotion) {
-      setNavLinksVisible(true);
+    if (location.pathname === "/404") {
+      setIsWordmarkIntersecting(false);
       return;
     }
 
+    let observer: IntersectionObserver | null = null;
     let timer: ReturnType<typeof setTimeout> | null = null;
-    const onReady = () => {
-      timer = setTimeout(() => {
-        setNavLinksVisible(true);
-      }, 600);
+    let cancelled = false;
+
+    const attachObserver = () => {
+      if (cancelled) return;
+      const wordmarkEl = document.querySelector<HTMLElement>("[data-wordmark]");
+      if (!wordmarkEl) {
+        timer = setTimeout(attachObserver, 60);
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (entry) {
+            setIsWordmarkIntersecting(entry.isIntersecting);
+          }
+        },
+        {
+          rootMargin: "0px 0px -15% 0px",
+          threshold: 0,
+        }
+      );
+
+      observer.observe(wordmarkEl);
     };
 
-    if ((window as unknown as { __appReady?: boolean }).__appReady) {
-      onReady();
-    } else {
-      window.addEventListener("app:ready", onReady, { once: true });
-      return () => {
-        window.removeEventListener("app:ready", onReady);
-        if (timer) clearTimeout(timer);
-      };
-    }
+    setIsWordmarkIntersecting(false);
+    attachObserver();
+
     return () => {
+      cancelled = true;
       if (timer) clearTimeout(timer);
+      if (observer) observer.disconnect();
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!isHome || shouldReduceMotion) {
+      setIsNavVisible(true);
+      return;
+    }
+
+    if ((window as unknown as { __appReady?: boolean }).__appReady) {
+      setIsNavVisible(true);
+      return;
+    }
+
+    const onReady = () => {
+      setIsNavVisible(true);
+    };
+
+    window.addEventListener("app:ready", onReady, { once: true });
+    return () => {
+      window.removeEventListener("app:ready", onReady);
     };
   }, [isHome, shouldReduceMotion]);
 
@@ -238,6 +279,9 @@ export function Nav() {
 
   const isItemActive = (item: NavItem) => {
     if (!isHome) {
+      if (item.id === "work") {
+        return location.pathname === "/work";
+      }
       if (item.id === "journal") {
         return location.pathname.startsWith("/journal");
       }
@@ -377,9 +421,12 @@ export function Nav() {
         <div className="w-full max-w-[1600px] h-full mx-auto px-6 md:px-12 flex justify-between items-center">
           {/* Name Left: "Razan Azizieh" links to "/" and calls scrollToTop when already on "/" */}
           <div
+            aria-hidden={isWordmarkIntersecting ? true : !showName}
             className={`transition-[opacity,transform] duration-300 ${
-              showName
-                ? "opacity-100 translate-y-0"
+              isWordmarkIntersecting
+                ? "opacity-0 -translate-y-1 pointer-events-none"
+                : showName
+                ? "opacity-100 translate-y-0 pointer-events-auto"
                 : "opacity-0 translate-y-2 pointer-events-none"
             }`}
           >
@@ -396,8 +443,8 @@ export function Nav() {
           {/* Desktop Nav (>=768px): Work, About, Journal, Contact as <a href="/#id"> */}
           <nav
             aria-label="Primary"
-            className={`hidden md:flex items-center gap-8 t-ui transition-opacity duration-[var(--d-fast,600ms)] ${
-              navLinksVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`hidden md:flex items-center gap-8 t-ui transition-opacity duration-300 ${
+              isNavVisible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
             }`}
           >
             {navItems.map((item) => {
@@ -408,6 +455,7 @@ export function Nav() {
                 <Link
                   key={item.id}
                   to={`/#${item.id}`}
+                  tabIndex={isNavVisible ? 0 : -1}
                   onClick={(e) => handleDesktopSectionClick(e, item.id)}
                   className={`${colorClass} min-h-[44px] inline-flex items-center no-underline cursor-pointer focus-visible:outline`}
                 >
@@ -418,10 +466,15 @@ export function Nav() {
           </nav>
 
           {/* Mobile "Menu" / "Close" Text Button (<768px): t-ui font, z-index 1000 */}
-          <div className="md:hidden">
+          <div
+            className={`md:hidden transition-opacity duration-300 ${
+              isNavVisible ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"
+            }`}
+          >
             <button
               ref={menuButtonRef}
               type="button"
+              tabIndex={isNavVisible ? 0 : -1}
               onClick={() => {
                 setIsMobileOpen((prev) => !prev);
               }}

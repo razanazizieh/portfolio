@@ -3,10 +3,10 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     base: "/portfolio/",
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -21,6 +21,7 @@ export default defineConfig(() => {
       host: "0.0.0.0",
       hmr: false,
     },
+    esbuild: mode === "production" ? { drop: ["console", "debugger"] } : {},
     build: {
       chunkSizeWarningLimit: 1200,
       rollupOptions: {

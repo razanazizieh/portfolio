@@ -9,7 +9,7 @@
 @theme {
   --color-ink: #141414;
   --color-ink-2: #44443F;
-  --font-sans: "Inter Tight Variable", "Inter Tight", system-ui, sans-serif;
+  --font-sans: "Inter Tight Variable", "Inter Tight", "Inter Tight Fallback", system-ui, sans-serif;
   --font-serif: "Instrument Serif", serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -723,6 +723,21 @@ html.lenis, html.lenis body {
 }
 
 /* =========================================================================
+   Hero Done Guard: Nothing below the hero may show before the hero intro ends
+   ========================================================================= */
+html:not(.hero-done) main > *:not(#hero),
+html:not(.hero-done) #hero ~ * {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.hero-done) main > *:not(#hero),
+  html:not(.hero-done) #hero ~ * {
+    visibility: visible !important;
+  }
+}
+
+/* =========================================================================
    Unified Reveal System
    ========================================================================= */
 @keyframes preloaderMaskReveal {
@@ -843,6 +858,155 @@ html.lenis, html.lenis body {
   transform: translate3d(0, 0, 0);
 }
 
+/* Statement Line Masks and Reveals */
+.statement-line-mask {
+  display: block;
+  overflow: hidden;
+  padding-block: 0.05em;
+  margin-block: -0.05em;
+}
+
+.js-reveal [data-reveal-group][data-revealed="true"] .statement-line-mask,
+[data-revealed="true"] .statement-line-mask,
+.statement-line-mask[data-revealed="true"] {
+  overflow: visible !important;
+}
+
+.statement-line {
+  display: inline-block;
+  will-change: transform;
+}
+
+.js-reveal [data-reveal-id="statement"]:not(.is-in) .statement-line,
+.js-reveal [data-reveal-group]:not(.is-in) .statement-line {
+  transform: translate3d(0, 105%, 0);
+}
+
+.statement-line-1 {
+  transition: transform 1000ms cubic-bezier(0.22, 1, 0.36, 1) 0ms;
+}
+
+.statement-line-2 {
+  transition: transform 1000ms cubic-bezier(0.22, 1, 0.36, 1) 140ms;
+}
+
+.js-reveal .is-in .statement-line,
+.js-reveal [data-reveal-group].is-in .statement-line {
+  transform: translate3d(0, 0, 0);
+}
+
+[data-revealed="true"] .statement-line {
+  transform: none !important;
+  will-change: auto;
+}
+
+.statement-feels {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.js-reveal [data-reveal-id="statement"]:not(.is-in) .statement-feels,
+.js-reveal [data-reveal-group]:not(.is-in) .statement-feels {
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+}
+
+.statement-feels {
+  transition: opacity 600ms cubic-bezier(0.22, 1, 0.36, 1) 700ms,
+              transform 600ms cubic-bezier(0.22, 1, 0.36, 1) 700ms;
+}
+
+.js-reveal .is-in .statement-feels,
+.js-reveal [data-reveal-group].is-in .statement-feels {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-revealed="true"] .statement-feels {
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+/* Work Desktop Reveals */
+.work-desktop-reveal-block {
+  will-change: transform, opacity;
+}
+
+.js-reveal [data-reveal-id="work-desktop"]:not(.is-in) .work-desktop-reveal-block,
+.js-reveal [data-reveal-group]:not(.is-in) .work-desktop-reveal-block {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+
+.work-desktop-reveal-block {
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.js-reveal .is-in .work-desktop-reveal-block,
+.js-reveal [data-reveal-group].is-in .work-desktop-reveal-block {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-revealed="true"] .work-desktop-reveal-block {
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+.work-desktop-reveal-fade {
+  will-change: opacity;
+}
+
+.js-reveal [data-reveal-id="work-desktop"]:not(.is-in) .work-desktop-reveal-fade,
+.js-reveal [data-reveal-group]:not(.is-in) .work-desktop-reveal-fade {
+  opacity: 0;
+}
+
+.work-desktop-reveal-fade {
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.js-reveal .is-in .work-desktop-reveal-fade,
+.js-reveal [data-reveal-group].is-in .work-desktop-reveal-fade {
+  opacity: 1;
+}
+
+[data-revealed="true"] .work-desktop-reveal-fade {
+  opacity: 1 !important;
+  will-change: auto;
+}
+
+/* Work Mobile Reveals */
+.work-mobile-item {
+  will-change: transform, opacity;
+}
+
+.js-reveal .work-mobile-item:not(.is-in) {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+}
+
+.work-mobile-item {
+  transition: opacity 900ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: calc(var(--i, 0) * 100ms);
+}
+
+.js-reveal .work-mobile-item.is-in {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-revealed="true"].work-mobile-item,
+.work-mobile-item[data-revealed="true"] {
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: auto;
+}
+
 /* Standalone Blocks, lists, link rows */
 .js-reveal [data-reveal="up"]:not(.is-in) {
   opacity: 0;
@@ -889,6 +1053,22 @@ html.lenis, html.lenis body {
   animation: mountClipReveal var(--dur-headline, 1100ms) var(--ease-reveal) both;
 }
 
+/* Work Page Card Media Clip Reveal */
+.js-reveal .work-card-media {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+
+.js-reveal .is-in .work-card-media,
+.js-reveal .work-card-media.is-in {
+  clip-path: inset(0 0 0 0);
+}
+
+[data-revealed="true"] .work-card-media {
+  clip-path: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   [data-reveal-child],
   .is-in [data-reveal-child],
@@ -896,16 +1076,26 @@ html.lenis, html.lenis body {
   .js-reveal [data-reveal="words"] .w > span,
   .js-reveal [data-reveal-group] [data-reveal="words"] .w > span,
   .js-reveal .statement-word-inner,
+  .statement-line,
+  .statement-feels,
+  .work-desktop-reveal-block,
+  .work-desktop-reveal-fade,
+  .work-mobile-item,
   .js-reveal .wordmark-reveal-content,
   .js-reveal [data-reveal="up"],
   .js-reveal [data-reveal="clip"],
   .js-reveal [data-reveal="clip"] img,
-  .js-reveal [data-reveal="clip"] video {
+  .js-reveal [data-reveal="clip"] video,
+  .work-card-media {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
     clip-path: none !important;
     transition: none !important;
+  }
+
+  .statement-line-mask {
+    overflow: visible !important;
   }
 
   .mount-clip-reveal {

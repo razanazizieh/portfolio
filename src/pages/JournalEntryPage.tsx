@@ -13,11 +13,10 @@ import { Words } from "../components/Words";
 
 /**
  * Journal Entry Detail View (/journal/:slug)
- * - Wrapped in data-reveal-group
+ * - Wrapped in data-reveal-group (hugs content, trigger: 0.8)
  * - Title words (d 0ms)
- * - Meta child (d 100ms)
- * - Body paragraphs/blocks (children, +100ms each)
- * - Prev/next children
+ * - Meta (d 200ms)
+ * - Each body paragraph 120ms apart
  */
 export function JournalEntryPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -34,7 +33,7 @@ export function JournalEntryPage() {
 
   return (
     <article className="w-full min-h-screen pt-32 pb-32 max-w-[1600px] mx-auto px-6 md:px-12">
-      <div data-reveal-group data-reveal-id="journal-entry" className="w-full">
+      <div data-reveal-group data-reveal-id="journal-entry" data-reveal-at="0.8" className="w-full">
         <Helmet>
           <title>{`${entry.title} — Journal — Razan Azizieh`}</title>
           <meta name="description" content={entry.summary} />
@@ -57,30 +56,30 @@ export function JournalEntryPage() {
           </HL>
         </div>
 
-        {/* Entry Header: Title words (d 0) as h1, date + reading time (child, d 100ms) */}
+        {/* Entry Header: Title words (d 0) as h1, date + reading time (child, d 200ms) */}
         <header className="mb-24">
+          <Words
+            as="h1"
+            text={entry.title}
+            delay={0}
+            className="t-title text-[var(--ink)] max-w-5xl mb-6"
+          />
           <div
             data-reveal-child
-            style={{ "--d": "100ms" } as React.CSSProperties}
-            className="flex items-center gap-4 t-meta text-[var(--ink-2)] mb-6"
+            style={{ "--d": "200ms" } as React.CSSProperties}
+            className="flex items-center gap-4 t-meta text-[var(--ink-2)]"
           >
             <time dateTime={entry.date}>{entry.date}</time>
             <span>&bull;</span>
             <span>{entry.readingMinutes} min read</span>
           </div>
-          <Words
-            as="h1"
-            text={entry.title}
-            delay={0}
-            className="t-title text-[var(--ink)] max-w-5xl"
-          />
         </header>
 
-        {/* Body Column (Cols 5-12, max-width 62ch, t-body text, children +100ms each) */}
+        {/* Body Column (Cols 5-12, max-width 62ch, t-body text, children 120ms apart) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mb-36">
           <div className="lg:col-start-5 lg:col-span-8 max-w-[62ch] flex flex-col gap-10">
             {entry.body.map((block, idx) => {
-              const blockDelay = 200 + idx * 100;
+              const blockDelay = 200 + (idx + 1) * 120;
 
               switch (block.type) {
                 case "h2":
@@ -182,7 +181,7 @@ export function JournalEntryPage() {
         {(prevEntry || nextEntry) && (
           <footer
             data-reveal-child
-            style={{ "--d": `${200 + entry.body.length * 100 + 100}ms` } as React.CSSProperties}
+            style={{ "--d": `${200 + (entry.body.length + 1) * 120}ms` } as React.CSSProperties}
             className="pt-24 border-none grid grid-cols-1 md:grid-cols-2 gap-12"
           >
             {prevEntry ? (
