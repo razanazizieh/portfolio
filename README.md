@@ -1,22 +1,13 @@
-# Razan Azizieh — Portfolio
-
 Personal portfolio and technical case studies of Razan Azizieh, Front-end Developer.
-
----
-
-## Overview
-A focused, editorial portfolio highlighting modern web applications, interactive projects, and front-end development. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
-
----
+Overview
+# A focused, editorial portfolio highlighting modern web applications, interactive projects, and front-end development. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
 
 ## Stack
-* **Framework:** React 19, TypeScript
-* **Bundler & Tooling:** Vite 6, Tailwind CSS 4
-* **Animation & Kinetics:** Motion (Framer Motion), Lenis (smooth scroll), GSAP (ticker synchronization)
-* **Routing & Head:** React Router 7, React Helmet Async
-* **Typography:** Self-hosted Inter Tight Variable and Instrument Serif via Fontsource
-
----
+- Framework: React 19, TypeScript
+- Bundler & Tooling: Vite 6, Tailwind CSS 4
+- Animation & Kinetics: Motion (Framer Motion), Lenis (smooth scroll), GSAP (ticker synchronization)
+- Routing & Head: React Router 7, React Helmet Async
+- Typography: Self-hosted Inter Tight Variable and Instrument Serif via Fontsource
 
 ## Scripts
 * **Start local development server:** `npm run dev`
@@ -29,29 +20,23 @@ A focused, editorial portfolio highlighting modern web applications, interactive
 * **Production build:** `npm run build`
 * **Comprehensive verification pipeline:** `npm run verify`
 
----
-
 ## Folder Structure
-* `public/` — Static assets, favicons, project media, robots.txt, sitemap.xml
-* `scripts/` — Verification and security audit scripts
-* `src/`
-  * `components/` — Reusable UI primitives
-  * `sections/` — Home landing panels
-  * `pages/` — Top-level view routes
-  * `hooks/` — Custom React hooks
-  * `lib/` — Core libraries and utility singletons
-  * `data/` — Structured case studies and journal markdown blocks
-  * `content/` — Global site metadata, biography, navigation, and contact configuration
-  * `styles/` — Design system tokens and global CSS
-
----
+```text
+├── public/               # Static assets, favicons, project media, robots.txt, sitemap.xml
+├── scripts/              # Verification and security audit scripts
+├── src/
+│   ├── components/       # Reusable UI primitives (Nav, Footer, TS, HL, Words, Layout)
+│   ├── sections/         # Home landing panels (Hero, Work, Statement, About, Journal, Contact)
+│   ├── pages/            # Top-level view routes (ProjectPage, JournalListPage, JournalEntryPage, PrivacyPage, NotFound)
+│   ├── hooks/            # Custom React hooks (smooth scroll, reduced motion, reveal engine)
+│   ├── lib/              # Core libraries and utility singletons (Lenis instance, scroll logic)
+│   ├── data/             # Structured case studies and journal markdown blocks
+│   ├── content/          # Global site metadata, biography, navigation, and contact configuration
+│   └── styles/           # Design system tokens and global CSS
+```
 
 ## Deployment
-GitHub Pages via GitHub Actions for repository `razanazizieh/portfolio`: Settings, Pages, Source: GitHub Actions. 
-* **Live site:** [https://razanazizieh.github.io/portfolio/](https://razanazizieh.github.io/portfolio/)
-* Run `npm run build` to generate the production-ready distribution in `dist/`.
-
----
+GitHub Pages via GitHub Actions for repository razanazizieh/portfolio: Settings, Pages, Source: GitHub Actions. Live site: https://razanazizieh.github.io/portfolio/ Run npm run build to generate the production-ready distribution in dist/.
 
 ## Process
 Developed and designed by Razan Azizieh. Built with AI-assisted development.
