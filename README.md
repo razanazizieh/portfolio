@@ -1,6 +1,7 @@
 Personal portfolio and technical case studies of Razan Azizieh, Front-end Developer.
-Overview
-# A focused, editorial portfolio highlighting modern web applications, interactive projects, and front-end development. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
+
+## Overview
+A focused, editorial portfolio highlighting modern web applications, interactive projects, and front-end development. The interface emphasizes typographic tension, fluid kinetic responsiveness, strict monochrome values, and accessible structure.
 
 ## Stack
 - Framework: React 19, TypeScript
