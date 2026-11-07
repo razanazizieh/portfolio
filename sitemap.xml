@@ -11,11 +11,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://razanazizieh.github.io/portfolio/journal</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://razanazizieh.github.io/portfolio/work/bilingual-portfolio-website</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -31,8 +26,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://razanazizieh.github.io/portfolio/journal</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://razanazizieh.github.io/portfolio/journal/why-im-learning-the-back-end</loc>
-    <lastmod>2026-10-29</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
