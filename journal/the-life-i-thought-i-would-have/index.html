@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Metadata -->
+    <script>
+      // Suppress Vite HMR / WebSocket errors in iframe environment
+      window.addEventListener('error', function (e) {
+        if (
+          e.message &&
+          (e.message.includes('send was called before connect') ||
+           e.message.includes('WebSocket') ||
+           e.message.includes('[vite]'))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+      window.addEventListener('unhandledrejection', function (e) {
+        if (
+          e.reason &&
+          typeof e.reason.message === 'string' &&
+          (e.reason.message.includes('send was called before connect') ||
+           e.reason.message.includes('WebSocket') ||
+           e.reason.message.includes('[vite]'))
+        ) {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }
+      });
+    </script>
+    <title>Razan Azizieh, Front-end Developer</title>
+    <meta
+      name="description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <link rel="canonical" href="https://razanazizieh.github.io/portfolio/" />
+
+    <!-- Favicons & App Icons -->
+    <link rel="icon" href="/portfolio/favicon.ico?v=5" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/portfolio/favicon.svg?v=5" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/portfolio/favicon-96x96.png?v=5" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/portfolio/apple-touch-icon.png?v=5" />
+    <link rel="manifest" href="/portfolio/site.webmanifest?v=5" />
+    <meta name="theme-color" content="#F5F4F0" />
+    <meta name="apple-mobile-web-app-title" content="Razan" />
+
+    <!-- Preload Variable Fonts Above the Fold -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/portfolio/fonts/inter-tight-latin-wght-normal.woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/portfolio/fonts/instrument-serif-latin-400-italic.woff2"
+      crossorigin
+    />
+
+    <!-- Critical Font Face & Visibility Styles -->
+    <style>
+      @font-face {
+        font-family: "Inter Tight Variable";
+        font-style: normal;
+        font-display: block;
+        font-weight: 100 900;
+        src: url("/portfolio/fonts/inter-tight-latin-wght-normal.woff2") format("woff2-variations");
+      }
+
+      @font-face {
+        font-family: "Instrument Serif";
+        font-style: italic;
+        font-display: block;
+        font-weight: 400;
+        src: url("/portfolio/fonts/instrument-serif-latin-400-italic.woff2") format("woff2");
+      }
+
+      @font-face {
+        font-family: "Inter Tight Fallback";
+        src: local("Arial");
+        size-adjust: 96%;
+        ascent-override: 94%;
+        descent-override: 24%;
+        line-gap-override: 0%;
+      }
+
+      html:not(.fonts-ready) #root {
+        visibility: hidden;
+      }
+
+      .preloader-initial-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background-color: #F5F4F0;
+        pointer-events: none;
+      }
+    </style>
+
+    <!-- Fonts Ready & Initial Preloader Failsafe Script -->
+    <script>
+      (function () {
+        var markFontsReady = function () {
+          if (document.documentElement.classList.contains('fonts-ready')) return;
+          document.documentElement.classList.add('fonts-ready');
+          window.__fontsReady = true;
+          window.dispatchEvent(new CustomEvent('fonts:ready'));
+        };
+
+        // 1200ms failsafe timer so the page can never stay hidden
+        var failsafeTimer = setTimeout(markFontsReady, 1200);
+
+        if (document.fonts && document.fonts.load) {
+          Promise.all([
+            document.fonts.load('300 1em "Inter Tight Variable"'),
+            document.fonts.load('250 1em "Inter Tight Variable"'),
+            document.fonts.load('italic 1em "Instrument Serif"'),
+            document.fonts.ready,
+          ])
+            .then(function () {
+              clearTimeout(failsafeTimer);
+              markFontsReady();
+            })
+            .catch(function () {
+              clearTimeout(failsafeTimer);
+              markFontsReady();
+            });
+        } else {
+          markFontsReady();
+        }
+
+        // Hide preloader overlay if not home or already seen or reduced motion
+        try {
+          var p = window.location.pathname;
+          var isHome = p === '/' || p === '/portfolio/' || p === '/portfolio';
+          var seen = sessionStorage.getItem('preloader_seen') === 'true';
+          var reduced =
+            window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (!isHome || seen || reduced) {
+            var el = document.getElementById('preloader-overlay');
+            if (el) el.style.display = 'none';
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Open Graph (Static for crawlers) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Razan Azizieh, Front-end Developer" />
+    <meta
+      property="og:description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <meta property="og:url" content="https://razanazizieh.github.io/portfolio/" />
+    <meta property="og:image" content="https://razanazizieh.github.io/portfolio/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Razan Azizieh — Front-end Developer" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Razan Azizieh, Front-end Developer" />
+    <meta
+      name="twitter:description"
+      content="Razan Azizieh is a Front-end Developer with a background in mathematics and informatics, building interfaces with React and distributed systems."
+    />
+    <meta name="twitter:image" content="https://razanazizieh.github.io/portfolio/og.png" />
+
+    <!-- JSON-LD Structured Data: Person -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Razan Azizieh",
+      "jobTitle": "Front-end Developer",
+      "url": "https://razanazizieh.github.io/portfolio/",
+      "sameAs": [
+        "https://linkedin.com/in/razanazizieh",
+        "https://github.com/razanazizieh"
+      ],
+      "knowsAbout": [
+        "React",
+        "TypeScript",
+        "Distributed systems"
+      ]
+    }
+    </script>
+    <script type="module" crossorigin src="/portfolio/assets/index-BLMl2jv3.js"></script>
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/vendor-6uJXN30m.js">
+    <link rel="modulepreload" crossorigin href="/portfolio/assets/motion-vendor-DR8F_j-P.js">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/motion-vendor-BNWJ7Zcm.css">
+    <link rel="stylesheet" crossorigin href="/portfolio/assets/index-CWKI4KMV.css">
+  </head>
+  <body class="bg-[#F5F4F0] text-[#0A0A0A] antialiased">
+    <div id="preloader-overlay" class="preloader-initial-overlay"></div>
+    <div id="root"></div>
+  </body>
+</html>
